@@ -429,16 +429,15 @@ export function AnalyzeSection() {
                     onClick={() => setSelectedMode(mode.id)}
                     disabled={isAnalyzing}
                     className={cn(
-                      "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all",
+                      "flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all",
                       selectedMode === mode.id
                         ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                         : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80",
                       isAnalyzing && "opacity-50 cursor-not-allowed"
                     )}
                   >
-                    <mode.icon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{mode.name}</span>
-                    <span className="sm:hidden">{mode.id}</span>
+                    <mode.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    <span>{mode.name}</span>
                   </button>
                 ))}
               </div>
@@ -459,13 +458,15 @@ export function AnalyzeSection() {
             {/* Sign In Prompt for non-logged in users */}
             {!user && (
               <div className="mb-6 p-4 rounded-xl bg-primary/10 border border-primary/30">
-                <div className="flex items-center gap-3">
-                  <LogIn className="h-5 w-5 text-primary" />
-                  <div className="flex-1">
-                    <span className="font-medium text-foreground">Sign in to analyze tweets</span>
-                    <p className="text-sm text-muted-foreground">Free users get 5 analyses per day</p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1">
+                    <LogIn className="h-5 w-5 text-primary shrink-0" />
+                    <div className="flex-1">
+                      <span className="font-medium text-foreground block">Sign in to analyze tweets</span>
+                      <p className="text-sm text-muted-foreground">Free users get 5 analyses per day</p>
+                    </div>
                   </div>
-                  <Button asChild variant="viral" size="sm">
+                  <Button asChild variant="viral" size="default" className="w-full sm:w-auto">
                     <Link to="/auth">Sign In</Link>
                   </Button>
                 </div>
