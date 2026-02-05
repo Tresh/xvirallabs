@@ -2,10 +2,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Sparkles, Zap, Crown } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const plans = [
   {
     name: "Free",
+    tier: "free",
     price: "$0",
     description: "Get started with viral analysis",
     icon: Zap,
@@ -19,10 +21,10 @@ const plans = [
       "No saved history",
       "No idea vault",
     ],
-    isCurrent: true,
   },
   {
     name: "Pro",
+    tier: "pro",
     price: "$19",
     period: "/month",
     description: "For serious content creators",
@@ -40,6 +42,7 @@ const plans = [
   },
   {
     name: "Elite",
+    tier: "elite",
     price: "$49",
     period: "/month",
     description: "For agencies & power users",
@@ -57,16 +60,19 @@ const plans = [
 ];
 
 export function PricingPlans() {
+  const { profile } = useAuth();
+  const currentTier = profile?.tier || "free";
+
   return (
     <Card className="bg-card/50 border-border">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle className="text-xl">Upgrade Your Plan</CardTitle>
             <CardDescription>Unlock more powerful viral analysis tools</CardDescription>
           </div>
-          <Badge variant="outline" className="text-primary border-primary">
-            Current: Free
+          <Badge variant="outline" className="text-primary border-primary capitalize">
+            Current: {currentTier}
           </Badge>
         </div>
       </CardHeader>
@@ -74,26 +80,32 @@ export function PricingPlans() {
         <div className="grid gap-4 md:grid-cols-3">
           {plans.map((plan) => {
             const Icon = plan.icon;
+            const isCurrent = plan.tier === currentTier;
             return (
               <div
                 key={plan.name}
                 className={`relative p-5 rounded-xl border transition-all ${
-                  plan.isCurrent
+                  isCurrent
                     ? "border-primary/50 bg-primary/5"
                     : plan.badge
                     ? "border-primary/30 bg-gradient-to-b from-primary/5 to-transparent"
                     : "border-border bg-secondary/30"
                 }`}
               >
-                {plan.badge && (
+                {plan.badge && !isCurrent && (
                   <Badge className="absolute -top-2 right-4 bg-primary text-primary-foreground">
                     {plan.badge}
                   </Badge>
                 )}
+                {isCurrent && (
+                  <Badge className="absolute -top-2 right-4 bg-viral-success text-foreground">
+                    Your Plan
+                  </Badge>
+                )}
                 
                 <div className="flex items-center gap-3 mb-4">
-                  <div className={`p-2 rounded-lg ${plan.isCurrent ? "bg-primary/20" : "bg-secondary"}`}>
-                    <Icon className={`h-5 w-5 ${plan.isCurrent ? "text-primary" : "text-muted-foreground"}`} />
+                  <div className={`p-2 rounded-lg ${isCurrent ? "bg-primary/20" : "bg-secondary"}`}>
+                    <Icon className={`h-5 w-5 ${isCurrent ? "text-primary" : "text-muted-foreground"}`} />
                   </div>
                   <div>
                     <h3 className="font-semibold">{plan.name}</h3>
@@ -123,7 +135,7 @@ export function PricingPlans() {
                   ))}
                 </ul>
                 
-                {plan.isCurrent ? (
+                {isCurrent ? (
                   <Button variant="outline" className="w-full" disabled>
                     Current Plan
                   </Button>
