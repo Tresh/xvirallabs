@@ -239,6 +239,8 @@ export function AnalyzeSection() {
           isAnalyzing={isAnalyzing}
           mode={selectedMode}
           onReset={handleReset}
+          originalPost={input}
+          inputType={inputType}
         />
       </div>
     </section>

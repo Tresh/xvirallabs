@@ -1,13 +1,19 @@
 import ReactMarkdown from "react-markdown";
 import { Button } from "./ui/button";
-import { Copy, Download, RefreshCw, Sparkles } from "lucide-react";
+import { Copy, Download, RefreshCw, Sparkles, BookmarkPlus, Dna, Lightbulb, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { useViralMemory } from "@/hooks/useViralMemory";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface AnalysisResultProps {
   result: string;
   isAnalyzing: boolean;
   mode: number;
   onReset: () => void;
+  originalPost?: string;
+  inputType?: "text" | "url";
 }
 
 const modeNames: Record<number, string> = {
@@ -23,7 +29,20 @@ const modeNames: Record<number, string> = {
   10: "Lab Summary",
 };
 
-export function AnalysisResult({ result, isAnalyzing, mode, onReset }: AnalysisResultProps) {
+export function AnalysisResult({ 
+  result, 
+  isAnalyzing, 
+  mode, 
+  onReset,
+  originalPost = "",
+  inputType = "text"
+}: AnalysisResultProps) {
+  const { user } = useAuth();
+  const { saveAnalysis, savePattern, saveIdea } = useViralMemory();
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSavingPattern, setIsSavingPattern] = useState(false);
+  const [isSavingIdea, setIsSavingIdea] = useState(false);
+
   const handleCopy = async () => {
     await navigator.clipboard.writeText(result);
     toast({
@@ -46,13 +65,133 @@ export function AnalysisResult({ result, isAnalyzing, mode, onReset }: AnalysisR
     });
   };
 
+  const handleSaveAnalysis = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Create an account to save your analyses",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error } = await saveAnalysis({
+      post_source: inputType === "url" ? "link" : "text",
+      original_post: originalPost,
+      mode_used: mode,
+      analysis_result: result,
+      identified_hook: null,
+      psychology_triggers: [],
+      viral_pattern: null,
+      dwell_time_score: null,
+      reply_potential: null,
+      bookmark_potential: null,
+    });
+
+    if (error) {
+      toast({
+        title: "Save failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      setIsSaved(true);
+      toast({
+        title: "Saved to Viral Lab!",
+        description: "Access it anytime from your dashboard",
+      });
+    }
+  };
+
+  const handleSavePattern = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Create an account to save patterns",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSavingPattern(true);
+    
+    // Extract pattern name from result (first line usually)
+    const firstLine = result.split("\n").find(l => l.trim().length > 0) || "Viral Pattern";
+    const patternName = firstLine.replace(/^#+\s*/, "").slice(0, 100);
+
+    const { error } = await savePattern({
+      pattern_name: patternName,
+      pattern_template: result.slice(0, 2000),
+      hook_framework: null,
+      best_for_niches: [],
+      source_analysis_id: null,
+    });
+
+    setIsSavingPattern(false);
+
+    if (error) {
+      toast({
+        title: "Save failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Pattern saved!",
+        description: "Reuse this pattern for future content",
+      });
+    }
+  };
+
+  const handleSaveIdea = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Create an account to save ideas",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSavingIdea(true);
+
+    // Extract first meaningful line as title
+    const firstLine = result.split("\n").find(l => l.trim().length > 0 && !l.startsWith("#")) || "Viral Idea";
+    const ideaTitle = firstLine.slice(0, 200);
+
+    const { error } = await saveIdea({
+      idea_title: ideaTitle,
+      idea_content: result.slice(0, 5000),
+      idea_status: "unused",
+      hook_type: null,
+      emotion_trigger: null,
+      generated_from_pattern_id: null,
+      generated_from_analysis_id: null,
+    });
+
+    setIsSavingIdea(false);
+
+    if (error) {
+      toast({
+        title: "Save failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Added to Idea Vault!",
+        description: "Track your content ideas in the dashboard",
+      });
+    }
+  };
+
   if (!result && !isAnalyzing) return null;
 
   return (
     <div className="mt-8 max-w-4xl mx-auto animate-fade-in">
       <div className="bg-card rounded-3xl border border-border p-8 shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 pb-4 border-b border-border gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-primary/10">
               <Sparkles className="h-5 w-5 text-primary" />
@@ -68,7 +207,7 @@ export function AnalysisResult({ result, isAnalyzing, mode, onReset }: AnalysisR
           </div>
           
           {!isAnalyzing && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Button variant="outline" size="sm" onClick={handleCopy}>
                 <Copy className="h-4 w-4" />
                 Copy
@@ -79,11 +218,73 @@ export function AnalysisResult({ result, isAnalyzing, mode, onReset }: AnalysisR
               </Button>
               <Button variant="ghost" size="sm" onClick={onReset}>
                 <RefreshCw className="h-4 w-4" />
-                New Analysis
+                New
               </Button>
             </div>
           )}
         </div>
+
+        {/* Save Actions - Only show when not analyzing and has result */}
+        {!isAnalyzing && result && (
+          <div className="mb-6 p-4 rounded-xl bg-secondary/30 border border-border">
+            <p className="text-sm font-medium mb-3 flex items-center gap-2">
+              <BookmarkPlus className="h-4 w-4 text-primary" />
+              Save to Your Viral Lab
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={isSaved ? "secondary" : "viral"}
+                size="sm"
+                onClick={handleSaveAnalysis}
+                disabled={isSaved}
+              >
+                {isSaved ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    Saved
+                  </>
+                ) : (
+                  <>
+                    <BookmarkPlus className="h-4 w-4" />
+                    Save Analysis
+                  </>
+                )}
+              </Button>
+              
+              {mode === 3 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSavePattern}
+                  disabled={isSavingPattern}
+                >
+                  <Dna className="h-4 w-4" />
+                  {isSavingPattern ? "Saving..." : "Save Pattern"}
+                </Button>
+              )}
+              
+              {(mode === 4 || mode === 8) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSaveIdea}
+                  disabled={isSavingIdea}
+                >
+                  <Lightbulb className="h-4 w-4" />
+                  {isSavingIdea ? "Saving..." : "Add to Ideas"}
+                </Button>
+              )}
+
+              {!user && (
+                <Link to="/auth">
+                  <Button variant="ghost" size="sm" className="text-primary">
+                    Sign in to save →
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Content */}
         <div className="prose prose-invert prose-sm max-w-none">
