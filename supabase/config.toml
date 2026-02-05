@@ -1,1 +1,7 @@
 project_id = "zkarawojjwxrbssosold"
+
+[functions.analyze-viral]
+verify_jwt = false
+
+[functions.content-lab]
+verify_jwt = false

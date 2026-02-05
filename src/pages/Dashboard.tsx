@@ -22,11 +22,13 @@ import {
   Loader2,
   Clock,
   TrendingUp,
-  CreditCard
+  CreditCard,
+  Calendar
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { PricingPlans } from "@/components/dashboard/PricingPlans";
+import { ContentLabTab } from "@/components/content-lab/ContentLabTab";
 
 const modeNames: Record<number, string> = {
   1: "Diagnosis",
@@ -57,7 +59,7 @@ export default function Dashboard() {
     fetchMemory
   } = useViralMemory();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("analyses");
+  const [activeTab, setActiveTab] = useState("content-lab");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -200,6 +202,10 @@ export default function Dashboard() {
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6 flex-wrap h-auto gap-1">
+            <TabsTrigger value="content-lab" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              <span className="hidden sm:inline">Content Lab</span>
+            </TabsTrigger>
             <TabsTrigger value="analyses" className="flex items-center gap-2">
               <Microscope className="h-4 w-4" />
               <span className="hidden sm:inline">Analyses</span>
@@ -217,6 +223,11 @@ export default function Dashboard() {
               <span className="hidden sm:inline">Plans</span>
             </TabsTrigger>
           </TabsList>
+
+          {/* Content Lab Tab */}
+          <TabsContent value="content-lab">
+            <ContentLabTab />
+          </TabsContent>
 
           {/* Analyses Tab */}
           <TabsContent value="analyses">
