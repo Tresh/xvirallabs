@@ -21,10 +21,12 @@ import {
   User,
   Loader2,
   Clock,
-  TrendingUp
+  TrendingUp,
+  CreditCard
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { PricingPlans } from "@/components/dashboard/PricingPlans";
 
 const modeNames: Record<number, string> = {
   1: "Diagnosis",
@@ -197,18 +199,22 @@ export default function Dashboard() {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap h-auto gap-1">
             <TabsTrigger value="analyses" className="flex items-center gap-2">
               <Microscope className="h-4 w-4" />
-              Analyses
+              <span className="hidden sm:inline">Analyses</span>
             </TabsTrigger>
             <TabsTrigger value="patterns" className="flex items-center gap-2">
               <Dna className="h-4 w-4" />
-              Patterns
+              <span className="hidden sm:inline">Patterns</span>
             </TabsTrigger>
             <TabsTrigger value="ideas" className="flex items-center gap-2">
               <Lightbulb className="h-4 w-4" />
-              Idea Vault
+              <span className="hidden sm:inline">Ideas</span>
+            </TabsTrigger>
+            <TabsTrigger value="plans" className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              <span className="hidden sm:inline">Plans</span>
             </TabsTrigger>
           </TabsList>
 
@@ -412,6 +418,11 @@ export default function Dashboard() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          {/* Plans Tab */}
+          <TabsContent value="plans">
+            <PricingPlans />
           </TabsContent>
         </Tabs>
 
