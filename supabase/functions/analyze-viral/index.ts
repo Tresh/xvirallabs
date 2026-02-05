@@ -228,13 +228,18 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    // Initialize Supabase with service role for usage checking
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
     // Try to get user context if authenticated
     let memoryContext = "";
+    let userId: string | null = null;
     const authHeader = req.headers.get("Authorization");
     
     if (authHeader) {
       try {
-        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
         const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
         const supabase = createClient(supabaseUrl, supabaseKey, {
           global: { headers: { Authorization: authHeader } },
@@ -243,6 +248,27 @@ serve(async (req) => {
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user) {
+          userId = user.id;
+
+          // Check rate limit using database function
+          const { data: remainingData, error: usageError } = await supabaseAdmin
+            .rpc('check_and_increment_usage', { p_user_id: user.id });
+
+          if (usageError) {
+            console.error("Usage check error:", usageError);
+          } else if (remainingData === 0) {
+            // User has hit their limit
+            return new Response(
+              JSON.stringify({ 
+                error: "Daily limit reached",
+                code: "LIMIT_EXCEEDED",
+                message: "You've used all 5 free analyses today. Upgrade to Pro for unlimited analyses!",
+                remaining: 0
+              }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+
           // Fetch user's memory in parallel
           const [patternsRes, brandVoiceRes, analysesRes] = await Promise.all([
             supabase
@@ -277,6 +303,18 @@ serve(async (req) => {
       } catch (e) {
         console.log("Could not fetch user memory (non-fatal):", e);
       }
+    }
+
+    // If no authenticated user, they can't use the service
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Authentication required",
+          code: "AUTH_REQUIRED",
+          message: "Please sign in to analyze tweets."
+        }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     let systemPrompt = modePrompts[mode] || modePrompts[1];

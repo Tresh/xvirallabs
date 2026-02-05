@@ -19,15 +19,19 @@ import {
   X,
   MessageSquare,
   Eye,
-  Save
+  LogIn
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useViralAnalysis } from "@/hooks/useViralAnalysis";
 import { useViralMemory } from "@/hooks/useViralMemory";
+import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { useAuth } from "@/contexts/AuthContext";
 import { AnalysisResult } from "./AnalysisResult";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
+import { UsageIndicator } from "./analyze/UsageIndicator";
+import { UpgradePrompt } from "./analyze/UpgradePrompt";
+import { Link } from "react-router-dom";
 
 const modes = [
   { id: 1, name: "Diagnose", icon: Microscope },
@@ -61,6 +65,7 @@ export function AnalyzeSection() {
   
   const { user } = useAuth();
   const { isAnalyzing, result, error, analyze, reset } = useViralAnalysis();
+  const { remaining, isUnlimited, hasReachedLimit, isLoading: usageLoading, dailyLimit, refresh: refreshUsage, decrementLocal } = useDailyUsage();
   const { saveAnalysis } = useViralMemory();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: "stats" | "comments") => {
@@ -107,6 +112,24 @@ export function AnalyzeSection() {
   const handleAnalyze = async () => {
     if (!input.trim()) return;
     
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to analyze tweets.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (hasReachedLimit) {
+      toast({
+        title: "Daily limit reached",
+        description: "You've used all 5 free analyses today. Upgrade to Pro for unlimited access!",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (selectedMode === 4 && !niche.trim()) {
       toast({
         title: "Niche required",
@@ -118,6 +141,12 @@ export function AnalyzeSection() {
     
     // TODO: Pass uploaded images to the analysis when backend supports it
     setHasSaved(false);
+    
+    // Optimistically decrement usage
+    if (!isUnlimited) {
+      decrementLocal();
+    }
+    
     await analyze(input, selectedMode, niche || undefined);
   };
 
@@ -186,35 +215,46 @@ export function AnalyzeSection() {
         {/* Main Analysis Card */}
         <div className="max-w-4xl mx-auto">
           <div className="bg-card rounded-3xl border border-border p-8 shadow-2xl">
-            {/* Input Type Toggle */}
-            <div className="flex items-center gap-2 mb-6">
-              <button
-                onClick={() => setInputType("text")}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all",
-                  inputType === "text"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <FileText className="h-4 w-4" />
-                Paste Text
-              </button>
-              <button
-                onClick={() => setInputType("url")}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all relative",
-                  inputType === "url"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <LinkIcon className="h-4 w-4" />
-                Tweet URL
-                <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 bg-viral-warning/20 text-viral-warning border-viral-warning/30">
-                  Soon
-                </Badge>
-              </button>
+            {/* Input Type Toggle + Usage Indicator */}
+            <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setInputType("text")}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all",
+                    inputType === "text"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <FileText className="h-4 w-4" />
+                  Paste Text
+                </button>
+                <button
+                  onClick={() => setInputType("url")}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all relative",
+                    inputType === "url"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <LinkIcon className="h-4 w-4" />
+                  Tweet URL
+                  <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 bg-viral-warning/20 text-viral-warning border-viral-warning/30">
+                    Soon
+                  </Badge>
+                </button>
+              </div>
+              
+              {user && (
+                <UsageIndicator 
+                  remaining={remaining}
+                  isUnlimited={isUnlimited}
+                  isLoading={usageLoading}
+                  dailyLimit={dailyLimit}
+                />
+              )}
             </div>
 
             {/* URL Coming Soon Message */}
@@ -411,18 +451,48 @@ export function AnalyzeSection() {
               </div>
             )}
 
+            {/* Limit Reached Prompt */}
+            {hasReachedLimit && user && (
+              <UpgradePrompt />
+            )}
+
+            {/* Sign In Prompt for non-logged in users */}
+            {!user && (
+              <div className="mb-6 p-4 rounded-xl bg-primary/10 border border-primary/30">
+                <div className="flex items-center gap-3">
+                  <LogIn className="h-5 w-5 text-primary" />
+                  <div className="flex-1">
+                    <span className="font-medium text-foreground">Sign in to analyze tweets</span>
+                    <p className="text-sm text-muted-foreground">Free users get 5 analyses per day</p>
+                  </div>
+                  <Button asChild variant="viral" size="sm">
+                    <Link to="/auth">Sign In</Link>
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* Analyze Button */}
             <Button
               variant="viral"
               size="xl"
               className="w-full"
               onClick={handleAnalyze}
-              disabled={!input.trim() || isAnalyzing || inputType === "url"}
+              disabled={!input.trim() || isAnalyzing || inputType === "url" || !user || hasReachedLimit}
             >
               {isAnalyzing ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
                   Analyzing Virality...
+                </>
+              ) : hasReachedLimit ? (
+                <>
+                  Daily Limit Reached
+                </>
+              ) : !user ? (
+                <>
+                  <LogIn className="h-5 w-5" />
+                  Sign In to Analyze
                 </>
               ) : (
                 <>
