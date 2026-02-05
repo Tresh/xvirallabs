@@ -89,6 +89,33 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_usage: {
+        Row: {
+          analysis_count: number
+          created_at: string
+          date: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_count?: number
+          created_at?: string
+          date?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_count?: number
+          created_at?: string
+          date?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       idea_vault: {
         Row: {
           created_at: string | null
@@ -321,6 +348,11 @@ export type Database = {
       }
     }
     Functions: {
+      check_and_increment_usage: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
+      get_remaining_usage: { Args: { p_user_id: string }; Returns: number }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
