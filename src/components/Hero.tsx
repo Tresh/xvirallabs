@@ -34,11 +34,21 @@ export function Hero() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <Button variant="viral" size="xl" className="w-full sm:w-auto">
+            <Button 
+              variant="viral" 
+              size="xl" 
+              className="w-full sm:w-auto"
+              onClick={() => document.getElementById('analyze')?.scrollIntoView({ behavior: 'smooth' })}
+            >
               Analyze a Tweet
               <ArrowRight className="h-5 w-5" />
             </Button>
-            <Button variant="glass" size="xl" className="w-full sm:w-auto">
+            <Button 
+              variant="glass" 
+              size="xl" 
+              className="w-full sm:w-auto"
+              onClick={() => document.getElementById('modes')?.scrollIntoView({ behavior: 'smooth' })}
+            >
               See How It Works
             </Button>
           </div>
