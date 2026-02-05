@@ -17,6 +17,9 @@ import {
   Trophy
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useViralAnalysis } from "@/hooks/useViralAnalysis";
+import { AnalysisResult } from "./AnalysisResult";
+import { toast } from "@/hooks/use-toast";
 
 const modes = [
   { id: 1, name: "Diagnose", icon: Microscope },
@@ -35,14 +38,29 @@ export function AnalyzeSection() {
   const [input, setInput] = useState("");
   const [inputType, setInputType] = useState<"text" | "url">("text");
   const [selectedMode, setSelectedMode] = useState(1);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [niche, setNiche] = useState("");
+  
+  const { isAnalyzing, result, error, analyze, reset } = useViralAnalysis();
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!input.trim()) return;
-    setIsAnalyzing(true);
-    // Will connect to AI later
-    setTimeout(() => setIsAnalyzing(false), 2000);
+    
+    if (selectedMode === 4 && !niche.trim()) {
+      toast({
+        title: "Niche required",
+        description: "Please enter your niche for generating viral variations.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    await analyze(input, selectedMode, niche || undefined);
+  };
+
+  const handleReset = () => {
+    reset();
+    setInput("");
+    setNiche("");
   };
 
   return (
@@ -108,8 +126,8 @@ export function AnalyzeSection() {
               className="min-h-[160px] bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground resize-none text-base mb-6"
             />
 
-            {/* Niche Input for Mode 4 */}
-            {selectedMode === 4 && (
+            {/* Niche Input for Mode 4 and 8 */}
+            {(selectedMode === 4 || selectedMode === 8) && (
               <input
                 type="text"
                 placeholder="Your niche (e.g., SaaS, Fitness, Personal Finance)"
@@ -129,11 +147,13 @@ export function AnalyzeSection() {
                   <button
                     key={mode.id}
                     onClick={() => setSelectedMode(mode.id)}
+                    disabled={isAnalyzing}
                     className={cn(
                       "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all",
                       selectedMode === mode.id
                         ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                        : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
+                        : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80",
+                      isAnalyzing && "opacity-50 cursor-not-allowed"
                     )}
                   >
                     <mode.icon className="h-4 w-4" />
@@ -143,6 +163,13 @@ export function AnalyzeSection() {
                 ))}
               </div>
             </div>
+
+            {/* Error Display */}
+            {error && (
+              <div className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive">
+                {error}
+              </div>
+            )}
 
             {/* Analyze Button */}
             <Button
@@ -167,42 +194,52 @@ export function AnalyzeSection() {
           </div>
 
           {/* Analysis Tips */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Microscope className="h-4 w-4 text-primary" />
+          {!result && (
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Microscope className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-foreground">Pro Tip</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Analyze posts with 1000+ likes for better pattern recognition
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-sm font-medium text-foreground">Pro Tip</h4>
-                <p className="text-xs text-muted-foreground">
-                  Analyze posts with 1000+ likes for better pattern recognition
-                </p>
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
+                <div className="p-2 rounded-lg bg-viral-success/10">
+                  <Sparkles className="h-4 w-4 text-viral-success" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-foreground">Best Results</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Use Mode 4 after extracting patterns from top performers
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
+                <div className="p-2 rounded-lg bg-viral-warning/10">
+                  <Brain className="h-4 w-4 text-viral-warning" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-foreground">Deep Dive</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Mode 2 reveals the psychology behind every viral hit
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
-              <div className="p-2 rounded-lg bg-viral-success/10">
-                <Sparkles className="h-4 w-4 text-viral-success" />
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-foreground">Best Results</h4>
-                <p className="text-xs text-muted-foreground">
-                  Use Mode 4 after extracting patterns from top performers
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
-              <div className="p-2 rounded-lg bg-viral-warning/10">
-                <Brain className="h-4 w-4 text-viral-warning" />
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-foreground">Deep Dive</h4>
-                <p className="text-xs text-muted-foreground">
-                  Mode 2 reveals the psychology behind every viral hit
-                </p>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
+
+        {/* Analysis Result */}
+        <AnalysisResult
+          result={result}
+          isAnalyzing={isAnalyzing}
+          mode={selectedMode}
+          onReset={handleReset}
+        />
       </div>
     </section>
   );
