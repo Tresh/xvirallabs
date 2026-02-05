@@ -1,8 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 const modePrompts: Record<number, string> = {
@@ -164,6 +165,49 @@ Summarize everything learned from this viral analysis into:
 Keep it sharp, memorable, and immediately actionable. This should be the kind of summary someone would screenshot and save.`,
 };
 
+// Build memory context from user's saved data
+function buildMemoryContext(
+  patterns: Array<{ pattern_name: string; pattern_template: string; usage_count: number }>,
+  brandVoice: { writing_traits: string[]; words_to_avoid: string[]; signature_phrases: string[]; preferred_hooks: string[] } | null,
+  recentHooks: string[]
+): string {
+  let context = "";
+
+  if (brandVoice) {
+    const traits: string[] = [];
+    if (brandVoice.writing_traits?.length) {
+      traits.push(`Writing style: ${brandVoice.writing_traits.join(", ")}`);
+    }
+    if (brandVoice.words_to_avoid?.length) {
+      traits.push(`Avoid these words: ${brandVoice.words_to_avoid.join(", ")}`);
+    }
+    if (brandVoice.signature_phrases?.length) {
+      traits.push(`Signature phrases: ${brandVoice.signature_phrases.join(", ")}`);
+    }
+    if (brandVoice.preferred_hooks?.length) {
+      traits.push(`Preferred hook types: ${brandVoice.preferred_hooks.join(", ")}`);
+    }
+    if (traits.length) {
+      context += `\n\n## User's Brand Voice\n${traits.join("\n")}`;
+    }
+  }
+
+  if (patterns?.length) {
+    const topPatterns = patterns.slice(0, 3);
+    context += `\n\n## User's Top Viral Patterns (from their saved library)\n`;
+    topPatterns.forEach((p, i) => {
+      context += `${i + 1}. "${p.pattern_name}" (used ${p.usage_count} times): ${p.pattern_template.slice(0, 150)}...\n`;
+    });
+  }
+
+  if (recentHooks?.length) {
+    context += `\n\n## Hooks the user has analyzed recently\n${recentHooks.slice(0, 5).join(", ")}`;
+    context += `\n\nConsider suggesting variations from these patterns or fresh angles they haven't explored.`;
+  }
+
+  return context;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -184,7 +228,64 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = modePrompts[mode] || modePrompts[1];
+    // Try to get user context if authenticated
+    let memoryContext = "";
+    const authHeader = req.headers.get("Authorization");
+    
+    if (authHeader) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+        const supabase = createClient(supabaseUrl, supabaseKey, {
+          global: { headers: { Authorization: authHeader } },
+        });
+
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          // Fetch user's memory in parallel
+          const [patternsRes, brandVoiceRes, analysesRes] = await Promise.all([
+            supabase
+              .from("viral_patterns")
+              .select("pattern_name, pattern_template, usage_count")
+              .eq("user_id", user.id)
+              .order("usage_count", { ascending: false })
+              .limit(5),
+            supabase
+              .from("brand_voice")
+              .select("writing_traits, words_to_avoid, signature_phrases, preferred_hooks")
+              .eq("user_id", user.id)
+              .maybeSingle(),
+            supabase
+              .from("viral_analyses")
+              .select("identified_hook")
+              .eq("user_id", user.id)
+              .order("created_at", { ascending: false })
+              .limit(10),
+          ]);
+
+          const recentHooks = analysesRes.data
+            ?.map((a) => a.identified_hook)
+            .filter(Boolean) as string[] || [];
+
+          memoryContext = buildMemoryContext(
+            patternsRes.data || [],
+            brandVoiceRes.data,
+            recentHooks
+          );
+        }
+      } catch (e) {
+        console.log("Could not fetch user memory (non-fatal):", e);
+      }
+    }
+
+    let systemPrompt = modePrompts[mode] || modePrompts[1];
+    
+    // Add memory context to system prompt if available
+    if (memoryContext) {
+      systemPrompt += `\n\n---\n# PERSONALIZATION (from user's Viral Lab memory)\n${memoryContext}\n\nUse this context to personalize your analysis. Reference their patterns if relevant. Match their brand voice if specified.`;
+    }
+
     let userMessage = `Tweet/Content to analyze:\n\n"${content}"`;
     
     if (niche && (mode === 4 || mode === 8)) {
