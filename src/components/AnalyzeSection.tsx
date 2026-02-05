@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { 
@@ -18,10 +18,13 @@ import {
   Image,
   X,
   MessageSquare,
-  Eye
+  Eye,
+  Save
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useViralAnalysis } from "@/hooks/useViralAnalysis";
+import { useViralMemory } from "@/hooks/useViralMemory";
+import { useAuth } from "@/contexts/AuthContext";
 import { AnalysisResult } from "./AnalysisResult";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "./ui/badge";
@@ -51,11 +54,14 @@ export function AnalyzeSection() {
   const [selectedMode, setSelectedMode] = useState(1);
   const [niche, setNiche] = useState("");
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
+  const [hasSaved, setHasSaved] = useState(false);
   
   const statsInputRef = useRef<HTMLInputElement>(null);
   const commentsInputRef = useRef<HTMLInputElement>(null);
   
+  const { user } = useAuth();
   const { isAnalyzing, result, error, analyze, reset } = useViralAnalysis();
+  const { saveAnalysis } = useViralMemory();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: "stats" | "comments") => {
     const files = e.target.files;
@@ -111,13 +117,44 @@ export function AnalyzeSection() {
     }
     
     // TODO: Pass uploaded images to the analysis when backend supports it
+    setHasSaved(false);
     await analyze(input, selectedMode, niche || undefined);
   };
+
+  // Auto-save analysis when complete (for logged-in users)
+  useEffect(() => {
+    if (result && user && !isAnalyzing && !hasSaved) {
+      const saveToMemory = async () => {
+        const { error: saveError } = await saveAnalysis({
+          post_source: inputType === "url" ? "link" : "text",
+          original_post: input,
+          mode_used: selectedMode,
+          analysis_result: result,
+          identified_hook: null,
+          psychology_triggers: [],
+          viral_pattern: null,
+          dwell_time_score: null,
+          reply_potential: null,
+          bookmark_potential: null,
+        });
+        
+        if (!saveError) {
+          setHasSaved(true);
+          toast({
+            title: "Analysis saved!",
+            description: "View it in your dashboard anytime.",
+          });
+        }
+      };
+      saveToMemory();
+    }
+  }, [result, user, isAnalyzing, hasSaved]);
 
   const handleReset = () => {
     reset();
     setInput("");
     setNiche("");
+    setHasSaved(false);
     // Clean up image previews
     uploadedImages.forEach(img => URL.revokeObjectURL(img.preview));
     setUploadedImages([]);
