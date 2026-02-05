@@ -50,6 +50,157 @@ export type Database = {
         }
         Relationships: []
       }
+      content_calendar_days: {
+        Row: {
+          calendar_id: string
+          content_goal: string
+          content_type: string
+          created_at: string
+          date: string | null
+          day_number: number
+          draft_action_driven: string | null
+          draft_content: string | null
+          draft_why_it_works: string | null
+          id: string
+          post_brief: string
+          psychological_trigger: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calendar_id: string
+          content_goal: string
+          content_type: string
+          created_at?: string
+          date?: string | null
+          day_number: number
+          draft_action_driven?: string | null
+          draft_content?: string | null
+          draft_why_it_works?: string | null
+          id?: string
+          post_brief: string
+          psychological_trigger?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calendar_id?: string
+          content_goal?: string
+          content_type?: string
+          created_at?: string
+          date?: string | null
+          day_number?: number
+          draft_action_driven?: string | null
+          draft_content?: string | null
+          draft_why_it_works?: string | null
+          id?: string
+          post_brief?: string
+          psychological_trigger?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_calendar_days_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "content_calendars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_calendars: {
+        Row: {
+          audience_size: string | null
+          calendar_length: number
+          created_at: string
+          id: string
+          main_goal: string
+          monetization_type: string | null
+          name: string
+          posting_capacity: string
+          primary_niche: string
+          status: string
+          sub_niches: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audience_size?: string | null
+          calendar_length?: number
+          created_at?: string
+          id?: string
+          main_goal: string
+          monetization_type?: string | null
+          name?: string
+          posting_capacity?: string
+          primary_niche: string
+          status?: string
+          sub_niches?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audience_size?: string | null
+          calendar_length?: number
+          created_at?: string
+          id?: string
+          main_goal?: string
+          monetization_type?: string | null
+          name?: string
+          posting_capacity?: string
+          primary_niche?: string
+          status?: string
+          sub_niches?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      content_coaching: {
+        Row: {
+          best_posting_time: string | null
+          calendar_day_id: string
+          created_at: string
+          follow_up_suggestions: string[] | null
+          id: string
+          intent_explanation: string | null
+          reply_strategy: string | null
+          user_id: string
+        }
+        Insert: {
+          best_posting_time?: string | null
+          calendar_day_id: string
+          created_at?: string
+          follow_up_suggestions?: string[] | null
+          id?: string
+          intent_explanation?: string | null
+          reply_strategy?: string | null
+          user_id: string
+        }
+        Update: {
+          best_posting_time?: string | null
+          calendar_day_id?: string
+          created_at?: string
+          follow_up_suggestions?: string[] | null
+          id?: string
+          intent_explanation?: string | null
+          reply_strategy?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_coaching_calendar_day_id_fkey"
+            columns: ["calendar_day_id"]
+            isOneToOne: false
+            referencedRelation: "content_calendar_days"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_flags: {
         Row: {
           content_id: string
@@ -88,6 +239,53 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      content_inspirations: {
+        Row: {
+          analysis_result: Json | null
+          calendar_id: string
+          content_formats: string[] | null
+          created_at: string
+          hook_styles: string[] | null
+          id: string
+          monetization_signals: string[] | null
+          psychological_angles: string[] | null
+          twitter_handle: string
+          user_id: string
+        }
+        Insert: {
+          analysis_result?: Json | null
+          calendar_id: string
+          content_formats?: string[] | null
+          created_at?: string
+          hook_styles?: string[] | null
+          id?: string
+          monetization_signals?: string[] | null
+          psychological_angles?: string[] | null
+          twitter_handle: string
+          user_id: string
+        }
+        Update: {
+          analysis_result?: Json | null
+          calendar_id?: string
+          content_formats?: string[] | null
+          created_at?: string
+          hook_styles?: string[] | null
+          id?: string
+          monetization_signals?: string[] | null
+          psychological_angles?: string[] | null
+          twitter_handle?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_inspirations_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "content_calendars"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       daily_usage: {
         Row: {
