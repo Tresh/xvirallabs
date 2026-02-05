@@ -95,11 +95,19 @@ export function ContentLabOnboarding({ onComplete }: ContentLabOnboardingProps) 
   };
 
   const handleSubmit = async () => {
-    if (!user) return;
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication required",
+        description: "Please log in to create a content calendar.",
+      });
+      return;
+    }
     
     setIsLoading(true);
     try {
       // Create the calendar in database
+      console.log("Creating calendar with user:", user.id);
       const { data: calendar, error: calendarError } = await supabase
         .from("content_calendars")
         .insert({
@@ -107,19 +115,26 @@ export function ContentLabOnboarding({ onComplete }: ContentLabOnboardingProps) 
           name: `${primaryNiche} Calendar`,
           calendar_length: isPaidUser ? calendarLength : 7,
           primary_niche: primaryNiche,
-          sub_niches: subNiches,
-          audience_size: audienceSize,
+          sub_niches: subNiches.length > 0 ? subNiches : null,
+          audience_size: audienceSize || null,
           main_goal: mainGoal,
-          monetization_type: monetizationType,
+          monetization_type: monetizationType || null,
           posting_capacity: postingCapacity,
           status: "generating",
         })
         .select()
         .single();
 
-      if (calendarError || !calendar) {
-        throw new Error("Failed to create calendar");
+      if (calendarError) {
+        console.error("Calendar creation error:", calendarError);
+        throw new Error(calendarError.message || "Failed to create calendar");
       }
+      
+      if (!calendar) {
+        throw new Error("Calendar was not returned from database");
+      }
+      
+      console.log("Calendar created:", calendar.id);
 
       // Save inspiration handles if Pro user
       const validHandles = inspirationHandles.filter(h => h.trim());
