@@ -25,14 +25,15 @@ interface ContentBankOnboardingProps {
   onComplete: (calendarId: string) => void;
 }
 
-const niches = [
-  "Tech/SaaS", "AI/ML", "Crypto/Web3", "Web3 Jobs", "Bounties/Airdrops",
-  "Zero Dollar Opportunities", "Marketing", "Finance/Investing", "DeFi/Trading",
-  "Productivity", "Career/Jobs", "Startup", "Freelancing", "Side Hustles",
-  "Design", "Health/Fitness", "Writing", "E-commerce", "Dropshipping",
-  "Education", "Personal Development", "Gaming", "NFTs", "Content Creation",
-  "Real Estate", "Relationships", "Money Twitter", "Hustle Culture", "Other"
+const nichePlaceholders = [
+  "e.g., Web3 jobs, bounties, and zero-dollar opportunities for beginners",
+  "e.g., AI tools for productivity, automation, and side hustles",
+  "e.g., Crypto trading, DeFi strategies, and airdrop hunting",
+  "e.g., Freelancing, remote work, and building a personal brand",
+  "e.g., SaaS marketing, growth hacking, and content strategy",
 ];
+
+const quickTags = ["Web3", "AI", "Crypto", "Marketing", "Freelancing", "Side Hustles", "Tech", "Finance"];
 
 const goals = [
   { value: "growth", label: "Maximum Growth", icon: Rocket, description: "Followers, reach, virality" },
@@ -53,11 +54,11 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
   const [isLoading, setIsLoading] = useState(false);
   
   // Form state
-  const [primaryNiche, setPrimaryNiche] = useState("");
-  const [customNiche, setCustomNiche] = useState("");
+  const [nicheInput, setNicheInput] = useState("");
   const [mainGoal, setMainGoal] = useState("");
   const [audienceLevel, setAudienceLevel] = useState("intermediate");
   const [unhingedMode, setUnhingedMode] = useState(false);
+  const [placeholder] = useState(() => nichePlaceholders[Math.floor(Math.random() * nichePlaceholders.length)]);
 
   const isPaidUser = profile?.tier === "pro" || profile?.tier === "elite";
 
@@ -73,7 +74,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
     
     setIsLoading(true);
     try {
-      const finalNiche = primaryNiche === "Other" ? customNiche.trim() : primaryNiche;
+      const finalNiche = nicheInput.trim();
       
       // Create the content bank in database
       const { data: calendar, error: calendarError } = await supabase
@@ -136,7 +137,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
   const canProceed = () => {
     switch (step) {
       case 1: 
-        return primaryNiche === "Other" ? customNiche.trim() !== "" : primaryNiche !== "";
+        return nicheInput.trim().length >= 5;
       case 2: 
         return mainGoal !== "";
       case 3: 
@@ -166,41 +167,45 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5 text-primary" />
-              What's your niche?
+              Describe your niche
             </CardTitle>
-            <CardDescription>We'll generate content bank ideas tailored to your audience</CardDescription>
+            <CardDescription>
+              Be specific! The more detail you give, the better the AI understands your audience.
+              You can include multiple niches or sub-niches.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {niches.map((niche) => (
-                <button
-                  key={niche}
-                  onClick={() => setPrimaryNiche(niche)}
-                  className={`p-3 rounded-lg text-sm font-medium transition-all border ${
-                    primaryNiche === niche
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-secondary/50 border-border hover:border-primary/50"
-                  }`}
-                >
-                  {niche}
-                </button>
-              ))}
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="text-sm text-muted-foreground mb-2 block">
+                What topics do you create content about?
+              </Label>
+              <textarea
+                placeholder={placeholder}
+                value={nicheInput}
+                onChange={(e) => setNicheInput(e.target.value)}
+                className="w-full min-h-[120px] p-4 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none text-base"
+                autoFocus
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                💡 Tip: Include your target audience, specific topics, and what makes your content unique
+              </p>
             </div>
 
-            {primaryNiche === "Other" && (
-              <div>
-                <Label className="text-sm text-muted-foreground mb-2 block">
-                  Enter your niche
-                </Label>
-                <Input
-                  placeholder="e.g., Sustainability, Mental Health, DIY..."
-                  value={customNiche}
-                  onChange={(e) => setCustomNiche(e.target.value)}
-                  className="bg-secondary/50"
-                  autoFocus
-                />
+            {/* Quick suggestions */}
+            <div>
+              <Label className="text-xs text-muted-foreground mb-2 block">Quick add:</Label>
+              <div className="flex flex-wrap gap-2">
+                {["Web3", "AI", "Crypto", "Marketing", "Freelancing", "Side Hustles", "Tech", "Finance"].map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setNicheInput(prev => prev ? `${prev}, ${tag}` : tag)}
+                    className="px-3 py-1 text-xs rounded-full bg-secondary/50 border border-border hover:border-primary/50 transition-colors"
+                  >
+                    + {tag}
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
           </CardContent>
         </Card>
       )}
