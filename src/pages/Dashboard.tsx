@@ -29,6 +29,7 @@ import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { PricingPlans } from "@/components/dashboard/PricingPlans";
 import { ContentLabTab } from "@/components/content-lab/ContentLabTab";
+import { AnalyzeDialog } from "@/components/dashboard/AnalyzeDialog";
 
 const modeNames: Record<number, string> = {
   1: "Diagnosis",
@@ -96,12 +97,12 @@ export default function Dashboard() {
           </Link>
           
           <div className="flex items-center gap-4">
-            <Link to="/#analyze">
+            <AnalyzeDialog onAnalysisComplete={() => fetchMemory()}>
               <Button variant="viral" size="sm">
                 New Analysis
                 <ArrowRight className="h-4 w-4" />
               </Button>
-            </Link>
+            </AnalyzeDialog>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <User className="h-4 w-4" />
               <span className="hidden sm:inline">{profile?.email}</span>
@@ -239,12 +240,12 @@ export default function Dashboard() {
                   <p className="text-sm text-muted-foreground mb-4">
                     Start by analyzing a viral tweet to build your library
                   </p>
-                  <Link to="/#analyze">
+                  <AnalyzeDialog onAnalysisComplete={() => fetchMemory()}>
                     <Button variant="viral">
                       Analyze Your First Tweet
                       <ArrowRight className="h-4 w-4" />
                     </Button>
-                  </Link>
+                  </AnalyzeDialog>
                 </CardContent>
               </Card>
             ) : (
