@@ -107,16 +107,18 @@ export function ContentBankView({ calendarId, onNewBank }: ContentBankViewProps)
     }
   };
 
+  const FREE_DAY_LIMIT = 3;
+
   const generateNextDay = async () => {
     if (!bank) return;
 
     const currentMaxDay = Math.max(...posts.map(p => p.day_number), 0);
 
-    if (!isPaidUser && currentMaxDay >= 1) {
+    if (!isPaidUser && currentMaxDay >= FREE_DAY_LIMIT) {
       toast({
         variant: "destructive",
         title: "Upgrade to Pro",
-        description: "Free users can generate 1 day. Upgrade for 30-day content banks!",
+        description: `Free users can generate ${FREE_DAY_LIMIT} days. Upgrade for 30-day content banks!`,
       });
       return;
     }
@@ -259,7 +261,7 @@ export function ContentBankView({ calendarId, onNewBank }: ContentBankViewProps)
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {(isPaidUser || currentMaxDay < 1) && currentMaxDay < 30 && (
+              {(isPaidUser || currentMaxDay < FREE_DAY_LIMIT) && currentMaxDay < 30 && (
                 <Button 
                   variant="viral" 
                   size="sm"
@@ -274,7 +276,7 @@ export function ContentBankView({ calendarId, onNewBank }: ContentBankViewProps)
                   Generate Day {currentMaxDay + 1}
                 </Button>
               )}
-              {!isPaidUser && currentMaxDay >= 1 && (
+              {!isPaidUser && currentMaxDay >= FREE_DAY_LIMIT && (
                 <Button variant="outline" size="sm" className="gap-1" disabled>
                   <Lock className="h-3 w-3" />
                   Upgrade for More Days
