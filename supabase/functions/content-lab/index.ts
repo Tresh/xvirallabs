@@ -867,6 +867,202 @@ ${CONTENT_BANK_PROMPT}`;
         }
       }
 
+      // ===== ANALYZE TWEET PERFORMANCE =====
+      case "analyze_performance": {
+        const { postId, metrics, tweetUrl, screenshotUrl, originalContent } = params;
+
+        const PERFORMANCE_ANALYSIS_PROMPT = `You are a Twitter/X analytics expert. Analyze this post's performance and provide actionable insights.
+
+Based on the metrics provided, analyze:
+1. Overall performance score (0-100)
+2. What worked well
+3. What could be improved
+4. Specific suggestions for future similar posts
+5. Psychology insights on why this content performed as it did
+
+Be specific and actionable. Reference the actual metrics.`;
+
+        const userPrompt = `Analyze this tweet's performance:
+
+ORIGINAL TWEET:
+${originalContent || "Not provided"}
+
+TWEET URL: ${tweetUrl || "Not provided"}
+
+PERFORMANCE METRICS:
+- Impressions: ${metrics.impressions || "N/A"}
+- Likes: ${metrics.likes || "N/A"}
+- Retweets: ${metrics.retweets || "N/A"}
+- Replies: ${metrics.replies || "N/A"}
+- Bookmarks: ${metrics.bookmarks || "N/A"}
+- Profile Visits: ${metrics.profile_visits || "N/A"}
+- Link Clicks: ${metrics.link_clicks || "N/A"}
+- Follows Gained: ${metrics.follows_gained || "N/A"}
+- Audience Reached: ${metrics.audience_reached || "N/A"}
+- Posted Time: ${metrics.posted_time || "N/A"}
+
+Calculate engagement rate and provide analysis.
+
+Output as JSON:
+{
+  "performance_score": <0-100>,
+  "engagement_rate": <calculated percentage>,
+  "analysis": "<detailed analysis paragraph>",
+  "what_worked": ["<point1>", "<point2>"],
+  "what_to_improve": ["<point1>", "<point2>"],
+  "suggestions": ["<actionable suggestion 1>", "<actionable suggestion 2>", "<actionable suggestion 3>"],
+  "psychology_insights": "<why this performed as it did>"
+}`;
+
+        try {
+          const content = await callAI(PERFORMANCE_ANALYSIS_PROMPT, userPrompt);
+          const analysis = parseAIJson(content);
+
+          // Calculate engagement rate if we have enough data
+          let engagementRate = analysis.engagement_rate;
+          if (!engagementRate && metrics.impressions > 0) {
+            const totalEngagements = (metrics.likes || 0) + (metrics.retweets || 0) + (metrics.replies || 0) + (metrics.bookmarks || 0);
+            engagementRate = ((totalEngagements / metrics.impressions) * 100).toFixed(2);
+          }
+
+          // Save to database
+          const { data: performanceData, error: insertError } = await supabaseAdmin
+            .from("post_performance")
+            .insert({
+              user_id: user.id,
+              calendar_day_id: postId || null,
+              tweet_url: tweetUrl,
+              screenshot_url: screenshotUrl,
+              impressions: metrics.impressions,
+              likes: metrics.likes,
+              retweets: metrics.retweets,
+              replies: metrics.replies,
+              bookmarks: metrics.bookmarks,
+              profile_visits: metrics.profile_visits,
+              link_clicks: metrics.link_clicks,
+              follows_gained: metrics.follows_gained,
+              audience_reached: metrics.audience_reached,
+              posted_time: metrics.posted_time,
+              engagement_rate: engagementRate,
+              ai_analysis: analysis.analysis,
+              ai_suggestions: analysis.suggestions,
+              performance_score: analysis.performance_score,
+            })
+            .select()
+            .single();
+
+          if (insertError) throw new Error("Failed to save performance data");
+
+          return new Response(
+            JSON.stringify({ 
+              success: true, 
+              performance: performanceData,
+              analysis: {
+                score: analysis.performance_score,
+                engagement_rate: engagementRate,
+                what_worked: analysis.what_worked,
+                what_to_improve: analysis.what_to_improve,
+                suggestions: analysis.suggestions,
+                psychology_insights: analysis.psychology_insights,
+                full_analysis: analysis.analysis,
+              }
+            }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          throw e;
+        }
+      }
+
+      // ===== ANALYZE SCREENSHOT =====
+      case "analyze_screenshot": {
+        const { screenshotUrl } = params;
+
+        const SCREENSHOT_ANALYSIS_PROMPT = `You are analyzing a Twitter/X analytics screenshot. Extract all visible metrics from the image.
+
+Look for:
+- Impressions / Views
+- Likes
+- Retweets / Reposts
+- Replies
+- Bookmarks
+- Quote Tweets
+- Profile Visits
+- Link Clicks
+- Follows from this post
+- Any engagement rate shown
+- Posted date/time if visible
+
+Output as JSON:
+{
+  "impressions": <number or null>,
+  "likes": <number or null>,
+  "retweets": <number or null>,
+  "replies": <number or null>,
+  "bookmarks": <number or null>,
+  "profile_visits": <number or null>,
+  "link_clicks": <number or null>,
+  "follows_gained": <number or null>,
+  "audience_reached": <number or null>,
+  "posted_time": "<ISO date string or null>",
+  "confidence": "<high|medium|low>",
+  "notes": "<any additional observations>"
+}`;
+
+        try {
+          // Use vision-capable model for screenshot analysis
+          const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash",
+              messages: [
+                { role: "system", content: SCREENSHOT_ANALYSIS_PROMPT },
+                { 
+                  role: "user", 
+                  content: [
+                    { type: "text", text: "Extract the Twitter/X metrics from this screenshot:" },
+                    { type: "image_url", image_url: { url: screenshotUrl } }
+                  ]
+                },
+              ],
+            }),
+          });
+
+          if (!response.ok) {
+            if (response.status === 429) throw new Error("RATE_LIMIT");
+            if (response.status === 402) throw new Error("PAYMENT_REQUIRED");
+            throw new Error("AI_ERROR");
+          }
+
+          const aiResponse = await response.json();
+          const content = aiResponse.choices[0]?.message?.content;
+          const metrics = parseAIJson(content);
+
+          return new Response(
+            JSON.stringify({ success: true, metrics }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          throw e;
+        }
+      }
+
       default:
         return new Response(
           JSON.stringify({ error: "Unknown action" }),
