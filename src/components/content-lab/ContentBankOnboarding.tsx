@@ -26,11 +26,12 @@ interface ContentBankOnboardingProps {
 }
 
 const niches = [
-  "Tech/SaaS", "AI/ML", "Crypto/Web3", "Marketing", "Finance/Investing",
-  "Productivity", "Career/Jobs", "Startup", "Design", "Health/Fitness",
-  "Writing", "E-commerce", "Education", "Personal Development", 
-  "Gaming", "Music", "Art", "Sports", "Travel", "Food", "Parenting", 
-  "Real Estate", "Politics", "News", "Relationships", "Other"
+  "Tech/SaaS", "AI/ML", "Crypto/Web3", "Web3 Jobs", "Bounties/Airdrops",
+  "Zero Dollar Opportunities", "Marketing", "Finance/Investing", "DeFi/Trading",
+  "Productivity", "Career/Jobs", "Startup", "Freelancing", "Side Hustles",
+  "Design", "Health/Fitness", "Writing", "E-commerce", "Dropshipping",
+  "Education", "Personal Development", "Gaming", "NFTs", "Content Creation",
+  "Real Estate", "Relationships", "Money Twitter", "Hustle Culture", "Other"
 ];
 
 const goals = [
