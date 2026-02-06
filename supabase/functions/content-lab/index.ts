@@ -6,7 +6,93 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// ===== MASTER SYSTEM PROMPT (CONTENT BANK ENGINE) =====
+// ===== BRAND PILLAR ARCHITECT SYSTEM PROMPT =====
+const BRAND_PILLAR_PROMPT = `You are a Brand Content Strategist.
+
+Based on the user's niche, goals, and audience:
+• Define the brand's core content pillars
+• Ensure pillars balance:
+  • Growth (reach)
+  • Trust (authority)
+  • Retention (identity)
+  • Monetization (sales)
+
+Twitter/X is short-form and attention-driven.
+Pillars must be practical, psychological, and postable daily.
+
+For each pillar, provide:
+- pillar_name: A clear, actionable name (e.g., "Authority & Expertise", "Viral Discovery")
+- purpose: What this pillar achieves for the brand
+- audience_need: What audience pain/desire it addresses
+- psychology_trigger: The core psychology it activates
+- example_formats: Array of 3-4 content formats that work for this pillar
+
+Output as a JSON array of exactly 5 pillar objects. No markdown, just JSON.`;
+
+// ===== MIND-MAP PLANNER PROMPT =====
+const MIND_MAP_PROMPT = `Using the brand content pillars provided, build a content mind-map plan.
+
+Rules:
+• Each day focuses on ONE primary pillar
+• Each day contains 5-10 tweet IDEAS (short titles, not full content)
+• Ideas must vary in format, psychology, and intent
+• Do NOT generate full content yet - just structured idea titles
+
+For each day, output:
+{
+  "day_number": <number>,
+  "pillar_id": "<uuid of the pillar>",
+  "pillar_name": "<name of the pillar>",
+  "ideas": [
+    {
+      "idea_title": "<short actionable title, max 50 chars>",
+      "idea_type": "<short_take|contrarian|framework|thread|question|hot_take|story|value_bomb|quote_tweet|poll>",
+      "intent": "<reach|replies|bookmarks|sales|authority>",
+      "psychology_hint": "<brief psychology note>"
+    }
+  ]
+}
+
+Output as a JSON array of day objects. Each day should have 5-10 ideas.`;
+
+// ===== SINGLE TWEET GENERATOR PROMPT =====
+const SINGLE_TWEET_PROMPT = `Generate the full Twitter/X post for this idea.
+
+Requirements:
+• Attention-first
+• Platform-native
+• Short-form (under 280 characters for single tweets)
+• Emotion + psychology
+• No corporate tone
+
+Output as JSON:
+{
+  "content": "<the full tweet text>",
+  "why_it_works": "<1-2 sentences explaining the psychology and expected engagement>",
+  "hook_type": "<curiosity|fear|authority|relatability|controversy|urgency>"
+}`;
+
+// ===== IMPROVE TWEET PROMPT =====
+const IMPROVE_TWEET_PROMPT = `Improve this tweet using the user's instruction.
+
+Keep:
+• The core idea
+• Twitter-native tone
+
+Enhance:
+• Hook strength
+• Emotional pull
+• Clarity
+• Engagement potential
+
+Output as JSON:
+{
+  "content": "<improved tweet text>",
+  "why_it_works": "<explanation of the improvement>",
+  "changes_made": "<brief description of what changed>"
+}`;
+
+// ===== CONTENT BANK ENGINE PROMPTS =====
 const SYSTEM_PROMPT = `You are ViralLabs Content Engine, an elite Twitter/X growth strategist.
 
 Your job is to generate high-volume, psychology-driven content banks, NOT calendars.
@@ -39,11 +125,8 @@ It optimizes for:
 - Replies
 - Bookmarks
 - Profile clicks
-- Sales intent
+- Sales intent`;
 
-Every day should feel like: "What do I feel like posting today?"`;
-
-// ===== PSYCHOLOGY TRIGGERS =====
 const PSYCHOLOGY_TRIGGERS = [
   "Curiosity gaps",
   "Fear of missing out",
@@ -59,7 +142,6 @@ const PSYCHOLOGY_TRIGGERS = [
   "Tribal belonging"
 ];
 
-// ===== CONTENT BANK GENERATION PROMPT =====
 const CONTENT_BANK_PROMPT = `Generate a Daily Twitter/X Content Bank.
 
 For EACH post, output a JSON object with these exact fields:
@@ -91,43 +173,12 @@ CRITICAL RULES:
 
 Output ONLY a valid JSON array of 10 post objects. No markdown, no explanation, just the JSON array.`;
 
-// ===== UNHINGED MODE ADDITION =====
 const UNHINGED_ADDITION = `
 UNHINGED MODE ACTIVATED 🔥
 Write bolder. Slightly controversial. Push boundaries.
 Still aligned with the niche. Optimized for replies, not safety.
 More personality. More edge. More "I can't believe they said that."
 Make people screenshot and share.`;
-
-// ===== DRAFT REGENERATION PROMPT =====
-const DRAFT_REGEN_PROMPT = `Regenerate this specific post with a fresh angle.
-
-Keep:
-- Same post category
-- Same general goal
-
-Change:
-- The hook
-- The angle
-- The psychology trigger
-
-Make it feel like a completely different post that serves the same purpose.
-
-Output as JSON:
-{
-  "post_text": "<new tweet text>",
-  "psychological_trigger": "<new trigger used>",
-  "why_it_works": "<1 sentence explanation>"
-}`;
-
-interface ContentBankSettings {
-  calendarId: string;
-  primaryNiche: string;
-  audienceLevel: string;
-  mainGoal: string;
-  dayNumber: number;
-  unhingedMode: boolean;
-}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -146,7 +197,6 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Verify authentication
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(
@@ -168,7 +218,6 @@ serve(async (req) => {
       );
     }
 
-    // Check user tier for access control
     const { data: profile } = await supabase
       .from("profiles")
       .select("tier")
@@ -178,16 +227,326 @@ serve(async (req) => {
     const tier = profile?.tier || "free";
     const isPaidUser = tier === "pro" || tier === "elite";
 
+    // Helper function for AI calls
+    const callAI = async (systemPrompt: string, userPrompt: string) => {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-3-flash-preview",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const status = response.status;
+        if (status === 429) {
+          throw new Error("RATE_LIMIT");
+        }
+        if (status === 402) {
+          throw new Error("PAYMENT_REQUIRED");
+        }
+        throw new Error("AI_ERROR");
+      }
+
+      const aiResponse = await response.json();
+      return aiResponse.choices[0]?.message?.content;
+    };
+
+    // Helper to parse JSON from AI response
+    const parseAIJson = (content: string) => {
+      let cleaned = content.trim();
+      if (cleaned.startsWith("```json")) cleaned = cleaned.slice(7);
+      if (cleaned.startsWith("```")) cleaned = cleaned.slice(3);
+      if (cleaned.endsWith("```")) cleaned = cleaned.slice(0, -3);
+      return JSON.parse(cleaned.trim());
+    };
+
     switch (action) {
-      // ===== GENERATE DAILY CONTENT BANK =====
+      // ===== LAYER 1: GENERATE BRAND PILLARS =====
+      case "generate_pillars": {
+        const { calendarId, niche, goal, audienceLevel, unhingedMode } = params;
+
+        // Free users: 3 pillars, Paid: 5 pillars
+        const pillarCount = isPaidUser ? 5 : 3;
+
+        const userPrompt = `Generate exactly ${pillarCount} brand content pillars for:
+
+Niche: ${niche}
+Main Goal: ${goal}
+Audience Level: ${audienceLevel || "intermediate"}
+${unhingedMode ? "Tone: Bold, edgy, slightly controversial" : "Tone: Professional but engaging"}
+
+${pillarCount === 3 ? "Focus on: Authority, Viral/Discovery, and Relatability pillars only." : "Include all 5 pillars: Authority, Relatability, Viral/Discovery, Education, and Conversion."}
+
+${BRAND_PILLAR_PROMPT}`;
+
+        try {
+          const content = await callAI(BRAND_PILLAR_PROMPT, userPrompt);
+          const pillars = parseAIJson(content);
+
+          // Insert pillars into database
+          const pillarInserts = pillars.map((pillar: any, index: number) => ({
+            calendar_id: calendarId,
+            user_id: user.id,
+            pillar_name: pillar.pillar_name,
+            pillar_order: index + 1,
+            purpose: pillar.purpose,
+            audience_need: pillar.audience_need,
+            psychology_trigger: pillar.psychology_trigger,
+            example_formats: pillar.example_formats,
+          }));
+
+          const { data: insertedPillars, error: insertError } = await supabaseAdmin
+            .from("brand_pillars")
+            .insert(pillarInserts)
+            .select();
+
+          if (insertError) throw new Error("Failed to save pillars");
+
+          // Update calendar
+          await supabaseAdmin
+            .from("content_calendars")
+            .update({ pillars_generated: true })
+            .eq("id", calendarId);
+
+          return new Response(
+            JSON.stringify({ success: true, pillars: insertedPillars }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          throw e;
+        }
+      }
+
+      // ===== LAYER 2: GENERATE MIND-MAP (IDEAS ONLY) =====
+      case "generate_mind_map": {
+        const { calendarId, pillars, niche, daysToGenerate, unhingedMode } = params;
+
+        // Free: 3 days, Paid: up to 30 days
+        const maxDays = isPaidUser ? Math.min(daysToGenerate || 7, 30) : Math.min(daysToGenerate || 3, 3);
+        const ideasPerDay = isPaidUser ? 10 : 5;
+
+        const pillarsInfo = pillars.map((p: any) => `- ${p.pillar_name} (ID: ${p.id}): ${p.purpose}`).join("\n");
+
+        const userPrompt = `Generate a ${maxDays}-day content mind-map for:
+
+Niche: ${niche}
+${unhingedMode ? "Style: Bold, edgy, attention-grabbing" : "Style: Engaging but professional"}
+
+Brand Pillars:
+${pillarsInfo}
+
+Requirements:
+- Generate exactly ${maxDays} days
+- Each day should have ${ideasPerDay} content ideas
+- Rotate through pillars to ensure variety
+- Ideas are SHORT TITLES only, not full content
+
+${MIND_MAP_PROMPT}`;
+
+        try {
+          const content = await callAI(MIND_MAP_PROMPT, userPrompt);
+          const dayPlans = parseAIJson(content);
+
+          // Insert all ideas into database
+          const ideaInserts: any[] = [];
+          for (const day of dayPlans) {
+            const pillarId = pillars.find((p: any) => p.pillar_name === day.pillar_name)?.id || day.pillar_id;
+            
+            day.ideas.forEach((idea: any, index: number) => {
+              ideaInserts.push({
+                calendar_id: calendarId,
+                pillar_id: pillarId,
+                user_id: user.id,
+                day_number: day.day_number,
+                idea_order: index + 1,
+                idea_title: idea.idea_title,
+                idea_type: idea.idea_type,
+                intent: idea.intent,
+                psychology_hint: idea.psychology_hint,
+                status: "idea",
+              });
+            });
+          }
+
+          const { error: insertError } = await supabaseAdmin
+            .from("content_ideas")
+            .insert(ideaInserts);
+
+          if (insertError) throw new Error("Failed to save mind-map");
+
+          // Update calendar
+          await supabaseAdmin
+            .from("content_calendars")
+            .update({ mind_map_generated: true, status: "ready", calendar_length: maxDays })
+            .eq("id", calendarId);
+
+          return new Response(
+            JSON.stringify({ success: true, days: dayPlans.length, totalIdeas: ideaInserts.length }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          throw e;
+        }
+      }
+
+      // ===== LAYER 3: GENERATE SINGLE TWEET ON DEMAND =====
+      case "generate_tweet": {
+        const { ideaId, ideaTitle, ideaType, pillarName, niche, intent, unhingedMode } = params;
+
+        const systemPrompt = unhingedMode 
+          ? SYSTEM_PROMPT + UNHINGED_ADDITION 
+          : SYSTEM_PROMPT;
+
+        const userPrompt = `Generate the full Twitter/X post for this idea:
+
+Brand Pillar: ${pillarName}
+Idea: ${ideaTitle}
+Format: ${ideaType}
+Niche: ${niche}
+Goal: ${intent}
+
+${SINGLE_TWEET_PROMPT}`;
+
+        try {
+          const content = await callAI(systemPrompt, userPrompt);
+          const tweet = parseAIJson(content);
+
+          // Update the idea with generated content
+          const { error: updateError } = await supabaseAdmin
+            .from("content_ideas")
+            .update({
+              generated_content: tweet.content,
+              why_it_works: tweet.why_it_works,
+              status: "generated",
+            })
+            .eq("id", ideaId);
+
+          if (updateError) throw new Error("Failed to save generated tweet");
+
+          return new Response(
+            JSON.stringify({ success: true, tweet }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          throw e;
+        }
+      }
+
+      // ===== IMPROVE TWEET =====
+      case "improve_tweet": {
+        const { ideaId, currentContent, instruction, niche, unhingedMode } = params;
+
+        if (!isPaidUser) {
+          return new Response(
+            JSON.stringify({ error: "Inline editing is a Pro feature. Upgrade to unlock!" }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const systemPrompt = unhingedMode 
+          ? SYSTEM_PROMPT + UNHINGED_ADDITION 
+          : SYSTEM_PROMPT;
+
+        const userPrompt = `Improve this tweet using my instruction:
+
+"${instruction}"
+
+Current tweet:
+"${currentContent}"
+
+Niche: ${niche}
+
+${IMPROVE_TWEET_PROMPT}`;
+
+        try {
+          const content = await callAI(systemPrompt, userPrompt);
+          const improved = parseAIJson(content);
+
+          // Update the idea
+          const { error: updateError } = await supabaseAdmin
+            .from("content_ideas")
+            .update({
+              generated_content: improved.content,
+              why_it_works: improved.why_it_works,
+            })
+            .eq("id", ideaId);
+
+          if (updateError) throw new Error("Failed to save improved tweet");
+
+          return new Response(
+            JSON.stringify({ success: true, improved }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          throw e;
+        }
+      }
+
+      // ===== SAVE TO VAULT =====
+      case "save_to_vault": {
+        const { ideaId, content, pillarName, ideaTitle } = params;
+
+        // Insert into idea_vault
+        const { error: insertError } = await supabaseAdmin
+          .from("idea_vault")
+          .insert({
+            user_id: user.id,
+            idea_title: ideaTitle,
+            idea_content: content,
+            hook_type: pillarName,
+            idea_status: "saved",
+          });
+
+        if (insertError) throw new Error("Failed to save to vault");
+
+        // Mark as saved
+        await supabaseAdmin
+          .from("content_ideas")
+          .update({ is_saved_to_vault: true })
+          .eq("id", ideaId);
+
+        return new Response(
+          JSON.stringify({ success: true }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // ===== LEGACY: GENERATE CONTENT BANK (keep for backward compat) =====
       case "generate_content_bank": {
-        const settings = params as ContentBankSettings;
-        
-        // Free users: 5 posts max, Paid users: 10+ posts
+        const settings = params;
         const postCount = isPaidUser ? 10 : 5;
-        const categories = isPaidUser 
-          ? ["clickbait", "clickbait", "engagement", "engagement", "authority", "authority", "thread", "thread", "sales", "relatable"]
-          : ["clickbait", "engagement", "authority", "thread", "relatable"]; // No sales for free
 
         const systemPrompt = settings.unhingedMode 
           ? SYSTEM_PROMPT + UNHINGED_ADDITION 
@@ -211,88 +570,53 @@ ${!isPaidUser ? "NOTE: This is a FREE user - do NOT include any sales/conversion
 
 ${CONTENT_BANK_PROMPT}`;
 
-        const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "google/gemini-3-flash-preview",
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userPrompt },
-            ],
-          }),
-        });
+        try {
+          const content = await callAI(systemPrompt, userPrompt);
+          const posts = parseAIJson(content);
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("AI error:", errorText);
-          if (response.status === 429) {
+          const dayInserts = posts.map((post: any, index: number) => ({
+            calendar_id: settings.calendarId,
+            user_id: user.id,
+            day_number: settings.dayNumber,
+            post_number: index + 1,
+            post_category: post.post_category,
+            content_goal: post.content_goal,
+            content_type: post.content_type,
+            psychological_trigger: post.psychological_trigger,
+            post_brief: post.why_it_works,
+            draft_content: post.post_text,
+            draft_why_it_works: post.why_it_works,
+            draft_action_driven: post.primary_action,
+            status: "drafted",
+          }));
+
+          const { error: insertError } = await supabaseAdmin
+            .from("content_calendar_days")
+            .insert(dayInserts);
+
+          if (insertError) throw new Error("Failed to save content bank");
+
+          await supabaseAdmin
+            .from("content_calendars")
+            .update({ status: "ready" })
+            .eq("id", settings.calendarId);
+
+          return new Response(
+            JSON.stringify({ success: true, posts: posts.length, isPaidUser }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
             return new Response(
               JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
               { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
             );
           }
-          throw new Error("Failed to generate content bank");
+          throw e;
         }
-
-        const aiResponse = await response.json();
-        const bankContent = aiResponse.choices[0]?.message?.content;
-
-        // Parse the JSON response
-        let posts;
-        try {
-          let cleanedContent = bankContent.trim();
-          if (cleanedContent.startsWith("```json")) cleanedContent = cleanedContent.slice(7);
-          if (cleanedContent.startsWith("```")) cleanedContent = cleanedContent.slice(3);
-          if (cleanedContent.endsWith("```")) cleanedContent = cleanedContent.slice(0, -3);
-          posts = JSON.parse(cleanedContent.trim());
-        } catch (e) {
-          console.error("Failed to parse content bank JSON:", e, bankContent);
-          throw new Error("Invalid content format from AI");
-        }
-
-        // Insert posts into database as calendar days
-        const dayInserts = posts.map((post: any, index: number) => ({
-          calendar_id: settings.calendarId,
-          user_id: user.id,
-          day_number: settings.dayNumber,
-          post_number: index + 1,
-          post_category: post.post_category,
-          content_goal: post.content_goal,
-          content_type: post.content_type,
-          psychological_trigger: post.psychological_trigger,
-          post_brief: post.why_it_works,
-          draft_content: post.post_text,
-          draft_why_it_works: post.why_it_works,
-          draft_action_driven: post.primary_action,
-          status: "drafted",
-        }));
-
-        const { error: insertError } = await supabaseAdmin
-          .from("content_calendar_days")
-          .insert(dayInserts);
-
-        if (insertError) {
-          console.error("Insert error:", insertError);
-          throw new Error("Failed to save content bank");
-        }
-
-        // Update calendar status
-        await supabaseAdmin
-          .from("content_calendars")
-          .update({ status: "ready" })
-          .eq("id", settings.calendarId);
-
-        return new Response(
-          JSON.stringify({ success: true, posts: posts.length, isPaidUser }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
       }
 
-      // ===== REGENERATE A SINGLE POST =====
+      // ===== LEGACY: REGENERATE POST =====
       case "regenerate_post": {
         const { postId, originalPost, niche, category, unhingedMode } = params;
 
@@ -303,61 +627,58 @@ ${CONTENT_BANK_PROMPT}`;
         const userPrompt = `Original post in ${niche} niche, category: ${category}
 "${originalPost}"
 
-${DRAFT_REGEN_PROMPT}`;
+Regenerate this specific post with a fresh angle.
 
-        const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "google/gemini-3-flash-preview",
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userPrompt },
-            ],
-          }),
-        });
+Keep:
+- Same post category
+- Same general goal
 
-        if (!response.ok) throw new Error("Failed to regenerate post");
+Change:
+- The hook
+- The angle
+- The psychology trigger
 
-        const aiResponse = await response.json();
-        let newPost;
+Output as JSON:
+{
+  "post_text": "<new tweet text>",
+  "psychological_trigger": "<new trigger used>",
+  "why_it_works": "<1 sentence explanation>"
+}`;
+
         try {
-          let content = aiResponse.choices[0]?.message?.content.trim();
-          if (content.startsWith("```json")) content = content.slice(7);
-          if (content.startsWith("```")) content = content.slice(3);
-          if (content.endsWith("```")) content = content.slice(0, -3);
-          newPost = JSON.parse(content.trim());
-        } catch (e) {
-          console.error("Failed to parse regenerated post:", e);
-          throw new Error("Invalid post format");
+          const content = await callAI(systemPrompt, userPrompt);
+          const newPost = parseAIJson(content);
+
+          const { error: updateError } = await supabaseAdmin
+            .from("content_calendar_days")
+            .update({
+              draft_content: newPost.post_text,
+              psychological_trigger: newPost.psychological_trigger,
+              draft_why_it_works: newPost.why_it_works,
+            })
+            .eq("id", postId);
+
+          if (updateError) throw new Error("Failed to save regenerated post");
+
+          return new Response(
+            JSON.stringify({ success: true, post: newPost }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          throw e;
         }
-
-        // Update the post in database
-        const { error: updateError } = await supabaseAdmin
-          .from("content_calendar_days")
-          .update({
-            draft_content: newPost.post_text,
-            psychological_trigger: newPost.psychological_trigger,
-            draft_why_it_works: newPost.why_it_works,
-          })
-          .eq("id", postId);
-
-        if (updateError) throw new Error("Failed to save regenerated post");
-
-        return new Response(
-          JSON.stringify({ success: true, post: newPost }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
       }
 
-      // ===== GENERATE NEXT DAY =====
+      // ===== LEGACY: GENERATE NEXT DAY =====
       case "generate_next_day": {
         const { calendarId, primaryNiche, audienceLevel, mainGoal, unhingedMode, currentMaxDay } = params;
 
-        // Free users limited to 1 day
         if (!isPaidUser && currentMaxDay >= 1) {
           return new Response(
             JSON.stringify({ error: "Free users can generate 1 day. Upgrade to Pro for 30-day content banks!" }),
@@ -365,7 +686,6 @@ ${DRAFT_REGEN_PROMPT}`;
           );
         }
 
-        // Paid users limited to 30 days
         if (currentMaxDay >= 30) {
           return new Response(
             JSON.stringify({ error: "Maximum 30 days reached for this content bank." }),
@@ -397,76 +717,50 @@ ${!isPaidUser ? "NOTE: This is a FREE user - do NOT include any sales/conversion
 
 ${CONTENT_BANK_PROMPT}`;
 
-        const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "google/gemini-3-flash-preview",
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userPrompt },
-            ],
-          }),
-        });
+        try {
+          const content = await callAI(systemPrompt, userPrompt);
+          const posts = parseAIJson(content);
 
-        if (!response.ok) {
-          if (response.status === 429) {
+          const dayInserts = posts.map((post: any, index: number) => ({
+            calendar_id: calendarId,
+            user_id: user.id,
+            day_number: nextDay,
+            post_number: index + 1,
+            post_category: post.post_category,
+            content_goal: post.content_goal,
+            content_type: post.content_type,
+            psychological_trigger: post.psychological_trigger,
+            post_brief: post.why_it_works,
+            draft_content: post.post_text,
+            draft_why_it_works: post.why_it_works,
+            draft_action_driven: post.primary_action,
+            status: "drafted",
+          }));
+
+          const { error: insertError } = await supabaseAdmin
+            .from("content_calendar_days")
+            .insert(dayInserts);
+
+          if (insertError) throw new Error("Failed to save next day");
+
+          await supabaseAdmin
+            .from("content_calendars")
+            .update({ calendar_length: nextDay })
+            .eq("id", calendarId);
+
+          return new Response(
+            JSON.stringify({ success: true, dayNumber: nextDay, posts: posts.length }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
             return new Response(
               JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
               { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
             );
           }
-          throw new Error("Failed to generate next day");
+          throw e;
         }
-
-        const aiResponse = await response.json();
-        let posts;
-        try {
-          let content = aiResponse.choices[0]?.message?.content.trim();
-          if (content.startsWith("```json")) content = content.slice(7);
-          if (content.startsWith("```")) content = content.slice(3);
-          if (content.endsWith("```")) content = content.slice(0, -3);
-          posts = JSON.parse(content.trim());
-        } catch (e) {
-          console.error("Failed to parse next day:", e);
-          throw new Error("Invalid content format");
-        }
-
-        const dayInserts = posts.map((post: any, index: number) => ({
-          calendar_id: calendarId,
-          user_id: user.id,
-          day_number: nextDay,
-          post_number: index + 1,
-          post_category: post.post_category,
-          content_goal: post.content_goal,
-          content_type: post.content_type,
-          psychological_trigger: post.psychological_trigger,
-          post_brief: post.why_it_works,
-          draft_content: post.post_text,
-          draft_why_it_works: post.why_it_works,
-          draft_action_driven: post.primary_action,
-          status: "drafted",
-        }));
-
-        const { error: insertError } = await supabaseAdmin
-          .from("content_calendar_days")
-          .insert(dayInserts);
-
-        if (insertError) throw new Error("Failed to save next day");
-
-        // Update calendar length
-        await supabaseAdmin
-          .from("content_calendars")
-          .update({ calendar_length: nextDay })
-          .eq("id", calendarId);
-
-        return new Response(
-          JSON.stringify({ success: true, dayNumber: nextDay, posts: posts.length }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
       }
 
       default:

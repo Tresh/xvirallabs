@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      brand_pillars: {
+        Row: {
+          audience_need: string | null
+          calendar_id: string
+          created_at: string
+          example_formats: string[] | null
+          id: string
+          pillar_name: string
+          pillar_order: number
+          psychology_trigger: string | null
+          purpose: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audience_need?: string | null
+          calendar_id: string
+          created_at?: string
+          example_formats?: string[] | null
+          id?: string
+          pillar_name: string
+          pillar_order?: number
+          psychology_trigger?: string | null
+          purpose?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audience_need?: string | null
+          calendar_id?: string
+          created_at?: string
+          example_formats?: string[] | null
+          id?: string
+          pillar_name?: string
+          pillar_order?: number
+          psychology_trigger?: string | null
+          purpose?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_pillars_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "content_calendars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brand_voice: {
         Row: {
           avoid_hooks: string[] | null
@@ -126,8 +176,10 @@ export type Database = {
           created_at: string
           id: string
           main_goal: string
+          mind_map_generated: boolean | null
           monetization_type: string | null
           name: string
+          pillars_generated: boolean | null
           posting_capacity: string
           primary_niche: string
           status: string
@@ -143,8 +195,10 @@ export type Database = {
           created_at?: string
           id?: string
           main_goal: string
+          mind_map_generated?: boolean | null
           monetization_type?: string | null
           name?: string
+          pillars_generated?: boolean | null
           posting_capacity?: string
           primary_niche: string
           status?: string
@@ -160,8 +214,10 @@ export type Database = {
           created_at?: string
           id?: string
           main_goal?: string
+          mind_map_generated?: boolean | null
           monetization_type?: string | null
           name?: string
+          pillars_generated?: boolean | null
           posting_capacity?: string
           primary_niche?: string
           status?: string
@@ -251,6 +307,78 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      content_ideas: {
+        Row: {
+          calendar_id: string
+          created_at: string
+          day_number: number
+          generated_content: string | null
+          id: string
+          idea_order: number
+          idea_title: string
+          idea_type: string
+          intent: string | null
+          is_saved_to_vault: boolean | null
+          pillar_id: string | null
+          psychology_hint: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+          why_it_works: string | null
+        }
+        Insert: {
+          calendar_id: string
+          created_at?: string
+          day_number: number
+          generated_content?: string | null
+          id?: string
+          idea_order?: number
+          idea_title: string
+          idea_type?: string
+          intent?: string | null
+          is_saved_to_vault?: boolean | null
+          pillar_id?: string | null
+          psychology_hint?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          why_it_works?: string | null
+        }
+        Update: {
+          calendar_id?: string
+          created_at?: string
+          day_number?: number
+          generated_content?: string | null
+          id?: string
+          idea_order?: number
+          idea_title?: string
+          idea_type?: string
+          intent?: string | null
+          is_saved_to_vault?: boolean | null
+          pillar_id?: string | null
+          psychology_hint?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          why_it_works?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_ideas_calendar_id_fkey"
+            columns: ["calendar_id"]
+            isOneToOne: false
+            referencedRelation: "content_calendars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_ideas_pillar_id_fkey"
+            columns: ["pillar_id"]
+            isOneToOne: false
+            referencedRelation: "brand_pillars"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       content_inspirations: {
         Row: {
