@@ -60,6 +60,7 @@ export function ContentLabOnboarding({ onComplete }: ContentLabOnboardingProps) 
   
   // Form state
   const [primaryNiche, setPrimaryNiche] = useState("");
+  const [customNiche, setCustomNiche] = useState("");
   const [subNiches, setSubNiches] = useState<string[]>([]);
   const [audienceSize, setAudienceSize] = useState("");
   const [mainGoal, setMainGoal] = useState("");
@@ -107,14 +108,15 @@ export function ContentLabOnboarding({ onComplete }: ContentLabOnboardingProps) 
     setIsLoading(true);
     try {
       // Create the calendar in database
+      const finalNiche = primaryNiche === "Other" ? customNiche.trim() : primaryNiche;
       console.log("Creating calendar with user:", user.id);
       const { data: calendar, error: calendarError } = await supabase
         .from("content_calendars")
         .insert({
           user_id: user.id,
-          name: `${primaryNiche} Calendar`,
+          name: `${finalNiche} Calendar`,
           calendar_length: isPaidUser ? calendarLength : 7,
-          primary_niche: primaryNiche,
+          primary_niche: finalNiche,
           sub_niches: subNiches.length > 0 ? subNiches : null,
           audience_size: audienceSize || null,
           main_goal: mainGoal,
@@ -155,7 +157,7 @@ export function ContentLabOnboarding({ onComplete }: ContentLabOnboardingProps) 
         body: {
           action: "generate_calendar",
           calendarId: calendar.id,
-          primaryNiche,
+          primaryNiche: finalNiche,
           subNiches,
           mainGoal,
           monetizationType,
@@ -189,10 +191,15 @@ export function ContentLabOnboarding({ onComplete }: ContentLabOnboardingProps) 
 
   const canProceed = () => {
     switch (step) {
-      case 1: return primaryNiche !== "";
+      case 1: 
+        if (primaryNiche === "Other") {
+          return customNiche.trim() !== "";
+        }
+        return primaryNiche !== "";
       case 2: return mainGoal !== "";
       case 3: return true;
       case 4: return postingCapacity !== "";
+      case 5: return true; // Always allow proceeding from step 5
       default: return false;
     }
   };
@@ -237,6 +244,21 @@ export function ContentLabOnboarding({ onComplete }: ContentLabOnboardingProps) 
                 </button>
               ))}
             </div>
+
+            {primaryNiche === "Other" && (
+              <div>
+                <Label className="text-sm text-muted-foreground mb-2 block">
+                  Enter your niche
+                </Label>
+                <Input
+                  placeholder="e.g., Parenting, Real Estate, Gaming..."
+                  value={customNiche}
+                  onChange={(e) => setCustomNiche(e.target.value)}
+                  className="bg-secondary/50"
+                  autoFocus
+                />
+              </div>
+            )}
 
             {primaryNiche && (
               <div>
