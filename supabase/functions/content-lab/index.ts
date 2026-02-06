@@ -301,13 +301,57 @@ serve(async (req) => {
       return aiResponse.choices[0]?.message?.content;
     };
 
-    // Helper to parse JSON from AI response
+    // Helper to parse JSON from AI response with robust error handling
     const parseAIJson = (content: string) => {
       let cleaned = content.trim();
+      
+      // Remove markdown code blocks
       if (cleaned.startsWith("```json")) cleaned = cleaned.slice(7);
       if (cleaned.startsWith("```")) cleaned = cleaned.slice(3);
       if (cleaned.endsWith("```")) cleaned = cleaned.slice(0, -3);
-      return JSON.parse(cleaned.trim());
+      cleaned = cleaned.trim();
+      
+      // Try direct parse first
+      try {
+        return JSON.parse(cleaned);
+      } catch (e) {
+        console.log("Direct JSON parse failed, attempting cleanup...");
+        
+        // Fix common JSON issues from AI responses
+        // 1. Fix unescaped newlines inside strings
+        cleaned = cleaned.replace(/(?<!\\)\n(?=(?:[^"]*"[^"]*")*[^"]*$)/g, '\\n');
+        
+        // 2. Fix control characters
+        cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (char) => {
+          if (char === '\n') return '\\n';
+          if (char === '\r') return '\\r';
+          if (char === '\t') return '\\t';
+          return '';
+        });
+        
+        // 3. Try extracting just the array portion if present
+        const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
+        if (arrayMatch) {
+          try {
+            return JSON.parse(arrayMatch[0]);
+          } catch (e2) {
+            // Continue to next attempt
+          }
+        }
+        
+        // 4. Try extracting just the object portion if present
+        const objectMatch = cleaned.match(/\{[\s\S]*\}/);
+        if (objectMatch) {
+          try {
+            return JSON.parse(objectMatch[0]);
+          } catch (e3) {
+            // Continue to fallback
+          }
+        }
+        
+        console.error("All JSON parse attempts failed. Raw content:", cleaned.substring(0, 500));
+        throw new Error("AI returned invalid JSON format");
+      }
     };
 
     switch (action) {
