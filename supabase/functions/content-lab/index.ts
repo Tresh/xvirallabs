@@ -614,29 +614,47 @@ ${CONTENT_BANK_PROMPT}`;
 
         try {
           const content = await callAI(systemPrompt, userPrompt);
-          const posts = parseAIJson(content);
+          console.log("AI response received for content bank");
+          
+          let posts;
+          try {
+            posts = parseAIJson(content);
+          } catch (parseErr) {
+            console.error("Failed to parse AI response:", content);
+            throw new Error("AI returned invalid JSON");
+          }
+
+          if (!Array.isArray(posts) || posts.length === 0) {
+            console.error("Posts is not a valid array:", posts);
+            throw new Error("AI did not return valid posts array");
+          }
 
           const dayInserts = posts.map((post: any, index: number) => ({
             calendar_id: settings.calendarId,
             user_id: user.id,
             day_number: settings.dayNumber,
             post_number: index + 1,
-            post_category: post.post_category,
-            content_goal: post.content_goal,
-            content_type: post.content_type,
-            psychological_trigger: post.psychological_trigger,
-            post_brief: post.why_it_works,
-            draft_content: post.post_text,
-            draft_why_it_works: post.why_it_works,
-            draft_action_driven: post.primary_action,
+            post_category: post.post_category || "clickbait",
+            content_goal: post.content_goal || "reach",
+            content_type: post.content_type || "tweet",
+            psychological_trigger: post.psychological_trigger || "curiosity",
+            post_brief: post.why_it_works || "Attention-grabbing content",
+            draft_content: post.post_text || "",
+            draft_why_it_works: post.why_it_works || "",
+            draft_action_driven: post.primary_action || "engage",
             status: "drafted",
           }));
+
+          console.log("Inserting posts:", dayInserts.length);
 
           const { error: insertError } = await supabaseAdmin
             .from("content_calendar_days")
             .insert(dayInserts);
 
-          if (insertError) throw new Error("Failed to save content bank");
+          if (insertError) {
+            console.error("Database insert error:", insertError);
+            throw new Error(`Failed to save content bank: ${insertError.message}`);
+          }
 
           await supabaseAdmin
             .from("content_calendars")
