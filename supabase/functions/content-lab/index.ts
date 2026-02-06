@@ -1063,6 +1063,72 @@ Output as JSON:
         }
       }
 
+      // ===== EXPAND TO LONG-FORM CONTENT =====
+      case "expand_content": {
+        const { originalContent, title, additionalContext, outputFormat, formatInstructions } = params;
+
+        const EXPAND_CONTENT_PROMPT = `You are a viral content strategist and researcher.
+
+Your task is to take short-form content and expand it into comprehensive long-form content.
+
+RULES:
+• Research and add relevant data points, statistics, and examples
+• Maintain the original voice and tone
+• Add depth without losing the punch
+• Include actionable insights
+• Make it engaging from start to finish
+
+${formatInstructions}`;
+
+        const userPrompt = `Expand this content into ${outputFormat}:
+
+Title/Topic: ${title}
+
+Original Content:
+${originalContent}
+
+${additionalContext ? `Additional Context/Direction:\n${additionalContext}` : ""}
+
+Generate comprehensive, well-researched content that expands on the original idea.`;
+
+        try {
+          // Stream the response for better UX
+          const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "google/gemini-3-flash-preview",
+              messages: [
+                { role: "system", content: EXPAND_CONTENT_PROMPT },
+                { role: "user", content: userPrompt },
+              ],
+              stream: true,
+            }),
+          });
+
+          if (!response.ok) {
+            if (response.status === 429) throw new Error("RATE_LIMIT");
+            if (response.status === 402) throw new Error("PAYMENT_REQUIRED");
+            throw new Error("AI_ERROR");
+          }
+
+          return new Response(response.body, {
+            headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+          });
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          throw e;
+        }
+      }
+
       default:
         return new Response(
           JSON.stringify({ error: "Unknown action" }),
