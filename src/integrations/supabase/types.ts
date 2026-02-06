@@ -112,10 +112,14 @@ export type Database = {
           draft_content: string | null
           draft_why_it_works: string | null
           id: string
+          is_posted: boolean | null
           post_brief: string
           post_category: string | null
           post_number: number | null
+          posted_at: string | null
           psychological_trigger: string | null
+          scheduled_date: string | null
+          scheduled_time: string | null
           status: string
           updated_at: string
           user_id: string
@@ -131,10 +135,14 @@ export type Database = {
           draft_content?: string | null
           draft_why_it_works?: string | null
           id?: string
+          is_posted?: boolean | null
           post_brief: string
           post_category?: string | null
           post_number?: number | null
+          posted_at?: string | null
           psychological_trigger?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -150,10 +158,14 @@ export type Database = {
           draft_content?: string | null
           draft_why_it_works?: string | null
           id?: string
+          is_posted?: boolean | null
           post_brief?: string
           post_category?: string | null
           post_number?: number | null
+          posted_at?: string | null
           psychological_trigger?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
           status?: string
           updated_at?: string
           user_id?: string
@@ -507,6 +519,86 @@ export type Database = {
             columns: ["generated_from_pattern_id"]
             isOneToOne: false
             referencedRelation: "viral_patterns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_performance: {
+        Row: {
+          ai_analysis: string | null
+          ai_suggestions: string[] | null
+          audience_reached: number | null
+          bookmarks: number | null
+          calendar_day_id: string | null
+          created_at: string
+          engagement_rate: number | null
+          follows_gained: number | null
+          id: string
+          impressions: number | null
+          likes: number | null
+          link_clicks: number | null
+          performance_score: number | null
+          posted_time: string | null
+          profile_visits: number | null
+          replies: number | null
+          retweets: number | null
+          screenshot_url: string | null
+          tweet_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_analysis?: string | null
+          ai_suggestions?: string[] | null
+          audience_reached?: number | null
+          bookmarks?: number | null
+          calendar_day_id?: string | null
+          created_at?: string
+          engagement_rate?: number | null
+          follows_gained?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          link_clicks?: number | null
+          performance_score?: number | null
+          posted_time?: string | null
+          profile_visits?: number | null
+          replies?: number | null
+          retweets?: number | null
+          screenshot_url?: string | null
+          tweet_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_analysis?: string | null
+          ai_suggestions?: string[] | null
+          audience_reached?: number | null
+          bookmarks?: number | null
+          calendar_day_id?: string | null
+          created_at?: string
+          engagement_rate?: number | null
+          follows_gained?: number | null
+          id?: string
+          impressions?: number | null
+          likes?: number | null
+          link_clicks?: number | null
+          performance_score?: number | null
+          posted_time?: string | null
+          profile_visits?: number | null
+          replies?: number | null
+          retweets?: number | null
+          screenshot_url?: string | null
+          tweet_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_performance_calendar_day_id_fkey"
+            columns: ["calendar_day_id"]
+            isOneToOne: false
+            referencedRelation: "content_calendar_days"
             referencedColumns: ["id"]
           },
         ]

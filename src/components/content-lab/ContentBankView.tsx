@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import {
   Loader2,
@@ -20,7 +21,19 @@ import {
   DollarSign,
   Heart,
   Lock,
+  Calendar,
+  List,
+  BarChart3,
 } from "lucide-react";
+import { DeleteBankDialog } from "./DeleteBankDialog";
+import { CalendarScheduleView } from "./CalendarScheduleView";
+import { PerformanceFeedback } from "./PerformanceFeedback";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 interface ContentPost {
   id: string;
@@ -35,6 +48,9 @@ interface ContentPost {
   draft_why_it_works: string | null;
   draft_action_driven: string | null;
   status: string;
+  scheduled_date: string | null;
+  scheduled_time: string | null;
+  is_posted: boolean;
 }
 
 interface ContentBank {
@@ -70,6 +86,8 @@ export function ContentBankView({ calendarId, onNewBank }: ContentBankViewProps)
   const [generatingDay, setGeneratingDay] = useState(false);
   const [regeneratingPost, setRegeneratingPost] = useState<string | null>(null);
   const [expandedDay, setExpandedDay] = useState<number | null>(1);
+  const [activeView, setActiveView] = useState<"list" | "calendar">("list");
+  const [feedbackPost, setFeedbackPost] = useState<ContentPost | null>(null);
 
   const isPaidUser = profile?.tier === "pro" || profile?.tier === "elite";
 
@@ -282,6 +300,11 @@ export function ContentBankView({ calendarId, onNewBank }: ContentBankViewProps)
                   Upgrade for More Days
                 </Button>
               )}
+              <DeleteBankDialog 
+                calendarId={calendarId} 
+                bankName={bank.name} 
+                onDeleted={onNewBank} 
+              />
               <Button variant="outline" size="sm" onClick={onNewBank}>
                 New Bank
               </Button>
@@ -290,146 +313,198 @@ export function ContentBankView({ calendarId, onNewBank }: ContentBankViewProps)
         </CardContent>
       </Card>
 
-      {/* Tagline */}
-      <p className="text-center text-sm text-muted-foreground italic">
-        "We don't give you a content calendar. We give you a daily content bank so you never run out of posts."
-      </p>
+      {/* View Tabs */}
+      <Tabs value={activeView} onValueChange={(v) => setActiveView(v as "list" | "calendar")}>
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="list" className="gap-2">
+            <List className="h-4 w-4" />
+            List View
+          </TabsTrigger>
+          <TabsTrigger value="calendar" className="gap-2">
+            <Calendar className="h-4 w-4" />
+            Calendar
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Days */}
-      <div className="space-y-4">
-        {days.map((dayNum) => {
-          const dayPosts = postsByDay[dayNum] || [];
-          const isExpanded = expandedDay === dayNum;
+        {/* Tagline */}
+        <p className="text-center text-sm text-muted-foreground italic my-4">
+          "We don't give you a content calendar. We give you a daily content bank so you never run out of posts."
+        </p>
 
-          return (
-            <Card key={dayNum} className="bg-card/50 overflow-hidden">
-              {/* Day Header */}
-              <button
-                onClick={() => setExpandedDay(isExpanded ? null : dayNum)}
-                className="w-full p-4 flex items-center justify-between hover:bg-secondary/30 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center font-bold text-primary">
-                    D{dayNum}
+        <TabsContent value="list">
+          {/* Days List */}
+        <div className="space-y-4">
+          {days.map((dayNum) => {
+            const dayPosts = postsByDay[dayNum] || [];
+            const isExpanded = expandedDay === dayNum;
+
+            return (
+              <Card key={dayNum} className="bg-card/50 overflow-hidden">
+                {/* Day Header */}
+                <button
+                  onClick={() => setExpandedDay(isExpanded ? null : dayNum)}
+                  className="w-full p-4 flex items-center justify-between hover:bg-secondary/30 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center font-bold text-primary">
+                      D{dayNum}
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold">Day {dayNum} — Content Bank</h3>
+                      <p className="text-xs text-muted-foreground">
+                        {dayPosts.length} posts • 
+                        {dayPosts.filter(p => p.post_category === "clickbait").length} clickbait, 
+                        {dayPosts.filter(p => p.post_category === "engagement").length} engagement
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <h3 className="font-semibold">Day {dayNum} — Content Bank</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {dayPosts.length} posts • 
-                      {dayPosts.filter(p => p.post_category === "clickbait").length} clickbait, 
-                      {dayPosts.filter(p => p.post_category === "engagement").length} engagement
-                    </p>
-                  </div>
-                </div>
-                {isExpanded ? (
-                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                )}
-              </button>
+                  {isExpanded ? (
+                    <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                  )}
+                </button>
 
-              {/* Posts */}
-              {isExpanded && (
-                <div className="border-t border-border divide-y divide-border">
-                  {dayPosts.map((post) => {
-                    const config = categoryConfig[post.post_category] || categoryConfig.clickbait;
-                    const isRegenerating = regeneratingPost === post.id;
+                {/* Posts */}
+                {isExpanded && (
+                  <div className="border-t border-border divide-y divide-border">
+                    {dayPosts.map((post) => {
+                      const config = categoryConfig[post.post_category] || categoryConfig.clickbait;
+                      const isRegenerating = regeneratingPost === post.id;
 
-                    return (
-                      <div key={post.id} className="p-4 hover:bg-secondary/20 transition-colors">
-                        <div className="flex items-start gap-3">
-                          {/* Post Number */}
-                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-medium">
-                            {post.post_number}
-                          </div>
-
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            {/* Category & Trigger */}
-                            <div className="flex items-center gap-2 mb-2 flex-wrap">
-                              <Badge className={`${config.color} border text-xs`}>
-                                {config.label}
-                              </Badge>
-                              {post.psychological_trigger && (
-                                <span className="text-xs text-muted-foreground">
-                                  {post.psychological_trigger}
-                                </span>
-                              )}
-                              <Badge variant="outline" className="text-xs capitalize">
-                                {post.content_goal}
-                              </Badge>
+                      return (
+                        <div key={post.id} className="p-4 hover:bg-secondary/20 transition-colors">
+                          <div className="flex items-start gap-3">
+                            {/* Post Number */}
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-medium">
+                              {post.post_number}
                             </div>
 
-                            {/* Post Text */}
-                            <p className="text-sm whitespace-pre-wrap mb-2">
-                              {post.draft_content}
-                            </p>
-
-                            {/* Why it works */}
-                            {post.draft_why_it_works && (
-                              <p className="text-xs text-muted-foreground italic mb-3">
-                                💡 {post.draft_why_it_works}
-                              </p>
-                            )}
-
-                            {/* Actions */}
-                            <div className="flex items-center gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => copyToClipboard(post.draft_content || "")}
-                                className="h-7 text-xs"
-                              >
-                                <Copy className="h-3 w-3 mr-1" />
-                                Copy
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => regeneratePost(post)}
-                                disabled={isRegenerating}
-                                className="h-7 text-xs"
-                              >
-                                {isRegenerating ? (
-                                  <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                                ) : (
-                                  <RefreshCw className="h-3 w-3 mr-1" />
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                              {/* Category & Trigger */}
+                              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                <Badge className={`${config.color} border text-xs`}>
+                                  {config.label}
+                                </Badge>
+                                {post.psychological_trigger && (
+                                  <span className="text-xs text-muted-foreground">
+                                    {post.psychological_trigger}
+                                  </span>
                                 )}
-                                Regenerate
-                              </Button>
+                                <Badge variant="outline" className="text-xs capitalize">
+                                  {post.content_goal}
+                                </Badge>
+                              </div>
+
+                              {/* Post Text */}
+                              <p className="text-sm whitespace-pre-wrap mb-2">
+                                {post.draft_content}
+                              </p>
+
+                              {/* Why it works */}
+                              {post.draft_why_it_works && (
+                                <p className="text-xs text-muted-foreground italic mb-3">
+                                  💡 {post.draft_why_it_works}
+                                </p>
+                              )}
+
+                              {/* Actions */}
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => copyToClipboard(post.draft_content || "")}
+                                  className="h-7 text-xs"
+                                >
+                                  <Copy className="h-3 w-3 mr-1" />
+                                  Copy
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => regeneratePost(post)}
+                                  disabled={isRegenerating}
+                                  className="h-7 text-xs"
+                                >
+                                  {isRegenerating ? (
+                                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                  ) : (
+                                    <RefreshCw className="h-3 w-3 mr-1" />
+                                  )}
+                                  Regenerate
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setFeedbackPost(post)}
+                                  className="h-7 text-xs"
+                                >
+                                  <BarChart3 className="h-3 w-3 mr-1" />
+                                  Report
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </Card>
-          );
-        })}
-      </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </Card>
+            );
+          })}
+        </div>
 
-      {/* Empty state */}
-      {days.length === 0 && (
-        <Card className="bg-card/50 border-dashed">
-          <CardContent className="pt-6 text-center py-12">
-            <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="font-semibold mb-2">No content yet</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Generate your first day's content bank to get started.
-            </p>
-            <Button variant="viral" onClick={generateNextDay} disabled={generatingDay}>
-              {generatingDay ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <Sparkles className="h-4 w-4 mr-2" />
-              )}
-              Generate Day 1
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+        {/* Empty state */}
+        {days.length === 0 && (
+          <Card className="bg-card/50 border-dashed">
+            <CardContent className="pt-6 text-center py-12">
+              <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="font-semibold mb-2">No content yet</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Generate your first day's content bank to get started.
+              </p>
+              <Button variant="viral" onClick={generateNextDay} disabled={generatingDay}>
+                {generatingDay ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <Sparkles className="h-4 w-4 mr-2" />
+                )}
+                Generate Day 1
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+        </TabsContent>
+
+        <TabsContent value="calendar">
+          <CalendarScheduleView posts={posts} onUpdate={fetchBank} />
+        </TabsContent>
+      </Tabs>
+
+      {/* Performance Feedback Sheet */}
+      <Sheet open={!!feedbackPost} onOpenChange={() => setFeedbackPost(null)}>
+        <SheetContent className="sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Report Performance
+            </SheetTitle>
+          </SheetHeader>
+          {feedbackPost && (
+            <div className="mt-6">
+              <PerformanceFeedback 
+                post={feedbackPost} 
+                onAnalyzed={() => {
+                  setFeedbackPost(null);
+                  toast({ title: "Performance logged!" });
+                }} 
+              />
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
