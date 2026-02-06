@@ -6,127 +6,127 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are ViralLabs Content Lab, a growth-focused content strategist and psychology-driven content coach.
+// ===== MASTER SYSTEM PROMPT (CONTENT BANK ENGINE) =====
+const SYSTEM_PROMPT = `You are ViralLabs Content Engine, an elite Twitter/X growth strategist.
 
-Your role is to:
-- Build data-backed, psychology-informed content systems
-- Help creators grow reach, trust, retention, and revenue
-- Design content calendars that compound over time
+Your job is to generate high-volume, psychology-driven content banks, NOT calendars.
 
-You do NOT generate random posts.
-Every piece of content must serve at least one goal:
-- Reach (virality)
-- Authority (trust)
-- Retention (loyal audience)
-- Conversion (sales)
+For each day:
+- Generate MULTIPLE posts
+- Across MULTIPLE formats
+- Using MULTIPLE psychological triggers
 
-You think in:
-- Attention economics
-- Behavioral psychology
-- Platform-native Twitter/X mechanics
-- Creator monetization funnels
+You understand that creators win by:
+- Posting frequently
+- Testing angles
+- Letting the algorithm pick winners
 
-You adapt outputs based on:
-- User niche
-- Growth stage
-- Monetization intent
-- Inspirations provided
+You NEVER generate "one post per day".
+You generate OPTIONS.
 
-Content Psychology Framework - Use these 5 buckets:
-1. Viral / Reach Content - Optimized for discovery, curiosity, and shares
-2. Authority / Trust Content - Builds credibility and expertise
-3. Retention / Relationship Content - Makes followers stay and feel seen
-4. Education / Grooming Content - Trains the audience to understand the problem you solve
-5. Conversion / Sales Content - Turns attention into leads or buyers`;
+Twitter/X is a short-form, attention-driven platform.
 
-// DNA Extraction prompt for analyzing inspiration accounts
-const DNA_EXTRACTION_PROMPT = `Analyze the Twitter/X account style provided.
+Content must:
+- Stop the scroll
+- Trigger emotion
+- Invite reaction
+- Reward curiosity
+- Normalize clickbait (without lying)
 
-Extract:
-- Common hook styles they use
-- Content formats they repeat
-- Psychological angles they employ
-- How they balance value vs personality
-- Monetization signals (soft vs hard selling)
+This system does NOT optimize for politeness or professionalism.
+It optimizes for:
+- Attention
+- Replies
+- Bookmarks
+- Profile clicks
+- Sales intent
 
-Summarize:
-- "What makes this account work" (3 bullet points)
-- "What should NOT be copied" (2 bullet points)
-- "How to adapt this to your own voice" (2 actionable tips)
+Every day should feel like: "What do I feel like posting today?"`;
 
-Keep it actionable and specific. Output in clear sections.`;
+// ===== PSYCHOLOGY TRIGGERS =====
+const PSYCHOLOGY_TRIGGERS = [
+  "Curiosity gaps",
+  "Fear of missing out",
+  "Identity signaling",
+  "Authority bias",
+  "Social proof",
+  "Loss aversion",
+  "Relatability",
+  "Status aspiration",
+  "Controversy",
+  "Pattern interrupt",
+  "Open loops",
+  "Tribal belonging"
+];
 
-// Calendar generation prompt
-const CALENDAR_GENERATION_PROMPT = `Generate a content calendar for the specified number of days.
+// ===== CONTENT BANK GENERATION PROMPT =====
+const CONTENT_BANK_PROMPT = `Generate a Daily Twitter/X Content Bank.
 
-For EACH day, output a JSON object with:
+For EACH post, output a JSON object with these exact fields:
 {
-  "day_number": <number>,
-  "content_goal": "<reach|authority|retention|education|conversion>",
-  "content_type": "<tweet|thread|reply_bait|soft_sell|story|value_bomb|contrarian>",
-  "psychological_trigger": "<specific trigger like curiosity gap, social proof, fear of missing out, identity signaling, etc>",
-  "post_brief": "<2-3 sentence description of what to post about>"
+  "post_number": <number 1-10>,
+  "post_category": "<clickbait|engagement|authority|thread|sales|relatable>",
+  "psychological_trigger": "<specific trigger from: ${PSYCHOLOGY_TRIGGERS.join(", ")}>",
+  "content_goal": "<reach|replies|bookmarks|profile_clicks|sales>",
+  "content_type": "<tweet|thread|poll|question|hot_take|story|value_bomb>",
+  "post_text": "<the actual tweet text, under 280 chars for single tweets>",
+  "why_it_works": "<1 sentence explaining the psychology>",
+  "primary_action": "<what this drives: reply, bookmark, follow, click_link, DM>"
 }
 
-Requirements:
-- Balance all 5 content psychology buckets throughout the calendar
-- Start with trust-building content
-- Gradually ramp up reach content
-- Warm audience before any conversion content
-- Avoid repetition and burnout
-- Match the user's posting capacity
+POST CATEGORY REQUIREMENTS:
+🧲 Clickbait/Curiosity (2 posts): Pure scroll-stoppers. Slightly unhinged. Forces a click or reply.
+💬 Engagement Farming (2 posts): Opinion bait. Questions. "Agree/disagree" energy. Designed for replies, not likes.
+🧠 Authority/Psychology (2 posts): Short insights. Contrarian takes. "Here's what nobody tells you."
+🧵 Thread/Long-Form (2 posts): Educational but dramatic. Built on open loops. Monetization-aware.
+💰 Sales/Conversion (1 post): Soft sell. Problem-aware. Leads to product, service, or DM.
+🧍 Relatable/Identity (1 post): "If you're like me…" Makes audience feel seen. Builds retention.
 
-Output ONLY a valid JSON array of day objects. No markdown, no explanation, just the JSON array.`;
+CRITICAL RULES:
+- Never repeat the same psychology trigger more than twice per day
+- No LinkedIn tone
+- No filler
+- Embrace clickbait, curiosity, and emotion
+- Short-form, attention-first language
 
-// Draft generation prompt
-const DRAFT_GENERATION_PROMPT = `Write the actual tweet/thread content for this post brief.
+Output ONLY a valid JSON array of 10 post objects. No markdown, no explanation, just the JSON array.`;
 
-Requirements:
-- Use platform-native Twitter/X language
-- Match the specified niche and tone
-- Optimize for replies and dwell time
-- Make it feel authentic, not AI-generated
-- Keep tweets under 280 characters unless it's a thread
+// ===== UNHINGED MODE ADDITION =====
+const UNHINGED_ADDITION = `
+UNHINGED MODE ACTIVATED 🔥
+Write bolder. Slightly controversial. Push boundaries.
+Still aligned with the niche. Optimized for replies, not safety.
+More personality. More edge. More "I can't believe they said that."
+Make people screenshot and share.`;
 
-Also provide:
-- "why_it_works": <1-2 sentences explaining the psychological mechanism>
-- "action_driven": <what action this post drives - e.g., "profile visit", "reply", "bookmark", "follow">
+// ===== DRAFT REGENERATION PROMPT =====
+const DRAFT_REGEN_PROMPT = `Regenerate this specific post with a fresh angle.
 
-Output as JSON:
-{
-  "draft_content": "<the actual tweet or thread>",
-  "why_it_works": "<explanation>",
-  "action_driven": "<action>"
-}`;
+Keep:
+- Same post category
+- Same general goal
 
-// Coaching prompt
-const COACHING_PROMPT = `Act as a daily content coach for this post.
+Change:
+- The hook
+- The angle
+- The psychology trigger
 
-Provide:
-1. Intent explanation (why this post matters today, 1-2 sentences)
-2. Best posting time (with reasoning based on content type)
-3. Reply strategy (how to engage with replies to boost algorithm)
-4. 2-3 follow-up suggestions (what to post after this one performs)
-
-Keep guidance short and actionable.
+Make it feel like a completely different post that serves the same purpose.
 
 Output as JSON:
 {
-  "intent_explanation": "<string>",
-  "best_posting_time": "<string>",
-  "reply_strategy": "<string>",
-  "follow_up_suggestions": ["<suggestion1>", "<suggestion2>", "<suggestion3>"]
+  "post_text": "<new tweet text>",
+  "psychological_trigger": "<new trigger used>",
+  "why_it_works": "<1 sentence explanation>"
 }`;
 
-interface CalendarSettings {
+interface ContentBankSettings {
   calendarId: string;
   primaryNiche: string;
-  subNiches?: string[];
+  audienceLevel: string;
   mainGoal: string;
-  monetizationType?: string;
-  postingCapacity: string;
-  calendarLength: number;
-  inspirationHandles?: string[];
+  dayNumber: number;
+  unhingedMode: boolean;
 }
 
 serve(async (req) => {
@@ -178,24 +178,38 @@ serve(async (req) => {
     const tier = profile?.tier || "free";
     const isPaidUser = tier === "pro" || tier === "elite";
 
-    // Handle different actions
     switch (action) {
-      case "generate_calendar": {
-        const settings = params as CalendarSettings;
+      // ===== GENERATE DAILY CONTENT BANK =====
+      case "generate_content_bank": {
+        const settings = params as ContentBankSettings;
         
-        // Free users: 7 days, Paid users: full calendar
-        const actualLength = isPaidUser ? settings.calendarLength : Math.min(settings.calendarLength, 7);
-        
-        const userPrompt = `Create a ${actualLength}-day content calendar.
+        // Free users: 5 posts max, Paid users: 10+ posts
+        const postCount = isPaidUser ? 10 : 5;
+        const categories = isPaidUser 
+          ? ["clickbait", "clickbait", "engagement", "engagement", "authority", "authority", "thread", "thread", "sales", "relatable"]
+          : ["clickbait", "engagement", "authority", "thread", "relatable"]; // No sales for free
 
-User Profile:
-- Primary Niche: ${settings.primaryNiche}
-${settings.subNiches?.length ? `- Sub-niches: ${settings.subNiches.join(", ")}` : ""}
-- Main Goal: ${settings.mainGoal}
-${settings.monetizationType ? `- Monetization: ${settings.monetizationType}` : ""}
-- Posting Capacity: ${settings.postingCapacity} (${settings.postingCapacity === "low" ? "3-4x/week" : settings.postingCapacity === "medium" ? "1x/day" : "2-3x/day"})
+        const systemPrompt = settings.unhingedMode 
+          ? SYSTEM_PROMPT + UNHINGED_ADDITION 
+          : SYSTEM_PROMPT;
 
-Generate exactly ${actualLength} days of content.`;
+        const userPrompt = `Generate a Daily Twitter/X Content Bank for:
+
+Niche: ${settings.primaryNiche}
+Audience level: ${settings.audienceLevel || "intermediate"}
+Goal: ${settings.mainGoal}
+Day: ${settings.dayNumber}
+
+Requirements:
+- Generate exactly ${postCount} posts for today
+- Use short-form, attention-first language
+- Embrace clickbait, curiosity, and emotion
+- No LinkedIn tone
+- No filler
+
+${!isPaidUser ? "NOTE: This is a FREE user - do NOT include any sales/conversion posts." : ""}
+
+${CONTENT_BANK_PROMPT}`;
 
         const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
@@ -206,7 +220,7 @@ Generate exactly ${actualLength} days of content.`;
           body: JSON.stringify({
             model: "google/gemini-3-flash-preview",
             messages: [
-              { role: "system", content: SYSTEM_PROMPT + "\n\n" + CALENDAR_GENERATION_PROMPT },
+              { role: "system", content: systemPrompt },
               { role: "user", content: userPrompt },
             ],
           }),
@@ -215,42 +229,46 @@ Generate exactly ${actualLength} days of content.`;
         if (!response.ok) {
           const errorText = await response.text();
           console.error("AI error:", errorText);
-          throw new Error("Failed to generate calendar");
+          if (response.status === 429) {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          throw new Error("Failed to generate content bank");
         }
 
         const aiResponse = await response.json();
-        const calendarContent = aiResponse.choices[0]?.message?.content;
+        const bankContent = aiResponse.choices[0]?.message?.content;
 
         // Parse the JSON response
-        let calendarDays;
+        let posts;
         try {
-          // Clean the response - remove markdown code blocks if present
-          let cleanedContent = calendarContent.trim();
-          if (cleanedContent.startsWith("```json")) {
-            cleanedContent = cleanedContent.slice(7);
-          }
-          if (cleanedContent.startsWith("```")) {
-            cleanedContent = cleanedContent.slice(3);
-          }
-          if (cleanedContent.endsWith("```")) {
-            cleanedContent = cleanedContent.slice(0, -3);
-          }
-          calendarDays = JSON.parse(cleanedContent.trim());
+          let cleanedContent = bankContent.trim();
+          if (cleanedContent.startsWith("```json")) cleanedContent = cleanedContent.slice(7);
+          if (cleanedContent.startsWith("```")) cleanedContent = cleanedContent.slice(3);
+          if (cleanedContent.endsWith("```")) cleanedContent = cleanedContent.slice(0, -3);
+          posts = JSON.parse(cleanedContent.trim());
         } catch (e) {
-          console.error("Failed to parse calendar JSON:", e, calendarContent);
-          throw new Error("Invalid calendar format from AI");
+          console.error("Failed to parse content bank JSON:", e, bankContent);
+          throw new Error("Invalid content format from AI");
         }
 
-        // Insert calendar days into database
-        const dayInserts = calendarDays.map((day: any) => ({
+        // Insert posts into database as calendar days
+        const dayInserts = posts.map((post: any, index: number) => ({
           calendar_id: settings.calendarId,
           user_id: user.id,
-          day_number: day.day_number,
-          content_goal: day.content_goal,
-          content_type: day.content_type,
-          psychological_trigger: day.psychological_trigger,
-          post_brief: day.post_brief,
-          status: "pending",
+          day_number: settings.dayNumber,
+          post_number: index + 1,
+          post_category: post.post_category,
+          content_goal: post.content_goal,
+          content_type: post.content_type,
+          psychological_trigger: post.psychological_trigger,
+          post_brief: post.why_it_works,
+          draft_content: post.post_text,
+          draft_why_it_works: post.why_it_works,
+          draft_action_driven: post.primary_action,
+          status: "drafted",
         }));
 
         const { error: insertError } = await supabaseAdmin
@@ -259,45 +277,33 @@ Generate exactly ${actualLength} days of content.`;
 
         if (insertError) {
           console.error("Insert error:", insertError);
-          throw new Error("Failed to save calendar");
+          throw new Error("Failed to save content bank");
         }
 
         // Update calendar status
         await supabaseAdmin
           .from("content_calendars")
-          .update({ status: "ready", calendar_length: actualLength })
+          .update({ status: "ready" })
           .eq("id", settings.calendarId);
 
         return new Response(
-          JSON.stringify({ success: true, days: calendarDays.length, isPaidUser }),
+          JSON.stringify({ success: true, posts: posts.length, isPaidUser }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
-      case "generate_draft": {
-        const { dayId, postBrief, contentGoal, contentType, niche } = params;
+      // ===== REGENERATE A SINGLE POST =====
+      case "regenerate_post": {
+        const { postId, originalPost, niche, category, unhingedMode } = params;
 
-        // Free users: limited drafts
-        if (!isPaidUser) {
-          const { count } = await supabase
-            .from("content_calendar_days")
-            .select("*", { count: "exact", head: true })
-            .eq("user_id", user.id)
-            .not("draft_content", "is", null);
+        const systemPrompt = unhingedMode 
+          ? SYSTEM_PROMPT + UNHINGED_ADDITION 
+          : SYSTEM_PROMPT;
 
-          if ((count || 0) >= 5) {
-            return new Response(
-              JSON.stringify({ error: "Free users limited to 5 drafts. Upgrade to Pro!" }),
-              { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
-          }
-        }
+        const userPrompt = `Original post in ${niche} niche, category: ${category}
+"${originalPost}"
 
-        const userPrompt = `Write content for:
-Niche: ${niche}
-Goal: ${contentGoal}
-Type: ${contentType}
-Brief: ${postBrief}`;
+${DRAFT_REGEN_PROMPT}`;
 
         const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
@@ -308,65 +314,88 @@ Brief: ${postBrief}`;
           body: JSON.stringify({
             model: "google/gemini-3-flash-preview",
             messages: [
-              { role: "system", content: SYSTEM_PROMPT + "\n\n" + DRAFT_GENERATION_PROMPT },
+              { role: "system", content: systemPrompt },
               { role: "user", content: userPrompt },
             ],
           }),
         });
 
-        if (!response.ok) {
-          throw new Error("Failed to generate draft");
-        }
+        if (!response.ok) throw new Error("Failed to regenerate post");
 
         const aiResponse = await response.json();
-        let draftData;
+        let newPost;
         try {
           let content = aiResponse.choices[0]?.message?.content.trim();
           if (content.startsWith("```json")) content = content.slice(7);
           if (content.startsWith("```")) content = content.slice(3);
           if (content.endsWith("```")) content = content.slice(0, -3);
-          draftData = JSON.parse(content.trim());
+          newPost = JSON.parse(content.trim());
         } catch (e) {
-          console.error("Failed to parse draft:", e);
-          throw new Error("Invalid draft format");
+          console.error("Failed to parse regenerated post:", e);
+          throw new Error("Invalid post format");
         }
 
-        // Update the calendar day with the draft
+        // Update the post in database
         const { error: updateError } = await supabaseAdmin
           .from("content_calendar_days")
           .update({
-            draft_content: draftData.draft_content,
-            draft_why_it_works: draftData.why_it_works,
-            draft_action_driven: draftData.action_driven,
-            status: "drafted",
+            draft_content: newPost.post_text,
+            psychological_trigger: newPost.psychological_trigger,
+            draft_why_it_works: newPost.why_it_works,
           })
-          .eq("id", dayId);
+          .eq("id", postId);
 
-        if (updateError) {
-          throw new Error("Failed to save draft");
-        }
+        if (updateError) throw new Error("Failed to save regenerated post");
 
         return new Response(
-          JSON.stringify({ success: true, draft: draftData }),
+          JSON.stringify({ success: true, post: newPost }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
-      case "generate_coaching": {
-        const { dayId, postBrief, contentGoal, draftContent } = params;
+      // ===== GENERATE NEXT DAY =====
+      case "generate_next_day": {
+        const { calendarId, primaryNiche, audienceLevel, mainGoal, unhingedMode, currentMaxDay } = params;
 
-        // Coaching is Pro+ only
-        if (!isPaidUser) {
+        // Free users limited to 1 day
+        if (!isPaidUser && currentMaxDay >= 1) {
           return new Response(
-            JSON.stringify({ error: "Daily coaching is a Pro feature. Upgrade to unlock!" }),
+            JSON.stringify({ error: "Free users can generate 1 day. Upgrade to Pro for 30-day content banks!" }),
             { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
 
-        const userPrompt = `Coach me on this post:
-Goal: ${contentGoal}
-Brief: ${postBrief}
-${draftContent ? `Draft: ${draftContent}` : ""}`;
+        // Paid users limited to 30 days
+        if (currentMaxDay >= 30) {
+          return new Response(
+            JSON.stringify({ error: "Maximum 30 days reached for this content bank." }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const nextDay = currentMaxDay + 1;
+        const postCount = isPaidUser ? 10 : 5;
+
+        const systemPrompt = unhingedMode 
+          ? SYSTEM_PROMPT + UNHINGED_ADDITION 
+          : SYSTEM_PROMPT;
+
+        const userPrompt = `Generate a Daily Twitter/X Content Bank for:
+
+Niche: ${primaryNiche}
+Audience level: ${audienceLevel || "intermediate"}
+Goal: ${mainGoal}
+Day: ${nextDay}
+
+Requirements:
+- Generate exactly ${postCount} posts for today
+- This is day ${nextDay} - vary the angles from previous days
+- Fresh psychology triggers
+- New hooks and formats
+
+${!isPaidUser ? "NOTE: This is a FREE user - do NOT include any sales/conversion posts." : ""}
+
+${CONTENT_BANK_PROMPT}`;
 
         const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
           method: "POST",
@@ -377,90 +406,67 @@ ${draftContent ? `Draft: ${draftContent}` : ""}`;
           body: JSON.stringify({
             model: "google/gemini-3-flash-preview",
             messages: [
-              { role: "system", content: COACHING_PROMPT },
+              { role: "system", content: systemPrompt },
               { role: "user", content: userPrompt },
             ],
           }),
         });
 
         if (!response.ok) {
-          throw new Error("Failed to generate coaching");
+          if (response.status === 429) {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          throw new Error("Failed to generate next day");
         }
 
         const aiResponse = await response.json();
-        let coachingData;
+        let posts;
         try {
           let content = aiResponse.choices[0]?.message?.content.trim();
           if (content.startsWith("```json")) content = content.slice(7);
           if (content.startsWith("```")) content = content.slice(3);
           if (content.endsWith("```")) content = content.slice(0, -3);
-          coachingData = JSON.parse(content.trim());
+          posts = JSON.parse(content.trim());
         } catch (e) {
-          console.error("Failed to parse coaching:", e);
-          throw new Error("Invalid coaching format");
+          console.error("Failed to parse next day:", e);
+          throw new Error("Invalid content format");
         }
 
-        // Save coaching to database
+        const dayInserts = posts.map((post: any, index: number) => ({
+          calendar_id: calendarId,
+          user_id: user.id,
+          day_number: nextDay,
+          post_number: index + 1,
+          post_category: post.post_category,
+          content_goal: post.content_goal,
+          content_type: post.content_type,
+          psychological_trigger: post.psychological_trigger,
+          post_brief: post.why_it_works,
+          draft_content: post.post_text,
+          draft_why_it_works: post.why_it_works,
+          draft_action_driven: post.primary_action,
+          status: "drafted",
+        }));
+
         const { error: insertError } = await supabaseAdmin
-          .from("content_coaching")
-          .insert({
-            calendar_day_id: dayId,
-            user_id: user.id,
-            intent_explanation: coachingData.intent_explanation,
-            best_posting_time: coachingData.best_posting_time,
-            reply_strategy: coachingData.reply_strategy,
-            follow_up_suggestions: coachingData.follow_up_suggestions,
-          });
+          .from("content_calendar_days")
+          .insert(dayInserts);
 
-        if (insertError) {
-          throw new Error("Failed to save coaching");
-        }
+        if (insertError) throw new Error("Failed to save next day");
+
+        // Update calendar length
+        await supabaseAdmin
+          .from("content_calendars")
+          .update({ calendar_length: nextDay })
+          .eq("id", calendarId);
 
         return new Response(
-          JSON.stringify({ success: true, coaching: coachingData }),
+          JSON.stringify({ success: true, dayNumber: nextDay, posts: posts.length }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
-      }
-
-      case "analyze_inspiration": {
-        const { calendarId, handle } = params;
-
-        // DNA extraction is Pro+ only
-        if (!isPaidUser) {
-          return new Response(
-            JSON.stringify({ error: "Account DNA analysis is a Pro feature. Upgrade to unlock!" }),
-            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-
-        const userPrompt = `Analyze the Twitter/X account: @${handle}
-
-Note: I don't have access to real-time data, so analyze based on common patterns for accounts in this style. Provide actionable insights the user can apply to their own content strategy.`;
-
-        const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "google/gemini-3-flash-preview",
-            messages: [
-              { role: "system", content: DNA_EXTRACTION_PROMPT },
-              { role: "user", content: userPrompt },
-            ],
-            stream: true,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to analyze account");
-        }
-
-        // For streaming response, return directly
-        return new Response(response.body, {
-          headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
-        });
       }
 
       default:

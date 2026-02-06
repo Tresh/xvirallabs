@@ -63,6 +63,8 @@ export type Database = {
           draft_why_it_works: string | null
           id: string
           post_brief: string
+          post_category: string | null
+          post_number: number | null
           psychological_trigger: string | null
           status: string
           updated_at: string
@@ -80,6 +82,8 @@ export type Database = {
           draft_why_it_works?: string | null
           id?: string
           post_brief: string
+          post_category?: string | null
+          post_number?: number | null
           psychological_trigger?: string | null
           status?: string
           updated_at?: string
@@ -97,6 +101,8 @@ export type Database = {
           draft_why_it_works?: string | null
           id?: string
           post_brief?: string
+          post_category?: string | null
+          post_number?: number | null
           psychological_trigger?: string | null
           status?: string
           updated_at?: string
@@ -114,6 +120,7 @@ export type Database = {
       }
       content_calendars: {
         Row: {
+          audience_level: string | null
           audience_size: string | null
           calendar_length: number
           created_at: string
@@ -125,10 +132,12 @@ export type Database = {
           primary_niche: string
           status: string
           sub_niches: string[] | null
+          unhinged_mode: boolean | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          audience_level?: string | null
           audience_size?: string | null
           calendar_length?: number
           created_at?: string
@@ -140,10 +149,12 @@ export type Database = {
           primary_niche: string
           status?: string
           sub_niches?: string[] | null
+          unhinged_mode?: boolean | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          audience_level?: string | null
           audience_size?: string | null
           calendar_length?: number
           created_at?: string
@@ -155,6 +166,7 @@ export type Database = {
           primary_niche?: string
           status?: string
           sub_niches?: string[] | null
+          unhinged_mode?: boolean | null
           updated_at?: string
           user_id?: string
         }
