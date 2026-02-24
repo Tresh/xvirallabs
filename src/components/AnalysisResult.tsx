@@ -189,7 +189,8 @@ export function AnalysisResult({
 
   return (
     <div className="mt-8 max-w-4xl mx-auto animate-fade-in">
-      <div className="bg-card rounded-3xl border border-border p-8 shadow-2xl">
+      {/* <div className="bg-card rounded-3xl border border-border p-8 shadow-2xl"> */}
+      <div className="bg-card rounded-3xl border border-border p-8 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 pb-4 border-b border-border gap-4">
           <div className="flex items-center gap-3">
@@ -273,7 +274,8 @@ export function AnalysisResult({
         )}
 
         {/* Content */}
-        <div className="prose prose-invert prose-sm max-w-none overflow-y-auto max-h-[60vh]">
+        {/* <div className="prose prose-invert prose-sm max-w-none overflow-y-auto max-h-[60vh]"> */}
+        <div className="prose prose-invert prose-sm max-w-none overflow-y-auto flex-1 min-h-0">
           <ReactMarkdown
             components={{
               h1: ({ children }) => (
