@@ -29,13 +29,13 @@ const modeNames: Record<number, string> = {
   10: "Lab Summary",
 };
 
-export function AnalysisResult({ 
-  result, 
-  isAnalyzing, 
-  mode, 
+export function AnalysisResult({
+  result,
+  isAnalyzing,
+  mode,
   onReset,
   originalPost = "",
-  inputType = "text"
+  inputType = "text",
 }: AnalysisResultProps) {
   const { user } = useAuth();
   const { saveAnalysis, savePattern, saveIdea } = useViralMemory();
@@ -114,9 +114,9 @@ export function AnalysisResult({
     }
 
     setIsSavingPattern(true);
-    
+
     // Extract pattern name from result (first line usually)
-    const firstLine = result.split("\n").find(l => l.trim().length > 0) || "Viral Pattern";
+    const firstLine = result.split("\n").find((l) => l.trim().length > 0) || "Viral Pattern";
     const patternName = firstLine.replace(/^#+\s*/, "").slice(0, 100);
 
     const { error } = await savePattern({
@@ -156,7 +156,7 @@ export function AnalysisResult({
     setIsSavingIdea(true);
 
     // Extract first meaningful line as title
-    const firstLine = result.split("\n").find(l => l.trim().length > 0 && !l.startsWith("#")) || "Viral Idea";
+    const firstLine = result.split("\n").find((l) => l.trim().length > 0 && !l.startsWith("#")) || "Viral Idea";
     const ideaTitle = firstLine.slice(0, 200);
 
     const { error } = await saveIdea({
@@ -197,15 +197,11 @@ export function AnalysisResult({
               <Sparkles className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-foreground">
-                {modeNames[mode]} Results
-              </h3>
-              <p className="text-sm text-muted-foreground font-mono">
-                MODE {mode}
-              </p>
+              <h3 className="text-lg font-semibold text-foreground">{modeNames[mode]} Results</h3>
+              <p className="text-sm text-muted-foreground font-mono">MODE {mode}</p>
             </div>
           </div>
-          
+
           {!isAnalyzing && (
             <div className="flex flex-wrap items-center gap-2">
               <Button variant="outline" size="sm" onClick={handleCopy}>
@@ -250,26 +246,16 @@ export function AnalysisResult({
                   </>
                 )}
               </Button>
-              
+
               {mode === 3 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSavePattern}
-                  disabled={isSavingPattern}
-                >
+                <Button variant="outline" size="sm" onClick={handleSavePattern} disabled={isSavingPattern}>
                   <Dna className="h-4 w-4" />
                   {isSavingPattern ? "Saving..." : "Save Pattern"}
                 </Button>
               )}
-              
+
               {(mode === 4 || mode === 8) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSaveIdea}
-                  disabled={isSavingIdea}
-                >
+                <Button variant="outline" size="sm" onClick={handleSaveIdea} disabled={isSavingIdea}>
                   <Lightbulb className="h-4 w-4" />
                   {isSavingIdea ? "Saving..." : "Add to Ideas"}
                 </Button>
@@ -287,13 +273,11 @@ export function AnalysisResult({
         )}
 
         {/* Content */}
-        <div className="prose prose-invert prose-sm max-w-none">
+        <div className="prose prose-invert prose-sm max-w-none overflow-y-auto max-h-[60vh]">
           <ReactMarkdown
             components={{
               h1: ({ children }) => (
-                <h1 className="text-2xl font-bold text-foreground mt-6 mb-4 first:mt-0">
-                  {children}
-                </h1>
+                <h1 className="text-2xl font-bold text-foreground mt-6 mb-4 first:mt-0">{children}</h1>
               ),
               h2: ({ children }) => (
                 <h2 className="text-xl font-semibold text-foreground mt-5 mb-3 flex items-center gap-2">
@@ -301,49 +285,31 @@ export function AnalysisResult({
                   {children}
                 </h2>
               ),
-              h3: ({ children }) => (
-                <h3 className="text-lg font-medium text-foreground mt-4 mb-2">
-                  {children}
-                </h3>
-              ),
-              p: ({ children }) => (
-                <p className="text-muted-foreground leading-relaxed mb-3">
-                  {children}
-                </p>
-              ),
-              ul: ({ children }) => (
-                <ul className="space-y-2 mb-4">{children}</ul>
-              ),
+              h3: ({ children }) => <h3 className="text-lg font-medium text-foreground mt-4 mb-2">{children}</h3>,
+              p: ({ children }) => <p className="text-muted-foreground leading-relaxed mb-3">{children}</p>,
+              ul: ({ children }) => <ul className="space-y-2 mb-4">{children}</ul>,
               li: ({ children }) => (
                 <li className="flex items-start gap-2 text-muted-foreground">
                   <span className="mt-2 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                   <span>{children}</span>
                 </li>
               ),
-              ol: ({ children }) => (
-                <ol className="space-y-2 mb-4 list-decimal list-inside">{children}</ol>
-              ),
-              strong: ({ children }) => (
-                <strong className="font-semibold text-foreground">{children}</strong>
-              ),
-              em: ({ children }) => (
-                <em className="text-primary italic">{children}</em>
-              ),
+              ol: ({ children }) => <ol className="space-y-2 mb-4 list-decimal list-inside">{children}</ol>,
+              strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
+              em: ({ children }) => <em className="text-primary italic">{children}</em>,
               blockquote: ({ children }) => (
                 <blockquote className="border-l-2 border-primary pl-4 my-4 italic text-muted-foreground bg-secondary/30 py-2 rounded-r-lg">
                   {children}
                 </blockquote>
               ),
               code: ({ children }) => (
-                <code className="px-2 py-1 bg-secondary rounded text-sm font-mono text-primary">
-                  {children}
-                </code>
+                <code className="px-2 py-1 bg-secondary rounded text-sm font-mono text-primary">{children}</code>
               ),
             }}
           >
             {result}
           </ReactMarkdown>
-          
+
           {isAnalyzing && (
             <div className="flex items-center gap-2 text-primary mt-4">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
