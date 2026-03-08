@@ -50,7 +50,7 @@ export function AnalysisCard({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className={`bg-card/50 ${analysis.is_pinned ? 'border-primary/50' : ''}`}>
+      <Card className={`${analysis.is_pinned ? 'border-foreground/30' : ''}`}>
         <CardContent className="pt-6">
           <div className="flex items-start justify-between gap-4">
             <CollapsibleTrigger className="flex-1 min-w-0 text-left cursor-pointer hover:bg-secondary/30 -m-2 p-2 rounded-lg transition-colors">
