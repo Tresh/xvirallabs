@@ -177,7 +177,7 @@ export default function Dashboard() {
 
         {/* Insights Card */}
         {stats.mostUsedHook && (
-          <Card className="mb-8 border-primary/30 bg-gradient-to-r from-primary/5 to-transparent">
+          <Card className="mb-8 border-border">
             <CardContent className="pt-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-xl bg-primary/10">
