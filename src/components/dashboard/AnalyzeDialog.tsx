@@ -174,7 +174,7 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
                   placeholder="Your niche (e.g., SaaS, Fitness)"
                   value={niche}
                   onChange={(e) => setNiche(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-secondary/50 border border-border text-foreground placeholder:text-muted-foreground"
+                  className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground"
                 />
               )}
 
