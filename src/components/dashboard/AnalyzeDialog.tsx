@@ -237,7 +237,7 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
           ) : (
             <div className="space-y-4">
               {/* Result Display */}
-              <div className="rounded-xl bg-secondary/30 border border-border p-4">
+              <div className="rounded-xl bg-secondary border border-border p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Badge>{modes.find((m) => m.id === selectedMode)?.name}</Badge>
                 </div>

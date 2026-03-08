@@ -376,7 +376,7 @@ export function AnalyzeSection() {
                     ) : (
                       <button
                         onClick={() => commentsInputRef.current?.click()}
-                        className="w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-muted-foreground/50 bg-secondary/30 hover:bg-secondary/50 transition-all flex flex-col items-center justify-center gap-2 group"
+                        className="w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-muted-foreground/50 bg-secondary/50 hover:bg-secondary transition-all flex flex-col items-center justify-center gap-2 group"
                       >
                         <div className="p-2 rounded-lg bg-muted group-hover:bg-secondary transition-colors">
                           <MessageSquare className="h-5 w-5 text-muted-foreground" />
