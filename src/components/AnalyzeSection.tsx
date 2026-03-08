@@ -503,8 +503,8 @@ export function AnalyzeSection() {
           {!result && (
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-start gap-3 p-4 rounded-xl border border-border">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Microscope className="h-4 w-4 text-primary" />
+                <div className="p-2 rounded-lg bg-secondary">
+                  <Microscope className="h-4 w-4 text-foreground" />
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-foreground">Pro Tip</h4>
