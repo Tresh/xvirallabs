@@ -114,7 +114,7 @@ export function AnalysisCard({
               
               <div>
                 <h4 className="text-sm font-medium mb-2">Analysis Result</h4>
-                <div className="text-sm prose prose-invert prose-sm max-w-none bg-secondary/30 p-3 rounded-lg">
+                <div className="text-sm prose prose-sm max-w-none bg-secondary/50 p-3 rounded-lg">
                   <ReactMarkdown>{analysis.analysis_result}</ReactMarkdown>
                 </div>
               </div>
