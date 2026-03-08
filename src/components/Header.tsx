@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
-import { User, LogOut, LayoutDashboard, Shield } from "lucide-react";
+import { User, LogOut, LayoutDashboard, Shield, Moon, Sun } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
+import { useTheme } from "@/hooks/useTheme";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +17,7 @@ import { Badge } from "./ui/badge";
 export function Header() {
   const { user, profile, signOut } = useAuth();
   const { isAdmin } = useAdmin();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
@@ -28,12 +30,17 @@ export function Header() {
           <Link to="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Features
           </Link>
-          <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Terms
-          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-md text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+
           {user ? (
             <>
               {isAdmin && (
