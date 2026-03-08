@@ -163,7 +163,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
 
       {/* Step 1: Niche */}
       {step === 1 && (
-        <Card className="bg-card/50 border-primary/20">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5 text-primary" />
