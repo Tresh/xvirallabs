@@ -525,8 +525,8 @@ export function AnalyzeSection() {
                 </div>
               </div>
               <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
-                <div className="p-2 rounded-lg bg-viral-warning/10">
-                  <Brain className="h-4 w-4 text-viral-warning" />
+                <div className="p-2 rounded-lg bg-muted">
+                  <Brain className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-foreground">Deep Dive</h4>
