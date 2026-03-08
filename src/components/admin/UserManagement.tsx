@@ -201,7 +201,7 @@ export function UserManagement({
                         <DropdownMenuItem 
                           onClick={() => handleRoleChange(user.user_id, "admin")}
                         >
-                          <Shield className="h-4 w-4 mr-2 text-viral-hot" />
+                          <Shield className="h-4 w-4 mr-2 text-primary" />
                           Admin
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
