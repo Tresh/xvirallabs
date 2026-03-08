@@ -168,7 +168,7 @@ export function ContentModeration({
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="text-viral-success hover:text-viral-success"
+                          className="text-primary hover:text-primary"
                           onClick={() => handleAction(flag.id, "resolved")}
                         >
                           <CheckCircle className="h-4 w-4" />
