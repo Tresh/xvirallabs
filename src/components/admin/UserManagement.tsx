@@ -31,8 +31,8 @@ interface UserManagementProps {
 
 const RoleBadge = ({ role }: { role: AppRole }) => {
   const styles = {
-    admin: "bg-viral-hot/20 text-viral-hot border-viral-hot/30",
-    moderator: "bg-viral-purple/20 text-viral-purple border-viral-purple/30",
+    admin: "bg-primary/20 text-primary border-primary/30",
+    moderator: "bg-muted text-foreground border-border",
     user: "bg-muted text-muted-foreground border-border",
   };
 
