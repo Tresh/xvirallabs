@@ -236,7 +236,7 @@ export function AnalyzeSection() {
                 >
                   <LinkIcon className="h-4 w-4" />
                   Tweet URL
-                  <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 bg-viral-warning/20 text-viral-warning border-viral-warning/30">
+                  <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 bg-muted text-muted-foreground">
                     Soon
                   </Badge>
                 </button>
