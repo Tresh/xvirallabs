@@ -276,7 +276,7 @@ export function AnalyzeSection() {
               onChange={(e) => setInput(e.target.value)}
               disabled={inputType === "url"}
               className={cn(
-                "min-h-[160px] bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground resize-none text-base mb-6",
+                "min-h-[160px] bg-background border-border text-foreground placeholder:text-muted-foreground resize-none text-base mb-6",
                 inputType === "url" && "opacity-50 cursor-not-allowed"
               )}
             />
