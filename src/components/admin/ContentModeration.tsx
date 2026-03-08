@@ -34,9 +34,9 @@ interface ContentModerationProps {
 
 const StatusBadge = ({ status }: { status: ContentFlag["status"] }) => {
   const styles = {
-    pending: "bg-viral-warning/20 text-viral-warning border-viral-warning/30",
+    pending: "bg-muted text-muted-foreground border-border",
     reviewed: "bg-primary/20 text-primary border-primary/30",
-    resolved: "bg-viral-success/20 text-viral-success border-viral-success/30",
+    resolved: "bg-primary/10 text-primary border-primary/20",
     dismissed: "bg-muted text-muted-foreground border-border",
   };
 

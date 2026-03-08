@@ -23,19 +23,19 @@ const StatCard = ({
   const variantStyles = {
     default: "border-border",
     primary: "border-primary/30 bg-primary/5",
-    success: "border-viral-success/30 bg-viral-success/5",
-    warning: "border-viral-warning/30 bg-viral-warning/5",
+    success: "border-primary/20 bg-primary/[0.03]",
+    warning: "border-border bg-muted/30",
   };
 
   const iconStyles = {
     default: "text-muted-foreground",
     primary: "text-primary",
-    success: "text-viral-success",
-    warning: "text-viral-warning",
+    success: "text-primary",
+    warning: "text-muted-foreground",
   };
 
   return (
-    <Card className={`${variantStyles[variant]} transition-all hover:glow-primary`}>
+    <Card className={`${variantStyles[variant]} transition-all`}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
