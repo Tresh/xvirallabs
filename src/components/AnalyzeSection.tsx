@@ -514,8 +514,8 @@ export function AnalyzeSection() {
                 </div>
               </div>
               <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
-                <div className="p-2 rounded-lg bg-viral-success/10">
-                  <Sparkles className="h-4 w-4 text-viral-success" />
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Sparkles className="h-4 w-4 text-primary" />
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-foreground">Best Results</h4>
