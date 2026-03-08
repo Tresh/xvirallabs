@@ -295,7 +295,7 @@ export function ContentModeration({
             </Button>
             <Button
               onClick={() => selectedFlag && handleAction(selectedFlag.id, "resolved")}
-              className="bg-viral-success hover:bg-viral-success/90"
+              className="bg-primary hover:bg-primary/90"
             >
               <CheckCircle className="h-4 w-4 mr-2" />
               Resolve
