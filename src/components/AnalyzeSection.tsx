@@ -209,7 +209,7 @@ export function AnalyzeSection() {
 
         {/* Main Analysis Card */}
         <div className="max-w-4xl mx-auto">
-          <div className="bg-card rounded-3xl border border-border p-8 shadow-2xl">
+          <div className="bg-background rounded-2xl border border-border p-8 shadow-sm">
             {/* Input Type Toggle + Usage Indicator */}
             <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
               <div className="flex items-center gap-2">
