@@ -125,7 +125,7 @@ export function ContentModeration({
 
         {pendingFlags.length === 0 ? (
           <div className="border rounded-lg p-8 text-center text-muted-foreground">
-            <CheckCircle className="h-12 w-12 mx-auto mb-4 text-viral-success" />
+            <CheckCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
             <p>No pending flags to review!</p>
           </div>
         ) : (
