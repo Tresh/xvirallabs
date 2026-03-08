@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Zap, Infinity } from "lucide-react";
+import { Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface UsageIndicatorProps {
@@ -21,7 +21,6 @@ export function UsageIndicator({ remaining, isUnlimited, isLoading, dailyLimit }
   if (isUnlimited) {
     return (
       <Badge className="bg-primary/20 text-primary border-primary/30">
-        <Infinity className="h-3 w-3 mr-1" />
         Unlimited
       </Badge>
     );
