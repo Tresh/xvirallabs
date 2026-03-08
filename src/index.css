@@ -2,48 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
 
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 9%;
 
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
 
-    --primary: 145 60% 45%;
-    --primary-foreground: 0 0% 2%;
+    --primary: 152 55% 33%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 11%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 50%;
+    --muted: 0 0% 93%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 145 60% 45%;
-    --accent-foreground: 0 0% 2%;
+    --accent: 152 55% 33%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 60% 50%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 145 60% 45%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 152 55% 33%;
 
-    --radius: 0.625rem;
+    --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 6%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 145 60% 45%;
-    --sidebar-primary-foreground: 0 0% 2%;
-    --sidebar-accent: 0 0% 11%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 145 60% 45%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-primary: 152 55% 33%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 95%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 152 55% 33%;
   }
 }
 
@@ -54,25 +54,19 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', sans-serif;
+    font-family: 'DM Sans', sans-serif;
   }
 
   .font-mono {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'IBM Plex Mono', monospace;
   }
 }
 
 @layer utilities {
   .text-gradient-primary {
-    background: linear-gradient(135deg, hsl(145 60% 45%) 0%, hsl(155 55% 50%) 100%);
+    background: linear-gradient(135deg, hsl(152 55% 33%) 0%, hsl(162 50% 38%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-  }
-
-  .bg-glass {
-    background: hsla(0, 0%, 8%, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
   }
 }
