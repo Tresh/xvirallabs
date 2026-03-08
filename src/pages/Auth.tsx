@@ -89,7 +89,7 @@ export default function Auth() {
           <Logo size="lg" />
         </div>
 
-        <Card className="border-border bg-card/80 backdrop-blur-sm">
+        <Card className="border-border bg-card">
           <CardHeader className="text-center">
             <div className="mx-auto p-3 rounded-xl bg-primary/10 w-fit mb-4">
               <FlaskConical className="h-8 w-8 text-primary" />
