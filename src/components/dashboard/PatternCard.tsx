@@ -119,7 +119,7 @@ Generate 3 high-performing tweets using this exact pattern structure, adapted fo
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="bg-card/50">
+      <Card>
         <CollapsibleTrigger className="w-full text-left cursor-pointer hover:bg-secondary/30 transition-colors">
           <CardHeader className="pb-2">
             <div className="flex items-start justify-between">
