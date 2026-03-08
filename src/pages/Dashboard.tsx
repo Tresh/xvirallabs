@@ -86,7 +86,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-border bg-background/90 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <Logo size="sm" showText={false} />
@@ -121,11 +121,11 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-card/50">
+          <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Microscope className="h-5 w-5 text-primary" />
+                <div className="p-2 rounded-lg bg-secondary">
+                  <Microscope className="h-5 w-5 text-foreground" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{stats.totalAnalyses}</p>
@@ -134,11 +134,11 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50">
+          <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Dna className="h-5 w-5 text-primary" />
+                <div className="p-2 rounded-lg bg-secondary">
+                  <Dna className="h-5 w-5 text-foreground" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{stats.totalPatterns}</p>
@@ -147,11 +147,11 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50">
+          <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-muted">
-                  <Lightbulb className="h-5 w-5 text-muted-foreground" />
+                <div className="p-2 rounded-lg bg-secondary">
+                  <Lightbulb className="h-5 w-5 text-foreground" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{stats.unusedIdeas}</p>
@@ -160,11 +160,11 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50">
+          <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <TrendingUp className="h-5 w-5 text-primary" />
+                <div className="p-2 rounded-lg bg-secondary">
+                  <TrendingUp className="h-5 w-5 text-foreground" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{stats.avgReplyPotential}/10</p>
@@ -177,10 +177,10 @@ export default function Dashboard() {
 
         {/* Insights Card */}
         {stats.mostUsedHook && (
-          <Card className="mb-8 border-primary/30 bg-gradient-to-r from-primary/5 to-transparent">
+          <Card className="mb-8 border-border">
             <CardContent className="pt-6">
               <div className="flex items-start gap-4">
-                <div className="p-3 rounded-xl bg-primary/10">
+                <div className="p-3 rounded-xl bg-secondary">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
                 <div>
@@ -230,7 +230,7 @@ export default function Dashboard() {
           {/* Analyses Tab */}
           <TabsContent value="analyses">
             {analyses.length === 0 ? (
-              <Card className="bg-card/50">
+              <Card>
                 <CardContent className="pt-6 text-center py-12">
                   <Microscope className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">No analyses yet</h3>
@@ -265,7 +265,7 @@ export default function Dashboard() {
           {/* Patterns Tab */}
           <TabsContent value="patterns">
             {patterns.length === 0 ? (
-              <Card className="bg-card/50">
+              <Card>
                 <CardContent className="pt-6 text-center py-12">
                   <Dna className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">No patterns saved</h3>
@@ -292,7 +292,7 @@ export default function Dashboard() {
           {/* Ideas Tab */}
           <TabsContent value="ideas">
             {ideas.length === 0 ? (
-              <Card className="bg-card/50">
+              <Card>
                 <CardContent className="pt-6 text-center py-12">
                   <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">Idea vault is empty</h3>

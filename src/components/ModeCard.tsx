@@ -16,13 +16,13 @@ export function ModeCard({ mode, title, description, icon: Icon, isSelected, onC
       onClick={onClick}
       className={cn(
         "group relative p-4 md:p-6 rounded-xl border text-left transition-all duration-200",
-        "bg-card hover:bg-secondary/50",
+        "hover:shadow-sm",
         isSelected 
-          ? "border-primary bg-primary/5" 
-          : "border-border hover:border-muted-foreground/30"
+          ? "border-foreground bg-foreground text-background" 
+          : "border-border bg-background hover:border-muted-foreground/40"
       )}
     >
-      <div className="absolute top-3 right-3 md:top-4 md:right-4 font-mono text-xs text-muted-foreground">
+      <div className="absolute top-3 right-3 md:top-4 md:right-4 font-mono text-xs opacity-40">
         {String(mode).padStart(2, '0')}
       </div>
 
@@ -30,16 +30,25 @@ export function ModeCard({ mode, title, description, icon: Icon, isSelected, onC
         <div className={cn(
           "p-2.5 md:p-3 rounded-lg w-fit transition-all duration-200 md:mb-4 flex-shrink-0",
           isSelected 
-            ? "bg-primary/15 text-primary" 
+            ? "bg-background/15" 
             : "bg-secondary text-muted-foreground group-hover:text-foreground"
         )}>
-          <Icon className="h-5 w-5 md:h-5 md:w-5" />
+          <Icon className="h-5 w-5" />
         </div>
-        <h3 className="text-sm md:text-base font-semibold text-foreground md:hidden">{title}</h3>
+        <h3 className={cn(
+          "text-sm md:text-base font-semibold md:hidden",
+          isSelected ? "text-background" : "text-foreground"
+        )}>{title}</h3>
       </div>
 
-      <h3 className="hidden md:block text-base font-semibold mb-2 text-foreground">{title}</h3>
-      <p className="text-xs text-muted-foreground leading-relaxed mt-2 md:mt-0">{description}</p>
+      <h3 className={cn(
+        "hidden md:block text-base font-semibold mb-2",
+        isSelected ? "text-background" : "text-foreground"
+      )}>{title}</h3>
+      <p className={cn(
+        "text-xs leading-relaxed mt-2 md:mt-0",
+        isSelected ? "text-background/70" : "text-muted-foreground"
+      )}>{description}</p>
     </button>
   );
 }

@@ -119,7 +119,7 @@ Generate 3 high-performing tweets using this exact pattern structure, adapted fo
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="bg-card/50">
+      <Card>
         <CollapsibleTrigger className="w-full text-left cursor-pointer hover:bg-secondary/30 transition-colors">
           <CardHeader className="pb-2">
             <div className="flex items-start justify-between">
@@ -133,7 +133,7 @@ Generate 3 high-performing tweets using this exact pattern structure, adapted fo
         </CollapsibleTrigger>
         
         <CardContent>
-          <p className="text-sm text-muted-foreground mb-3 font-mono bg-secondary/30 p-3 rounded-lg line-clamp-2">
+          <p className="text-sm text-muted-foreground mb-3 font-mono bg-secondary p-3 rounded-lg line-clamp-2">
             {pattern.pattern_template}
           </p>
           
@@ -151,7 +151,7 @@ Generate 3 high-performing tweets using this exact pattern structure, adapted fo
             <div className="space-y-4">
               <div>
                 <h4 className="text-sm font-medium mb-2">Full Pattern Template</h4>
-                <pre className="text-sm text-muted-foreground bg-secondary/30 p-3 rounded-lg whitespace-pre-wrap">
+                <pre className="text-sm text-muted-foreground bg-secondary p-3 rounded-lg whitespace-pre-wrap">
                   {pattern.pattern_template}
                 </pre>
               </div>

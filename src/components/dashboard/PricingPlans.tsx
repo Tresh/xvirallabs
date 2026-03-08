@@ -42,7 +42,7 @@ export function PricingPlans() {
   const currentTier = profile?.tier || "free";
 
   return (
-    <Card className="bg-card border-border">
+    <Card className="border-border">
       <CardHeader>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
@@ -64,10 +64,10 @@ export function PricingPlans() {
                 key={plan.name}
                 className={`relative p-5 rounded-xl border transition-all ${
                   isCurrent
-                    ? "border-primary/50 bg-primary/5"
+                    ? "border-foreground/30 bg-secondary"
                     : plan.badge
-                    ? "border-primary/30 bg-primary/[0.02]"
-                    : "border-border bg-secondary/30"
+                    ? "border-primary/30 bg-primary/5"
+                    : "border-border"
                 }`}
               >
                 {plan.badge && !isCurrent && (

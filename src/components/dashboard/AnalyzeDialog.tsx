@@ -164,7 +164,7 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
                 placeholder="Paste the viral tweet text here..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                className="min-h-[120px] bg-secondary/50 border-border resize-none"
+                className="min-h-[120px] bg-background border-border resize-none"
               />
 
               {/* Niche Input for Mode 4 and 8 */}
@@ -174,7 +174,7 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
                   placeholder="Your niche (e.g., SaaS, Fitness)"
                   value={niche}
                   onChange={(e) => setNiche(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-secondary/50 border border-border text-foreground placeholder:text-muted-foreground"
+                  className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground"
                 />
               )}
 
@@ -237,11 +237,11 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
           ) : (
             <div className="space-y-4">
               {/* Result Display */}
-              <div className="rounded-xl bg-secondary/30 border border-border p-4">
+              <div className="rounded-xl bg-secondary border border-border p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Badge>{modes.find((m) => m.id === selectedMode)?.name}</Badge>
                 </div>
-                <div className="prose prose-sm prose-invert max-w-none">
+                <div className="prose prose-sm max-w-none">
                   <ReactMarkdown>{result}</ReactMarkdown>
                 </div>
               </div>

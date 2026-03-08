@@ -89,7 +89,7 @@ export default function Auth() {
           <Logo size="lg" />
         </div>
 
-        <Card className="border-border bg-card/80 backdrop-blur-sm">
+        <Card className="border-border bg-card">
           <CardHeader className="text-center">
             <div className="mx-auto p-3 rounded-xl bg-primary/10 w-fit mb-4">
               <FlaskConical className="h-8 w-8 text-primary" />
@@ -117,7 +117,7 @@ export default function Auth() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="bg-secondary/50"
+                      className="bg-background"
                     />
                   </div>
                   <div className="space-y-2">
@@ -129,7 +129,7 @@ export default function Auth() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="bg-secondary/50"
+                      className="bg-background"
                     />
                   </div>
                   <Button 
@@ -161,7 +161,7 @@ export default function Auth() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="bg-secondary/50"
+                      className="bg-background"
                     />
                   </div>
                   <div className="space-y-2">
@@ -174,7 +174,7 @@ export default function Auth() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       minLength={6}
-                      className="bg-secondary/50"
+                      className="bg-background"
                     />
                   </div>
                   <Button 

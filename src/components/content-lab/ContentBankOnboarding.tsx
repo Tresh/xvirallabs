@@ -163,7 +163,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
 
       {/* Step 1: Niche */}
       {step === 1 && (
-        <Card className="bg-card/50 border-primary/20">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5 text-primary" />
@@ -183,7 +183,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
                 placeholder={placeholder}
                 value={nicheInput}
                 onChange={(e) => setNicheInput(e.target.value)}
-                className="w-full min-h-[120px] p-4 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none text-base"
+                className="w-full min-h-[120px] p-4 rounded-lg bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none text-base"
                 autoFocus
               />
               <p className="text-xs text-muted-foreground mt-2">
@@ -212,7 +212,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
 
       {/* Step 2: Goals */}
       {step === 2 && (
-        <Card className="bg-card/50 border-primary/20">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Rocket className="h-5 w-5 text-primary" />
@@ -228,7 +228,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
                   className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-all ${
                     mainGoal === goal.value
                       ? "bg-primary/10 border-primary"
-                      : "bg-secondary/30 border-border hover:border-primary/50"
+                      : "bg-background border-border hover:border-primary/50"
                   }`}
                 >
                   <RadioGroupItem value={goal.value} />
@@ -248,7 +248,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
 
       {/* Step 3: Settings */}
       {step === 3 && (
-        <Card className="bg-card/50 border-primary/20">
+        <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
@@ -267,7 +267,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
                     className={`flex items-center gap-4 p-3 rounded-lg border cursor-pointer transition-all ${
                       audienceLevel === level.value
                         ? "bg-primary/10 border-primary"
-                        : "bg-secondary/30 border-border hover:border-primary/50"
+                        : "bg-background border-border hover:border-primary/50"
                     }`}
                   >
                     <RadioGroupItem value={level.value} />
@@ -281,11 +281,11 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
             </div>
 
             {/* Unhinged Mode Toggle */}
-            <div className="p-4 rounded-lg bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/30">
+            <div className="p-4 rounded-lg border border-border bg-secondary/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-orange-500/20">
-                    <Flame className="h-5 w-5 text-orange-500" />
+                  <div className="p-2 rounded-lg bg-muted">
+                    <Flame className="h-5 w-5 text-foreground" />
                   </div>
                   <div>
                     <Label className="font-medium flex items-center gap-2">
@@ -304,7 +304,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
             </div>
 
             {/* What you'll get */}
-            <div className="p-4 rounded-lg bg-secondary/30 border border-border">
+            <div className="p-4 rounded-lg bg-secondary border border-border">
               <h4 className="font-medium mb-3">What you'll get:</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">

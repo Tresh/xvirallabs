@@ -32,7 +32,7 @@ export function IdeaCard({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="bg-card/50">
+      <Card>
         <CardContent className="pt-6">
           <div className="flex items-start justify-between gap-4">
             <CollapsibleTrigger className="flex-1 text-left cursor-pointer hover:bg-secondary/30 -m-2 p-2 rounded-lg transition-colors">
@@ -88,7 +88,7 @@ export function IdeaCard({
             <div className="space-y-4">
               <div>
                 <h4 className="text-sm font-medium mb-2">Full Idea</h4>
-                <div className="text-sm text-muted-foreground bg-secondary/30 p-3 rounded-lg whitespace-pre-wrap">
+                <div className="text-sm text-muted-foreground bg-secondary p-3 rounded-lg whitespace-pre-wrap">
                   {idea.idea_content || idea.idea_title}
                 </div>
               </div>

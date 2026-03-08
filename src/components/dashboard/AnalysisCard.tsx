@@ -50,7 +50,7 @@ export function AnalysisCard({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className={`bg-card/50 ${analysis.is_pinned ? 'border-primary/50' : ''}`}>
+      <Card className={`${analysis.is_pinned ? 'border-foreground/30' : ''}`}>
         <CardContent className="pt-6">
           <div className="flex items-start justify-between gap-4">
             <CollapsibleTrigger className="flex-1 min-w-0 text-left cursor-pointer hover:bg-secondary/30 -m-2 p-2 rounded-lg transition-colors">
@@ -107,14 +107,14 @@ export function AnalysisCard({
             <div className="space-y-4">
               <div>
                 <h4 className="text-sm font-medium mb-2">Original Post</h4>
-                <p className="text-sm text-muted-foreground bg-secondary/30 p-3 rounded-lg">
+                <p className="text-sm text-muted-foreground bg-secondary p-3 rounded-lg">
                   {analysis.original_post}
                 </p>
               </div>
               
               <div>
                 <h4 className="text-sm font-medium mb-2">Analysis Result</h4>
-                <div className="text-sm prose prose-invert prose-sm max-w-none bg-secondary/30 p-3 rounded-lg">
+                <div className="text-sm prose prose-sm max-w-none bg-secondary/50 p-3 rounded-lg">
                   <ReactMarkdown>{analysis.analysis_result}</ReactMarkdown>
                 </div>
               </div>

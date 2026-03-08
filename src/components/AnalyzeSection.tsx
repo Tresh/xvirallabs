@@ -209,7 +209,7 @@ export function AnalyzeSection() {
 
         {/* Main Analysis Card */}
         <div className="max-w-4xl mx-auto">
-          <div className="bg-card rounded-3xl border border-border p-8 shadow-2xl">
+          <div className="bg-background rounded-2xl border border-border p-8 shadow-sm">
             {/* Input Type Toggle + Usage Indicator */}
             <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
               <div className="flex items-center gap-2">
@@ -276,7 +276,7 @@ export function AnalyzeSection() {
               onChange={(e) => setInput(e.target.value)}
               disabled={inputType === "url"}
               className={cn(
-                "min-h-[160px] bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground resize-none text-base mb-6",
+                "min-h-[160px] bg-background border-border text-foreground placeholder:text-muted-foreground resize-none text-base mb-6",
                 inputType === "url" && "opacity-50 cursor-not-allowed"
               )}
             />
@@ -325,7 +325,7 @@ export function AnalyzeSection() {
                     ) : (
                       <button
                         onClick={() => statsInputRef.current?.click()}
-                        className="w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-primary/50 bg-secondary/30 hover:bg-secondary/50 transition-all flex flex-col items-center justify-center gap-2 group"
+                        className="w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-primary/50 bg-secondary/50 hover:bg-secondary transition-all flex flex-col items-center justify-center gap-2 group"
                       >
                         <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                           <Eye className="h-5 w-5 text-primary" />
@@ -376,7 +376,7 @@ export function AnalyzeSection() {
                     ) : (
                       <button
                         onClick={() => commentsInputRef.current?.click()}
-                        className="w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-muted-foreground/50 bg-secondary/30 hover:bg-secondary/50 transition-all flex flex-col items-center justify-center gap-2 group"
+                        className="w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-muted-foreground/50 bg-secondary/50 hover:bg-secondary transition-all flex flex-col items-center justify-center gap-2 group"
                       >
                         <div className="p-2 rounded-lg bg-muted group-hover:bg-secondary transition-colors">
                           <MessageSquare className="h-5 w-5 text-muted-foreground" />
@@ -408,7 +408,7 @@ export function AnalyzeSection() {
                 placeholder="Your niche (e.g., SaaS, Fitness, Personal Finance)"
                 value={niche}
                 onChange={(e) => setNiche(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-secondary/50 border border-border text-foreground placeholder:text-muted-foreground mb-6"
+                className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground mb-6"
               />
             )}
 
@@ -502,9 +502,9 @@ export function AnalyzeSection() {
           {/* Analysis Tips */}
           {!result && (
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Microscope className="h-4 w-4 text-primary" />
+                <div className="flex items-start gap-3 p-4 rounded-xl border border-border">
+                <div className="p-2 rounded-lg bg-secondary">
+                  <Microscope className="h-4 w-4 text-foreground" />
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-foreground">Pro Tip</h4>
@@ -513,9 +513,9 @@ export function AnalyzeSection() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Sparkles className="h-4 w-4 text-primary" />
+                <div className="flex items-start gap-3 p-4 rounded-xl border border-border">
+                <div className="p-2 rounded-lg bg-secondary">
+                  <Sparkles className="h-4 w-4 text-foreground" />
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-foreground">Best Results</h4>
@@ -524,9 +524,9 @@ export function AnalyzeSection() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
-                <div className="p-2 rounded-lg bg-muted">
-                  <Brain className="h-4 w-4 text-muted-foreground" />
+                <div className="flex items-start gap-3 p-4 rounded-xl border border-border">
+                <div className="p-2 rounded-lg bg-secondary">
+                  <Brain className="h-4 w-4 text-foreground" />
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-foreground">Deep Dive</h4>

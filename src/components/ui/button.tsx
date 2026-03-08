@@ -11,13 +11,13 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-border bg-transparent hover:bg-secondary hover:text-secondary-foreground",
+        outline: "border border-border bg-background hover:bg-secondary hover:text-secondary-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-secondary hover:text-secondary-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        viral: "bg-primary text-primary-foreground font-semibold hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98]",
-        glow: "bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02]",
-        glass: "bg-secondary/80 backdrop-blur-xl border border-border text-foreground hover:bg-secondary",
+        viral: "bg-foreground text-background font-semibold hover:bg-foreground/90 hover:scale-[1.02] active:scale-[0.98]",
+        glow: "bg-primary text-primary-foreground hover:bg-primary/90",
+        glass: "bg-secondary border border-border text-foreground hover:bg-muted",
       },
       size: {
         default: "h-10 px-4 py-2",

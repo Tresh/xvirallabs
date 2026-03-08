@@ -18,7 +18,7 @@ export function Header() {
   const { isAdmin } = useAdmin();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/">
           <Logo />
@@ -100,7 +100,7 @@ export function Header() {
               </Link>
               <Link to="/auth">
                 <Button variant="viral" size="sm">
-                  Start Free
+                  Get Started
                 </Button>
               </Link>
             </>
