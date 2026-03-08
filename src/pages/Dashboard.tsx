@@ -160,11 +160,11 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50">
+          <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <TrendingUp className="h-5 w-5 text-primary" />
+                <div className="p-2 rounded-lg bg-secondary">
+                  <TrendingUp className="h-5 w-5 text-foreground" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{stats.avgReplyPotential}/10</p>
