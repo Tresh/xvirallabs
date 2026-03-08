@@ -50,8 +50,8 @@ const StatusBadge = ({ status }: { status: ContentFlag["status"] }) => {
 const ContentTypeBadge = ({ type }: { type: ContentFlag["content_type"] }) => {
   const styles = {
     analysis: "bg-primary/20 text-primary border-primary/30",
-    pattern: "bg-viral-purple/20 text-viral-purple border-viral-purple/30",
-    idea: "bg-viral-success/20 text-viral-success border-viral-success/30",
+    pattern: "bg-muted text-foreground border-border",
+    idea: "bg-primary/10 text-primary border-primary/20",
   };
 
   return (
