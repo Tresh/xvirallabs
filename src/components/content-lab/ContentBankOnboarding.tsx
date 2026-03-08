@@ -267,7 +267,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
                     className={`flex items-center gap-4 p-3 rounded-lg border cursor-pointer transition-all ${
                       audienceLevel === level.value
                         ? "bg-primary/10 border-primary"
-                        : "bg-secondary/30 border-border hover:border-primary/50"
+                        : "bg-background border-border hover:border-primary/50"
                     }`}
                   >
                     <RadioGroupItem value={level.value} />
