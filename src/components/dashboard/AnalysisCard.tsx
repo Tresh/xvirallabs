@@ -107,7 +107,7 @@ export function AnalysisCard({
             <div className="space-y-4">
               <div>
                 <h4 className="text-sm font-medium mb-2">Original Post</h4>
-                <p className="text-sm text-muted-foreground bg-secondary/30 p-3 rounded-lg">
+                <p className="text-sm text-muted-foreground bg-secondary p-3 rounded-lg">
                   {analysis.original_post}
                 </p>
               </div>

@@ -275,7 +275,7 @@ export function AnalysisResult({
 
         {/* Content */}
         {/* <div className="prose prose-invert prose-sm max-w-none overflow-y-auto max-h-[60vh]"> */}
-        <div className="prose prose-invert prose-sm max-w-none overflow-y-auto flex-1 min-h-0">
+        <div className="prose prose-sm max-w-none overflow-y-auto flex-1 min-h-0">
           <ReactMarkdown
             components={{
               h1: ({ children }) => (

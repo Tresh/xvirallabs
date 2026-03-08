@@ -151,7 +151,7 @@ Generate 3 high-performing tweets using this exact pattern structure, adapted fo
             <div className="space-y-4">
               <div>
                 <h4 className="text-sm font-medium mb-2">Full Pattern Template</h4>
-                <pre className="text-sm text-muted-foreground bg-secondary/30 p-3 rounded-lg whitespace-pre-wrap">
+                <pre className="text-sm text-muted-foreground bg-secondary p-3 rounded-lg whitespace-pre-wrap">
                   {pattern.pattern_template}
                 </pre>
               </div>

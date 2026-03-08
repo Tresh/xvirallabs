@@ -150,7 +150,7 @@ export function ExpandToLongFormDialog({
           {/* Original Content Preview */}
           <div>
             <Label className="text-sm font-medium">Original Content</Label>
-            <div className="mt-2 p-3 bg-secondary/30 rounded-lg text-sm text-muted-foreground max-h-32 overflow-y-auto">
+            <div className="mt-2 p-3 bg-secondary rounded-lg text-sm text-muted-foreground max-h-32 overflow-y-auto">
               {initialContent}
             </div>
           </div>

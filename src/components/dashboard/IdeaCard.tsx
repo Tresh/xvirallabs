@@ -88,7 +88,7 @@ export function IdeaCard({
             <div className="space-y-4">
               <div>
                 <h4 className="text-sm font-medium mb-2">Full Idea</h4>
-                <div className="text-sm text-muted-foreground bg-secondary/30 p-3 rounded-lg whitespace-pre-wrap">
+                <div className="text-sm text-muted-foreground bg-secondary p-3 rounded-lg whitespace-pre-wrap">
                   {idea.idea_content || idea.idea_title}
                 </div>
               </div>

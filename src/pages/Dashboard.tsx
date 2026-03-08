@@ -292,7 +292,7 @@ export default function Dashboard() {
           {/* Ideas Tab */}
           <TabsContent value="ideas">
             {ideas.length === 0 ? (
-              <Card className="bg-card/50">
+              <Card>
                 <CardContent className="pt-6 text-center py-12">
                   <Lightbulb className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">Idea vault is empty</h3>

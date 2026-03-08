@@ -241,7 +241,7 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
                 <div className="flex items-center gap-2 mb-3">
                   <Badge>{modes.find((m) => m.id === selectedMode)?.name}</Badge>
                 </div>
-                <div className="prose prose-sm prose-invert max-w-none">
+                <div className="prose prose-sm max-w-none">
                   <ReactMarkdown>{result}</ReactMarkdown>
                 </div>
               </div>

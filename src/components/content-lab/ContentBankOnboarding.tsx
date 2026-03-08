@@ -281,11 +281,11 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
             </div>
 
             {/* Unhinged Mode Toggle */}
-            <div className="p-4 rounded-lg bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/30">
+            <div className="p-4 rounded-lg border border-border bg-secondary/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-orange-500/20">
-                    <Flame className="h-5 w-5 text-orange-500" />
+                  <div className="p-2 rounded-lg bg-muted">
+                    <Flame className="h-5 w-5 text-foreground" />
                   </div>
                   <div>
                     <Label className="font-medium flex items-center gap-2">
