@@ -223,7 +223,7 @@ export function AnalysisResult({
 
         {/* Save Actions - Only show when not analyzing and has result */}
         {!isAnalyzing && result && (
-          <div className="mb-6 p-4 rounded-xl bg-secondary/30 border border-border">
+          <div className="mb-6 p-4 rounded-xl bg-secondary border border-border">
             <p className="text-sm font-medium mb-3 flex items-center gap-2">
               <BookmarkPlus className="h-4 w-4 text-primary" />
               Save to Your Viral Lab
