@@ -190,7 +190,7 @@ export function AnalysisResult({
   return (
     <div className="mt-8 max-w-4xl mx-auto animate-fade-in">
       {/* <div className="bg-card rounded-3xl border border-border p-8 shadow-2xl"> */}
-      <div className="bg-card rounded-3xl border border-border p-8 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="bg-background rounded-2xl border border-border p-8 shadow-sm flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 pb-4 border-b border-border gap-4">
           <div className="flex items-center gap-3">
