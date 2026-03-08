@@ -180,7 +180,7 @@ export default function Dashboard() {
           <Card className="mb-8 border-border">
             <CardContent className="pt-6">
               <div className="flex items-start gap-4">
-                <div className="p-3 rounded-xl bg-primary/10">
+                <div className="p-3 rounded-xl bg-secondary">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
                 <div>
