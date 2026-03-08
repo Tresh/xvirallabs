@@ -32,7 +32,7 @@ export function IdeaCard({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="bg-card/50">
+      <Card>
         <CardContent className="pt-6">
           <div className="flex items-start justify-between gap-4">
             <CollapsibleTrigger className="flex-1 text-left cursor-pointer hover:bg-secondary/30 -m-2 p-2 rounded-lg transition-colors">
