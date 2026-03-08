@@ -312,7 +312,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
                   {isPaidUser ? "10 posts per day" : "5 posts per day (Free tier)"}
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-viral-success">✓</span>
+                  <span className="text-primary">✓</span>
                   Multiple content formats & psychology triggers
                 </li>
                 <li className="flex items-center gap-2">
