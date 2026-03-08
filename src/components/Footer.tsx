@@ -1,9 +1,9 @@
 import { Logo } from "./Logo";
-import { Atom, Twitter, Github } from "lucide-react";
+import { Twitter, Github } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-card/50 py-12">
+    <footer className="border-t border-border py-12">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <Logo />
@@ -18,7 +18,7 @@ export function Footer() {
           </div>
 
           <p className="text-sm text-muted-foreground font-mono">
-            © 2025 Viral Labs. Reverse-engineer virality.
+            © 2025 Viral Labs
           </p>
         </div>
       </div>

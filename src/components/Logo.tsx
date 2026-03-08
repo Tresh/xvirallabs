@@ -17,16 +17,13 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
   
   return (
     <div className="flex items-center gap-3">
-      <div className="relative">
-        <div className="absolute inset-0 bg-primary/30 blur-xl rounded-full" />
-        <div className={cn("relative bg-gradient-to-br from-primary to-viral-success rounded-xl", classes.wrapper)}>
-          <Atom className={cn("text-primary-foreground", classes.icon)} />
-        </div>
+      <div className={cn("bg-primary rounded-lg", classes.wrapper)}>
+        <Atom className={cn("text-primary-foreground", classes.icon)} />
       </div>
       {showText && (
         <div className="flex flex-col">
           <span className={cn("font-bold tracking-tight text-foreground", classes.text)}>
-            Viral<span className="text-gradient-primary">Labs</span>
+            Viral<span className="text-primary">Labs</span>
           </span>
           <span className={cn("font-mono text-muted-foreground tracking-widest uppercase", classes.subtext)}>
             Twitter/X Analysis

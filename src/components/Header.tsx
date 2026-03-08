@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
-import { Sparkles, User, LogOut, LayoutDashboard, Shield } from "lucide-react";
+import { User, LogOut, LayoutDashboard, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
 import {
@@ -41,7 +41,7 @@ export function Header() {
             <>
               {isAdmin && (
                 <Link to="/admin">
-                  <Button variant="ghost" size="sm" className="gap-2 text-viral-hot">
+                  <Button variant="ghost" size="sm" className="gap-2 text-primary">
                     <Shield className="h-4 w-4" />
                     <span className="hidden sm:inline">Admin</span>
                   </Button>
@@ -74,7 +74,7 @@ export function Header() {
                   </DropdownMenuItem>
                   {isAdmin && (
                     <DropdownMenuItem asChild>
-                      <Link to="/admin" className="flex items-center gap-2 text-viral-hot">
+                      <Link to="/admin" className="flex items-center gap-2 text-primary">
                         <Shield className="h-4 w-4" />
                         Admin Panel
                       </Link>
@@ -99,8 +99,7 @@ export function Header() {
                 </Button>
               </Link>
               <Link to="/auth">
-                <Button variant="glow" size="sm" className="gap-2">
-                  <Sparkles className="h-4 w-4" />
+                <Button variant="viral" size="sm">
                   Start Free
                 </Button>
               </Link>

@@ -11,16 +11,8 @@ const plans = [
     price: "$0",
     description: "Get started with viral analysis",
     icon: Zap,
-    features: [
-      "5 analyses per day",
-      "Basic viral diagnosis",
-      "Psychology breakdown",
-      "Pattern extraction",
-    ],
-    limitations: [
-      "No saved history",
-      "No idea vault",
-    ],
+    features: ["5 analyses per day", "Basic viral diagnosis", "Psychology breakdown", "Pattern extraction"],
+    limitations: ["No saved history", "No idea vault"],
   },
   {
     name: "Pro",
@@ -30,14 +22,7 @@ const plans = [
     description: "For serious content creators",
     icon: Sparkles,
     badge: "Popular",
-    features: [
-      "Unlimited analyses",
-      "All 10 analysis modes",
-      "Saved analysis history",
-      "Pattern library",
-      "Idea vault",
-      "Brand voice settings",
-    ],
+    features: ["Unlimited analyses", "All 10 analysis modes", "Saved analysis history", "Pattern library", "Idea vault", "Brand voice settings"],
     comingSoon: true,
   },
   {
@@ -47,14 +32,7 @@ const plans = [
     period: "/month",
     description: "For agencies & power users",
     icon: Crown,
-    features: [
-      "Everything in Pro",
-      "Team collaboration",
-      "API access",
-      "Priority support",
-      "Custom integrations",
-      "White-label reports",
-    ],
+    features: ["Everything in Pro", "Team collaboration", "API access", "Priority support", "Custom integrations", "White-label reports"],
     comingSoon: true,
   },
 ];
@@ -64,14 +42,14 @@ export function PricingPlans() {
   const currentTier = profile?.tier || "free";
 
   return (
-    <Card className="bg-card/50 border-border">
+    <Card className="bg-card border-border">
       <CardHeader>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
             <CardTitle className="text-xl">Upgrade Your Plan</CardTitle>
             <CardDescription>Unlock more powerful viral analysis tools</CardDescription>
           </div>
-          <Badge variant="outline" className="text-primary border-primary capitalize">
+          <Badge variant="outline" className="text-primary border-primary/30 capitalize">
             Current: {currentTier}
           </Badge>
         </div>
@@ -88,7 +66,7 @@ export function PricingPlans() {
                   isCurrent
                     ? "border-primary/50 bg-primary/5"
                     : plan.badge
-                    ? "border-primary/30 bg-gradient-to-b from-primary/5 to-transparent"
+                    ? "border-primary/30 bg-primary/[0.02]"
                     : "border-border bg-secondary/30"
                 }`}
               >
@@ -98,22 +76,20 @@ export function PricingPlans() {
                   </Badge>
                 )}
                 {isCurrent && (
-                  <Badge className="absolute -top-2 right-4 bg-viral-success text-foreground">
+                  <Badge className="absolute -top-2 right-4 bg-primary text-primary-foreground">
                     Your Plan
                   </Badge>
                 )}
                 
                 <div className="flex items-center gap-3 mb-4">
-                  <div className={`p-2 rounded-lg ${isCurrent ? "bg-primary/20" : "bg-secondary"}`}>
+                  <div className={`p-2 rounded-lg ${isCurrent ? "bg-primary/15" : "bg-secondary"}`}>
                     <Icon className={`h-5 w-5 ${isCurrent ? "text-primary" : "text-muted-foreground"}`} />
                   </div>
                   <div>
                     <h3 className="font-semibold">{plan.name}</h3>
                     <div className="flex items-baseline gap-1">
                       <span className="text-2xl font-bold">{plan.price}</span>
-                      {plan.period && (
-                        <span className="text-sm text-muted-foreground">{plan.period}</span>
-                      )}
+                      {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
                     </div>
                   </div>
                 </div>
@@ -123,7 +99,7 @@ export function PricingPlans() {
                 <ul className="space-y-2 mb-4">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-viral-success flex-shrink-0" />
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -136,17 +112,11 @@ export function PricingPlans() {
                 </ul>
                 
                 {isCurrent ? (
-                  <Button variant="outline" className="w-full" disabled>
-                    Current Plan
-                  </Button>
+                  <Button variant="outline" className="w-full" disabled>Current Plan</Button>
                 ) : plan.comingSoon ? (
-                  <Button variant="viral" className="w-full" disabled>
-                    Coming Soon
-                  </Button>
+                  <Button variant="viral" className="w-full" disabled>Coming Soon</Button>
                 ) : (
-                  <Button variant="viral" className="w-full">
-                    Upgrade
-                  </Button>
+                  <Button variant="viral" className="w-full">Upgrade</Button>
                 )}
               </div>
             );

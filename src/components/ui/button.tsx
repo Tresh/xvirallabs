@@ -9,15 +9,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline: "border border-border bg-transparent hover:bg-secondary hover:text-secondary-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-secondary hover:text-secondary-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        viral: "bg-gradient-to-r from-[hsl(145,80%,45%)] to-[hsl(175,85%,50%)] text-[hsl(220,20%,4%)] font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]",
-        glow: "bg-primary text-primary-foreground shadow-[0_0_20px_hsla(175,85%,50%,0.3)] hover:shadow-[0_0_30px_hsla(175,85%,50%,0.5)] hover:scale-[1.02]",
-        glass: "bg-[hsla(220,20%,15%,0.8)] backdrop-blur-xl border border-[hsla(175,85%,50%,0.2)] text-foreground hover:border-[hsla(175,85%,50%,0.4)] hover:bg-secondary/50",
+        viral: "bg-primary text-primary-foreground font-semibold hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98]",
+        glow: "bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02]",
+        glass: "bg-secondary/80 backdrop-blur-xl border border-border text-foreground hover:bg-secondary",
       },
       size: {
         default: "h-10 px-4 py-2",
