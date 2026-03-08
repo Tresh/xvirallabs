@@ -133,7 +133,7 @@ Generate 3 high-performing tweets using this exact pattern structure, adapted fo
         </CollapsibleTrigger>
         
         <CardContent>
-          <p className="text-sm text-muted-foreground mb-3 font-mono bg-secondary/30 p-3 rounded-lg line-clamp-2">
+          <p className="text-sm text-muted-foreground mb-3 font-mono bg-secondary p-3 rounded-lg line-clamp-2">
             {pattern.pattern_template}
           </p>
           
