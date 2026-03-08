@@ -308,7 +308,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
               <h4 className="font-medium mb-3">What you'll get:</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
-                  <span className="text-viral-success">✓</span>
+                  <span className="text-primary">✓</span>
                   {isPaidUser ? "10 posts per day" : "5 posts per day (Free tier)"}
                 </li>
                 <li className="flex items-center gap-2">
