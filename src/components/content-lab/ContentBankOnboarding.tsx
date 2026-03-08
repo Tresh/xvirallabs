@@ -316,7 +316,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
                   Multiple content formats & psychology triggers
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-viral-success">✓</span>
+                  <span className="text-primary">✓</span>
                   Ready-to-post content (no drafts needed)
                 </li>
                 {isPaidUser && (
