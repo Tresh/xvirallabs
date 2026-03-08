@@ -265,7 +265,7 @@ export default function Dashboard() {
           {/* Patterns Tab */}
           <TabsContent value="patterns">
             {patterns.length === 0 ? (
-              <Card className="bg-card/50">
+              <Card>
                 <CardContent className="pt-6 text-center py-12">
                   <Dna className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">No patterns saved</h3>
