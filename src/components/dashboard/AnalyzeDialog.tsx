@@ -164,7 +164,7 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
                 placeholder="Paste the viral tweet text here..."
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                className="min-h-[120px] bg-secondary/50 border-border resize-none"
+                className="min-h-[120px] bg-background border-border resize-none"
               />
 
               {/* Niche Input for Mode 4 and 8 */}
