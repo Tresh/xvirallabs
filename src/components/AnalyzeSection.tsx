@@ -367,7 +367,7 @@ export function AnalyzeSection() {
                           </Button>
                         </div>
                         <div className="absolute top-2 left-2">
-                          <Badge className="bg-viral-purple/90 text-foreground text-xs">
+                          <Badge className="bg-muted text-foreground text-xs">
                             <MessageSquare className="h-3 w-3 mr-1" />
                             Comments
                           </Badge>
