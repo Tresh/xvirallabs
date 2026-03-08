@@ -56,8 +56,8 @@ const TierBadge = ({ tier }: { tier: string | null }) => {
   const tierValue = tier || "free";
   const styles: Record<string, string> = {
     free: "bg-muted text-muted-foreground border-border",
-    pro: "bg-viral-success/20 text-viral-success border-viral-success/30",
-    elite: "bg-viral-warning/20 text-viral-warning border-viral-warning/30",
+    pro: "bg-primary/20 text-primary border-primary/30",
+    elite: "bg-foreground/10 text-foreground border-foreground/20",
   };
 
   return (
