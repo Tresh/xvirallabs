@@ -234,7 +234,7 @@ export function ExpandToLongFormDialog({
                   Copy
                 </Button>
               </div>
-              <div className="p-4 bg-secondary/30 rounded-lg prose prose-invert prose-sm max-w-none max-h-[400px] overflow-y-auto">
+              <div className="p-4 bg-secondary/50 rounded-lg prose prose-sm max-w-none max-h-[400px] overflow-y-auto">
                 <ReactMarkdown>{expandedContent}</ReactMarkdown>
               </div>
             </div>
