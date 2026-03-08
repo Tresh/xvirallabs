@@ -183,7 +183,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
                 placeholder={placeholder}
                 value={nicheInput}
                 onChange={(e) => setNicheInput(e.target.value)}
-                className="w-full min-h-[120px] p-4 rounded-lg bg-secondary/50 border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none text-base"
+                className="w-full min-h-[120px] p-4 rounded-lg bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none text-base"
                 autoFocus
               />
               <p className="text-xs text-muted-foreground mt-2">
