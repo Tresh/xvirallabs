@@ -322,7 +322,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
                 {isPaidUser && (
                   <>
                     <li className="flex items-center gap-2">
-                      <span className="text-viral-success">✓</span>
+                      <span className="text-primary">✓</span>
                       Up to 30 days of content
                     </li>
                     <li className="flex items-center gap-2">
