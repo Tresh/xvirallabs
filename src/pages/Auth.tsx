@@ -117,7 +117,7 @@ export default function Auth() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="bg-secondary/50"
+                      className="bg-background"
                     />
                   </div>
                   <div className="space-y-2">
@@ -129,7 +129,7 @@ export default function Auth() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      className="bg-secondary/50"
+                      className="bg-background"
                     />
                   </div>
                   <Button 
