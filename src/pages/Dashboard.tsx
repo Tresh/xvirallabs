@@ -150,8 +150,8 @@ export default function Dashboard() {
           <Card className="bg-card/50">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-viral-warning/10">
-                  <Lightbulb className="h-5 w-5 text-viral-warning" />
+                <div className="p-2 rounded-lg bg-muted">
+                  <Lightbulb className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{stats.unusedIdeas}</p>

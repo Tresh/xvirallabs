@@ -119,7 +119,7 @@ export function ContentModeration({
       {/* Pending Flags */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <Flag className="h-5 w-5 text-viral-warning" />
+          <Flag className="h-5 w-5 text-muted-foreground" />
           <h3 className="text-lg font-semibold">Pending Review ({pendingFlags.length})</h3>
         </div>
 
