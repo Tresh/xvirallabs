@@ -194,18 +194,13 @@ export function AnalyzeSection() {
 
   return (
     <section id="analyze" className="py-24 relative">
-      <div className="absolute inset-0 grid-pattern opacity-50" />
-      
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border mb-6">
-            <Sparkles className="h-4 w-4 text-viral-success" />
-            <span className="font-mono text-xs text-viral-success">START YOUR ANALYSIS</span>
-          </div>
+          <p className="text-xs font-mono text-primary tracking-widest uppercase mb-4">Start Your Analysis</p>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             Paste. Analyze.{" "}
-            <span className="text-gradient-viral">Go Viral.</span>
+            <span className="text-primary">Go Viral.</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Drop any tweet and let our AI reverse-engineer its success.
