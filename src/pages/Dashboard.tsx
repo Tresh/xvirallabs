@@ -121,11 +121,11 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-card/50">
+          <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Microscope className="h-5 w-5 text-primary" />
+                <div className="p-2 rounded-lg bg-secondary">
+                  <Microscope className="h-5 w-5 text-foreground" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{stats.totalAnalyses}</p>
