@@ -254,8 +254,8 @@ export function AnalyzeSection() {
 
             {/* URL Coming Soon Message */}
             {inputType === "url" && (
-              <div className="mb-6 p-4 rounded-xl bg-viral-warning/10 border border-viral-warning/30">
-                <div className="flex items-center gap-2 text-viral-warning">
+              <div className="mb-6 p-4 rounded-xl bg-muted border border-border">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <LinkIcon className="h-5 w-5" />
                   <span className="font-medium">Direct URL Fetching Coming Soon!</span>
                 </div>

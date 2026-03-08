@@ -220,7 +220,7 @@ export function UserManagement({
                         <DropdownMenuItem 
                           onClick={() => handleTierChange(user.user_id, "elite")}
                         >
-                          <Crown className="h-4 w-4 mr-2 text-viral-warning" />
+                          <Crown className="h-4 w-4 mr-2 text-foreground" />
                           Elite
                         </DropdownMenuItem>
                       </DropdownMenuContent>
