@@ -7,7 +7,7 @@ export function Hero() {
   const { user } = useAuth();
 
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center pt-16">
+    <section className="relative min-h-[80vh] flex items-center justify-center pt-28">
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-2xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-secondary text-sm mb-8 animate-fade-in">

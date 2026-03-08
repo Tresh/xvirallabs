@@ -21,14 +21,9 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
         <Atom className={cn("text-background", classes.icon)} />
       </div>
       {showText && (
-        <div className="flex flex-col">
-          <span className={cn("font-bold tracking-tight text-foreground", classes.text)}>
-            Viral<span className="text-primary">Labs</span>
-          </span>
-          <span className={cn("font-mono text-muted-foreground tracking-widest uppercase", classes.subtext)}>
-            Twitter/X Analysis
-          </span>
-        </div>
+        <span className={cn("font-bold tracking-tight text-foreground", classes.text)}>
+          Viral<span className="text-primary">Labs</span>
+        </span>
       )}
     </div>
   );
