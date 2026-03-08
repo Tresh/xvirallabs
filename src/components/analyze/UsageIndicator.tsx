@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Zap, Infinity, TrendingUp } from "lucide-react";
+import { Zap, Infinity } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface UsageIndicatorProps {
@@ -20,16 +20,15 @@ export function UsageIndicator({ remaining, isUnlimited, isLoading, dailyLimit }
 
   if (isUnlimited) {
     return (
-      <Badge className="bg-viral-success/20 text-viral-success border-viral-success/30">
+      <Badge className="bg-primary/20 text-primary border-primary/30">
         <Infinity className="h-3 w-3 mr-1" />
         Unlimited
       </Badge>
     );
   }
 
-  const percentage = (remaining / dailyLimit) * 100;
-  const isLow = remaining <= 2;
   const isEmpty = remaining === 0;
+  const isLow = remaining <= 2;
 
   return (
     <Badge
@@ -39,7 +38,7 @@ export function UsageIndicator({ remaining, isUnlimited, isLoading, dailyLimit }
         isEmpty
           ? "bg-destructive/20 text-destructive border-destructive/30"
           : isLow
-          ? "bg-viral-warning/20 text-viral-warning border-viral-warning/30"
+          ? "bg-muted text-muted-foreground border-border"
           : "bg-primary/20 text-primary border-primary/30"
       )}
     >

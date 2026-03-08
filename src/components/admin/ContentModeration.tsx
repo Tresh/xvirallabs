@@ -34,9 +34,9 @@ interface ContentModerationProps {
 
 const StatusBadge = ({ status }: { status: ContentFlag["status"] }) => {
   const styles = {
-    pending: "bg-viral-warning/20 text-viral-warning border-viral-warning/30",
+    pending: "bg-muted text-muted-foreground border-border",
     reviewed: "bg-primary/20 text-primary border-primary/30",
-    resolved: "bg-viral-success/20 text-viral-success border-viral-success/30",
+    resolved: "bg-primary/10 text-primary border-primary/20",
     dismissed: "bg-muted text-muted-foreground border-border",
   };
 
@@ -50,8 +50,8 @@ const StatusBadge = ({ status }: { status: ContentFlag["status"] }) => {
 const ContentTypeBadge = ({ type }: { type: ContentFlag["content_type"] }) => {
   const styles = {
     analysis: "bg-primary/20 text-primary border-primary/30",
-    pattern: "bg-viral-purple/20 text-viral-purple border-viral-purple/30",
-    idea: "bg-viral-success/20 text-viral-success border-viral-success/30",
+    pattern: "bg-muted text-foreground border-border",
+    idea: "bg-primary/10 text-primary border-primary/20",
   };
 
   return (
@@ -119,13 +119,13 @@ export function ContentModeration({
       {/* Pending Flags */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
-          <Flag className="h-5 w-5 text-viral-warning" />
+          <Flag className="h-5 w-5 text-muted-foreground" />
           <h3 className="text-lg font-semibold">Pending Review ({pendingFlags.length})</h3>
         </div>
 
         {pendingFlags.length === 0 ? (
           <div className="border rounded-lg p-8 text-center text-muted-foreground">
-            <CheckCircle className="h-12 w-12 mx-auto mb-4 text-viral-success" />
+            <CheckCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
             <p>No pending flags to review!</p>
           </div>
         ) : (
@@ -168,7 +168,7 @@ export function ContentModeration({
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="text-viral-success hover:text-viral-success"
+                          className="text-primary hover:text-primary"
                           onClick={() => handleAction(flag.id, "resolved")}
                         >
                           <CheckCircle className="h-4 w-4" />
@@ -295,7 +295,7 @@ export function ContentModeration({
             </Button>
             <Button
               onClick={() => selectedFlag && handleAction(selectedFlag.id, "resolved")}
-              className="bg-viral-success hover:bg-viral-success/90"
+              className="bg-primary hover:bg-primary/90"
             >
               <CheckCircle className="h-4 w-4 mr-2" />
               Resolve

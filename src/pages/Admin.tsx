@@ -72,7 +72,7 @@ export default function Admin() {
               </Button>
               <div className="h-6 w-px bg-border" />
               <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-viral-hot" />
+                <Shield className="h-5 w-5 text-primary" />
                 <h1 className="text-xl font-bold">Admin Panel</h1>
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function Admin() {
               <Flag className="h-4 w-4 mr-2" />
               Moderation
               {pendingFlagsCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-viral-hot text-[10px] font-bold flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-[10px] font-bold flex items-center justify-center">
                   {pendingFlagsCount}
                 </span>
               )}

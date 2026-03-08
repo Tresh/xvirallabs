@@ -194,18 +194,13 @@ export function AnalyzeSection() {
 
   return (
     <section id="analyze" className="py-24 relative">
-      <div className="absolute inset-0 grid-pattern opacity-50" />
-      
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border mb-6">
-            <Sparkles className="h-4 w-4 text-viral-success" />
-            <span className="font-mono text-xs text-viral-success">START YOUR ANALYSIS</span>
-          </div>
+          <p className="text-xs font-mono text-primary tracking-widest uppercase mb-4">Start Your Analysis</p>
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             Paste. Analyze.{" "}
-            <span className="text-gradient-viral">Go Viral.</span>
+            <span className="text-primary">Go Viral.</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Drop any tweet and let our AI reverse-engineer its success.
@@ -241,7 +236,7 @@ export function AnalyzeSection() {
                 >
                   <LinkIcon className="h-4 w-4" />
                   Tweet URL
-                  <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 bg-viral-warning/20 text-viral-warning border-viral-warning/30">
+                  <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0 bg-muted text-muted-foreground">
                     Soon
                   </Badge>
                 </button>
@@ -259,8 +254,8 @@ export function AnalyzeSection() {
 
             {/* URL Coming Soon Message */}
             {inputType === "url" && (
-              <div className="mb-6 p-4 rounded-xl bg-viral-warning/10 border border-viral-warning/30">
-                <div className="flex items-center gap-2 text-viral-warning">
+              <div className="mb-6 p-4 rounded-xl bg-muted border border-border">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <LinkIcon className="h-5 w-5" />
                   <span className="font-medium">Direct URL Fetching Coming Soon!</span>
                 </div>
@@ -372,7 +367,7 @@ export function AnalyzeSection() {
                           </Button>
                         </div>
                         <div className="absolute top-2 left-2">
-                          <Badge className="bg-viral-purple/90 text-foreground text-xs">
+                          <Badge className="bg-muted text-foreground text-xs">
                             <MessageSquare className="h-3 w-3 mr-1" />
                             Comments
                           </Badge>
@@ -381,10 +376,10 @@ export function AnalyzeSection() {
                     ) : (
                       <button
                         onClick={() => commentsInputRef.current?.click()}
-                        className="w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-viral-purple/50 bg-secondary/30 hover:bg-secondary/50 transition-all flex flex-col items-center justify-center gap-2 group"
+                        className="w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-muted-foreground/50 bg-secondary/30 hover:bg-secondary/50 transition-all flex flex-col items-center justify-center gap-2 group"
                       >
-                        <div className="p-2 rounded-lg bg-viral-purple/10 group-hover:bg-viral-purple/20 transition-colors">
-                          <MessageSquare className="h-5 w-5 text-viral-purple" />
+                        <div className="p-2 rounded-lg bg-muted group-hover:bg-secondary transition-colors">
+                          <MessageSquare className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">
                           Comments Screenshot
@@ -519,8 +514,8 @@ export function AnalyzeSection() {
                 </div>
               </div>
               <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
-                <div className="p-2 rounded-lg bg-viral-success/10">
-                  <Sparkles className="h-4 w-4 text-viral-success" />
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Sparkles className="h-4 w-4 text-primary" />
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-foreground">Best Results</h4>
@@ -530,8 +525,8 @@ export function AnalyzeSection() {
                 </div>
               </div>
               <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
-                <div className="p-2 rounded-lg bg-viral-warning/10">
-                  <Brain className="h-4 w-4 text-viral-warning" />
+                <div className="p-2 rounded-lg bg-muted">
+                  <Brain className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <div>
                   <h4 className="text-sm font-medium text-foreground">Deep Dive</h4>

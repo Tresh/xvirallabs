@@ -31,8 +31,8 @@ interface UserManagementProps {
 
 const RoleBadge = ({ role }: { role: AppRole }) => {
   const styles = {
-    admin: "bg-viral-hot/20 text-viral-hot border-viral-hot/30",
-    moderator: "bg-viral-purple/20 text-viral-purple border-viral-purple/30",
+    admin: "bg-primary/20 text-primary border-primary/30",
+    moderator: "bg-muted text-foreground border-border",
     user: "bg-muted text-muted-foreground border-border",
   };
 
@@ -56,8 +56,8 @@ const TierBadge = ({ tier }: { tier: string | null }) => {
   const tierValue = tier || "free";
   const styles: Record<string, string> = {
     free: "bg-muted text-muted-foreground border-border",
-    pro: "bg-viral-success/20 text-viral-success border-viral-success/30",
-    elite: "bg-viral-warning/20 text-viral-warning border-viral-warning/30",
+    pro: "bg-primary/20 text-primary border-primary/30",
+    elite: "bg-foreground/10 text-foreground border-foreground/20",
   };
 
   return (
@@ -201,7 +201,7 @@ export function UserManagement({
                         <DropdownMenuItem 
                           onClick={() => handleRoleChange(user.user_id, "admin")}
                         >
-                          <Shield className="h-4 w-4 mr-2 text-viral-hot" />
+                          <Shield className="h-4 w-4 mr-2 text-primary" />
                           Admin
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -214,13 +214,13 @@ export function UserManagement({
                         <DropdownMenuItem 
                           onClick={() => handleTierChange(user.user_id, "pro")}
                         >
-                          <Crown className="h-4 w-4 mr-2 text-viral-success" />
+                          <Crown className="h-4 w-4 mr-2 text-primary" />
                           Pro
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={() => handleTierChange(user.user_id, "elite")}
                         >
-                          <Crown className="h-4 w-4 mr-2 text-viral-warning" />
+                          <Crown className="h-4 w-4 mr-2 text-foreground" />
                           Elite
                         </DropdownMenuItem>
                       </DropdownMenuContent>
