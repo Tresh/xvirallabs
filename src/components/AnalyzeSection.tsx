@@ -376,10 +376,10 @@ export function AnalyzeSection() {
                     ) : (
                       <button
                         onClick={() => commentsInputRef.current?.click()}
-                        className="w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-viral-purple/50 bg-secondary/30 hover:bg-secondary/50 transition-all flex flex-col items-center justify-center gap-2 group"
+                        className="w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-muted-foreground/50 bg-secondary/30 hover:bg-secondary/50 transition-all flex flex-col items-center justify-center gap-2 group"
                       >
-                        <div className="p-2 rounded-lg bg-viral-purple/10 group-hover:bg-viral-purple/20 transition-colors">
-                          <MessageSquare className="h-5 w-5 text-viral-purple" />
+                        <div className="p-2 rounded-lg bg-muted group-hover:bg-secondary transition-colors">
+                          <MessageSquare className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground">
                           Comments Screenshot
