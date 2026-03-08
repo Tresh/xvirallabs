@@ -42,7 +42,7 @@ export function PricingPlans() {
   const currentTier = profile?.tier || "free";
 
   return (
-    <Card className="bg-card border-border">
+    <Card className="border-border">
       <CardHeader>
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
