@@ -1,5 +1,6 @@
 import { Logo } from "./Logo";
 import { Twitter, Github } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
@@ -8,12 +9,14 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <Logo />
           
-          <div className="flex items-center gap-6">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              <Twitter className="h-5 w-5" />
+          <div className="flex items-center gap-6 text-sm text-muted-foreground">
+            <Link to="/features" className="hover:text-foreground transition-colors">Features</Link>
+            <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+            <a href="#" className="hover:text-foreground transition-colors">
+              <Twitter className="h-4 w-4" />
             </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              <Github className="h-5 w-5" />
+            <a href="#" className="hover:text-foreground transition-colors">
+              <Github className="h-4 w-4" />
             </a>
           </div>
 
