@@ -138,17 +138,17 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
             Analyze Tweet
           </DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 pr-4">
-          {!result ? (
-            <div className="space-y-4">
+        {!result ? (
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="space-y-4 pr-4">
               {/* Usage Indicator */}
               <div className="flex justify-end">
                 <UsageIndicator
@@ -234,15 +234,61 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
                 </Button>
               </div>
             </div>
-          ) : (
-            <div className="space-y-4">
+          </ScrollArea>
+        ) : (
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="space-y-4 pr-4">
               {/* Result Display */}
-              <div className="rounded-xl bg-secondary border border-border p-4">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="rounded-xl bg-secondary/50 border border-border p-5">
+                <div className="flex items-center gap-2 mb-4">
                   <Badge>{modes.find((m) => m.id === selectedMode)?.name}</Badge>
                 </div>
-                <div className="prose prose-sm max-w-none">
-                  <ReactMarkdown>{result}</ReactMarkdown>
+                <div className="prose prose-sm max-w-none dark:prose-invert">
+                  <ReactMarkdown
+                    components={{
+                      h1: ({ children }) => (
+                        <h1 className="text-xl font-bold text-foreground mt-5 mb-3 first:mt-0">{children}</h1>
+                      ),
+                      h2: ({ children }) => (
+                        <h2 className="text-lg font-semibold text-foreground mt-4 mb-2 flex items-center gap-2">
+                          <span className="w-1 h-4 bg-primary rounded-full flex-shrink-0" />
+                          {children}
+                        </h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className="text-base font-medium text-foreground mt-3 mb-1.5">{children}</h3>
+                      ),
+                      p: ({ children }) => (
+                        <p className="text-muted-foreground leading-relaxed mb-2.5 text-sm">{children}</p>
+                      ),
+                      ul: ({ children }) => <ul className="space-y-1.5 mb-3">{children}</ul>,
+                      li: ({ children }) => (
+                        <li className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                          <span>{children}</span>
+                        </li>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className="space-y-1.5 mb-3 list-decimal list-inside text-sm">{children}</ol>
+                      ),
+                      strong: ({ children }) => (
+                        <strong className="font-semibold text-foreground">{children}</strong>
+                      ),
+                      em: ({ children }) => <em className="text-primary italic">{children}</em>,
+                      blockquote: ({ children }) => (
+                        <blockquote className="border-l-2 border-primary pl-3 my-3 italic text-muted-foreground bg-secondary/50 py-1.5 rounded-r-lg text-sm">
+                          {children}
+                        </blockquote>
+                      ),
+                      code: ({ children }) => (
+                        <code className="px-1.5 py-0.5 bg-secondary rounded text-xs font-mono text-primary">
+                          {children}
+                        </code>
+                      ),
+                    }}
+                  >
+                    {result}
+                  </ReactMarkdown>
                 </div>
               </div>
 
@@ -257,8 +303,8 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
                 </Button>
               </div>
             </div>
-          )}
-        </ScrollArea>
+          </ScrollArea>
+        )}
       </DialogContent>
     </Dialog>
   );
