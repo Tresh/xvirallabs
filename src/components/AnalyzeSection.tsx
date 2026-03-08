@@ -513,7 +513,7 @@ export function AnalyzeSection() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3 p-4 rounded-xl bg-card/50 border border-border">
+                <div className="flex items-start gap-3 p-4 rounded-xl border border-border">
                 <div className="p-2 rounded-lg bg-primary/10">
                   <Sparkles className="h-4 w-4 text-primary" />
                 </div>
