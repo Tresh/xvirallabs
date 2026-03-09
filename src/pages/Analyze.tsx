@@ -46,9 +46,9 @@ const modes = [
 
 export default function Analyze() {
   const navigate = useNavigate();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, profile, isLoading: authLoading } = useAuth();
   const { isAnalyzing, result, error, analyze, reset } = useViralAnalysis();
-  const { saveAnalysis } = useViralMemory();
+  const { saveAnalysis, savePattern, saveIdea } = useViralMemory();
   const {
     remaining,
     isUnlimited,
