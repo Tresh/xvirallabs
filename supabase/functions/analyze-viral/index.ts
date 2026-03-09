@@ -268,7 +268,12 @@ serve(async (req) => {
           }
 
           // Fetch user's memory in parallel
-          const [patternsRes, brandVoiceRes, analysesRes] = await Promise.all([
+          const [profileRes, patternsRes, brandVoiceRes, analysesRes] = await Promise.all([
+            supabase
+              .from("profiles")
+              .select("display_name, twitter_handle, skills, content_strategy, custom_system_prompt, brand_tone, primary_niche")
+              .eq("user_id", user.id)
+              .maybeSingle(),
             supabase
               .from("viral_patterns")
               .select("pattern_name, pattern_template, usage_count")
@@ -289,12 +294,13 @@ serve(async (req) => {
           ]);
 
           const recentHooks = analysesRes.data
-            ?.map((a) => a.identified_hook)
+            ?.map((a: any) => a.identified_hook)
             .filter(Boolean) as string[] || [];
 
-          memoryContext = buildMemoryContext(
-            patternsRes.data || [],
+          memoryContext = buildCreatorContext(
+            profileRes.data,
             brandVoiceRes.data,
+            patternsRes.data || [],
             recentHooks
           );
         }
