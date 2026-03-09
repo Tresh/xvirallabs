@@ -233,7 +233,6 @@ export default function Analyze() {
                 </Button>
               </CardContent>
             </Card>
-          </div>
           </div> : (
 
         /* Results View */
