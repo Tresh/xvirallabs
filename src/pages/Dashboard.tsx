@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useViralMemory } from "@/hooks/useViralMemory";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,12 @@ import {
   ArrowRight,
   Loader2,
   TrendingUp,
+  Sparkles,
 } from "lucide-react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { PricingPlans } from "@/components/dashboard/PricingPlans";
 import { ContentLabTab } from "@/components/content-lab/ContentLabTab";
-import { AnalyzeDialog } from "@/components/dashboard/AnalyzeDialog";
 import { AnalysisCard } from "@/components/dashboard/AnalysisCard";
 import { PatternCard } from "@/components/dashboard/PatternCard";
 import { IdeaCard } from "@/components/dashboard/IdeaCard";
@@ -73,12 +73,18 @@ export default function Dashboard() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           onSignOut={handleSignOut}
-          onAnalysisComplete={() => fetchMemory()}
         />
 
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 flex items-center border-b border-border bg-background/90 backdrop-blur-md sticky top-0 z-50 px-4">
+          <header className="h-14 flex items-center justify-between border-b border-border bg-background/90 backdrop-blur-md sticky top-0 z-50 px-4">
             <SidebarTrigger />
+            <Link to="/analyze">
+              <Button variant="viral" size="sm" className="gap-2">
+                <Sparkles className="h-3.5 w-3.5" />
+                New Analysis
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </Link>
           </header>
 
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
@@ -172,12 +178,12 @@ export default function Dashboard() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Start by analyzing a viral tweet to build your library
                     </p>
-                    <AnalyzeDialog onAnalysisComplete={() => fetchMemory()}>
+                    <Link to="/analyze">
                       <Button variant="viral">
                         Analyze Your First Tweet
                         <ArrowRight className="h-4 w-4" />
                       </Button>
-                    </AnalyzeDialog>
+                    </Link>
                   </CardContent>
                 </Card>
               ) : (
