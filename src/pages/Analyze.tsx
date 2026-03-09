@@ -118,6 +118,8 @@ export default function Analyze() {
           idea_status: "unused",
           hook_type: null,
           emotion_trigger: null,
+          generated_from_pattern_id: null,
+          generated_from_analysis_id: null,
         });
         if (!saveError) {
           setHasSaved(true);
