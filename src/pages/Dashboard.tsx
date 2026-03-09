@@ -72,13 +72,7 @@ export default function Dashboard() {
       <div className="min-h-screen flex w-full">
         <DashboardSidebar
           activeTab={activeTab}
-          onTabChange={(tab) => {
-            if (tab === "settings") {
-              navigate("/settings");
-            } else {
-              setActiveTab(tab);
-            }
-          }}
+          onTabChange={setActiveTab}
           onSignOut={handleSignOut}
         />
 
