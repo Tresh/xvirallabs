@@ -63,7 +63,13 @@ export function DashboardSidebar({
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     isActive={activeTab === item.id}
-                    onClick={() => onTabChange(item.id)}
+                    onClick={() => {
+                      if (item.id === "memory") {
+                        window.location.href = "/memory";
+                      } else {
+                        onTabChange(item.id);
+                      }
+                    }}
                     tooltip={item.title}
                   >
                     <item.icon className="h-4 w-4" />
