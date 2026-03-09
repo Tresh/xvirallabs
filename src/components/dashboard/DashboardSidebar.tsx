@@ -30,6 +30,7 @@ const navItems = [
   { id: "analyses", title: "Analyses", icon: Microscope },
   { id: "patterns", title: "Patterns", icon: Dna },
   { id: "ideas", title: "Ideas", icon: Lightbulb },
+  { id: "memory", title: "Memory", icon: Brain },
   { id: "plans", title: "Plans", icon: CreditCard },
 ];
 
