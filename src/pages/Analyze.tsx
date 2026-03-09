@@ -164,82 +164,75 @@ export default function Analyze() {
         </div>
 
         {!result ?
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left: Input */}
-            <div className="lg:col-span-2 space-y-5">
-              <Card>
-                <CardContent className="pt-6 space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Tweet Content</label>
-                    <Textarea
+          <div className="max-w-2xl mx-auto space-y-5">
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">Tweet Content</label>
+                  <Textarea
                     placeholder={"Paste the viral tweet text here...\n\nExample: 'I spent 10 years building startups.\nHere are 7 lessons that cost me $2M to learn:'"}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    className="min-h-[180px] bg-background border-border resize-none text-base" />
-                  
-                  </div>
+                    className="min-h-[180px] bg-background border-border resize-none text-base"
+                  />
+                </div>
 
-                  {(selectedMode === 4 || selectedMode === 8) &&
                 <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">Your Niche</label>
-                      <input
-                    type="text"
-                    placeholder="e.g., SaaS, Fitness, Personal Finance"
-                    value={niche}
-                    onChange={(e) => setNiche(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground placeholder:text-muted-foreground" />
-                  
-                    </div>
-                }
+                  <label className="text-sm font-medium text-foreground mb-2 block">Analysis Mode</label>
+                  <div className="flex flex-wrap gap-2">
+                    {modes.map((mode) => (
+                      <button
+                        key={mode.id}
+                        onClick={() => setSelectedMode(mode.id)}
+                        disabled={isAnalyzing}
+                        className={cn(
+                          "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border cursor-pointer",
+                          selectedMode === mode.id
+                            ? "bg-primary/10 border-primary/30 text-primary"
+                            : "bg-secondary/50 border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
+                        )}
+                      >
+                        <mode.icon className="h-3 w-3" />
+                        {mode.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-                  {error &&
-                <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30">
-                      <p className="text-sm text-destructive">{error}</p>
-                    </div>
-                }
+                {(selectedMode === 4 || selectedMode === 8) && (
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Your Niche</label>
+                    <input
+                      type="text"
+                      placeholder="e.g., SaaS, Fitness, Personal Finance"
+                      value={niche}
+                      onChange={(e) => setNiche(e.target.value)}
+                      className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground placeholder:text-muted-foreground"
+                    />
+                  </div>
+                )}
 
-                  <Button
+                {error && (
+                  <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+                    <p className="text-sm text-destructive">{error}</p>
+                  </div>
+                )}
+
+                <Button
                   variant="viral"
                   size="lg"
                   className="w-full gap-2"
                   onClick={handleAnalyze}
-                  disabled={isAnalyzing || !input.trim() || hasReachedLimit}>
-                  
-                    {isAnalyzing ?
-                  <><Loader2 className="h-4 w-4 animate-spin" /> Analyzing...</> :
-
-                  <><Sparkles className="h-4 w-4" /> Run Analysis<ArrowRight className="h-4 w-4" /></>
-                  }
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Right: Mode Selector */}
-            <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">Analysis Mode</h3>
-              <div className="space-y-2">
-                {modes.map((mode) =>
-              <button
-                key={mode.id}
-                onClick={() => setSelectedMode(mode.id)}
-                disabled={isAnalyzing}
-                className={cn(
-                  "w-full flex items-start gap-3 p-3 rounded-lg text-left transition-all border",
-                  selectedMode === mode.id ?
-                  "bg-primary/10 border-primary/30 shadow-sm" :
-                  "bg-card border-border hover:bg-secondary/60"
-                )}>
-                
-                    <mode.icon className={cn("h-4 w-4 mt-0.5 flex-shrink-0", selectedMode === mode.id ? "text-primary" : "text-muted-foreground")} />
-                    <div>
-                      <p className={cn("text-sm font-medium", selectedMode === mode.id ? "text-primary" : "text-foreground")}>{mode.name}</p>
-                      <p className="text-xs text-muted-foreground">{mode.desc}</p>
-                    </div>
-                  </button>
-              )}
-              </div>
-            </div>
+                  disabled={isAnalyzing || !input.trim() || hasReachedLimit}
+                >
+                  {isAnalyzing ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Analyzing...</>
+                  ) : (
+                    <><Sparkles className="h-4 w-4" /> Run Analysis<ArrowRight className="h-4 w-4" /></>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
           </div> : (
 
         /* Results View */
