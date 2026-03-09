@@ -9,6 +9,7 @@ import {
   LogOut,
   Moon,
   Sun,
+  Brain,
 } from "lucide-react";
 import {
   Sidebar,
