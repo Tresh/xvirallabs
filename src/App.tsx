@@ -11,6 +11,7 @@ import Analyze from "./pages/Analyze";
 import Admin from "./pages/Admin";
 import Features from "./pages/Features";
 import Terms from "./pages/Terms";
+import Memory from "./pages/Memory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
