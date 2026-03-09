@@ -305,7 +305,7 @@ export default function Analyze() {
                 </Button>
                 {!hasSaved &&
               <Button variant="viral" size="sm" onClick={handleSave}>
-                    Save to Library
+                    {getSaveLabel()}
                   </Button>
               }
               </div>
