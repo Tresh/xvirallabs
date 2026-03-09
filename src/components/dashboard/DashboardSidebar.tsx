@@ -6,11 +6,9 @@ import {
   Dna,
   Lightbulb,
   CreditCard,
-  Settings,
   LogOut,
   Moon,
   Sun,
-  ArrowRight,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,9 +22,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/useTheme";
-import { AnalyzeDialog } from "./AnalyzeDialog";
 
 const navItems = [
   { id: "content-lab", title: "Content Lab", icon: Calendar },
@@ -40,14 +36,12 @@ interface DashboardSidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onSignOut: () => void;
-  onAnalysisComplete: () => void;
 }
 
 export function DashboardSidebar({
   activeTab,
   onTabChange,
   onSignOut,
-  onAnalysisComplete,
 }: DashboardSidebarProps) {
   const { theme, toggleTheme } = useTheme();
 
@@ -62,14 +56,6 @@ export function DashboardSidebar({
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <div className="px-3 mb-3 group-data-[collapsible=icon]:hidden">
-              <AnalyzeDialog onAnalysisComplete={onAnalysisComplete}>
-                <Button variant="viral" size="sm" className="w-full gap-2">
-                  New Analysis
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Button>
-              </AnalyzeDialog>
-            </div>
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
