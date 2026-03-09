@@ -80,7 +80,6 @@ export default function Dashboard() {
             <SidebarTrigger />
             <Link to="/analyze">
               <Button variant="viral" size="sm" className="gap-2">
-                <Sparkles className="h-3.5 w-3.5" />
                 New Analysis
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
