@@ -323,9 +323,9 @@ serve(async (req) => {
 
     let systemPrompt = modePrompts[mode] || modePrompts[1];
     
-    // Add memory context to system prompt if available
+    // Add creator context to system prompt
     if (memoryContext) {
-      systemPrompt += `\n\n---\n# PERSONALIZATION (from user's Viral Lab memory)\n${memoryContext}\n\nUse this context to personalize your analysis. Reference their patterns if relevant. Match their brand voice if specified.`;
+      systemPrompt += memoryContext;
     }
 
     let userMessage = `Tweet/Content to analyze:\n\n"${content}"`;
