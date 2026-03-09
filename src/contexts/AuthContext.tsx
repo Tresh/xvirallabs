@@ -12,6 +12,10 @@ interface Profile {
   brand_tone: "authoritative" | "relatable" | "bold" | "playful";
   growth_goal: "followers" | "leads" | "sales" | "authority";
   tier: "free" | "pro" | "elite";
+  display_name: string | null;
+  skills: string[];
+  content_strategy: string | null;
+  custom_system_prompt: string | null;
 }
 
 interface BrandVoice {

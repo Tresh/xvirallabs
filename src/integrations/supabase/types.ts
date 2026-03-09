@@ -606,12 +606,16 @@ export type Database = {
       profiles: {
         Row: {
           brand_tone: string | null
+          content_strategy: string | null
           created_at: string | null
+          custom_system_prompt: string | null
+          display_name: string | null
           email: string | null
           growth_goal: string | null
           id: string
           primary_niche: string | null
           secondary_niches: string[] | null
+          skills: string[] | null
           tier: string | null
           twitter_handle: string | null
           updated_at: string | null
@@ -619,12 +623,16 @@ export type Database = {
         }
         Insert: {
           brand_tone?: string | null
+          content_strategy?: string | null
           created_at?: string | null
+          custom_system_prompt?: string | null
+          display_name?: string | null
           email?: string | null
           growth_goal?: string | null
           id?: string
           primary_niche?: string | null
           secondary_niches?: string[] | null
+          skills?: string[] | null
           tier?: string | null
           twitter_handle?: string | null
           updated_at?: string | null
@@ -632,12 +640,16 @@ export type Database = {
         }
         Update: {
           brand_tone?: string | null
+          content_strategy?: string | null
           created_at?: string | null
+          custom_system_prompt?: string | null
+          display_name?: string | null
           email?: string | null
           growth_goal?: string | null
           id?: string
           primary_niche?: string | null
           secondary_niches?: string[] | null
+          skills?: string[] | null
           tier?: string | null
           twitter_handle?: string | null
           updated_at?: string | null

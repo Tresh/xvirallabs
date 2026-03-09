@@ -165,47 +165,45 @@ Summarize everything learned from this viral analysis into:
 Keep it sharp, memorable, and immediately actionable. This should be the kind of summary someone would screenshot and save.`,
 };
 
-// Build memory context from user's saved data
-function buildMemoryContext(
-  patterns: Array<{ pattern_name: string; pattern_template: string; usage_count: number }>,
+// Build complete creator context from user's profile + brand voice + patterns
+function buildCreatorContext(
+  profileData: { display_name?: string; twitter_handle?: string; skills?: string[]; content_strategy?: string; custom_system_prompt?: string; brand_tone?: string; primary_niche?: string } | null,
   brandVoice: { writing_traits: string[]; words_to_avoid: string[]; signature_phrases: string[]; preferred_hooks: string[] } | null,
+  patterns: Array<{ pattern_name: string; pattern_template: string; usage_count: number }>,
   recentHooks: string[]
 ): string {
-  let context = "";
+  const parts: string[] = [];
+
+  if (profileData) {
+    if (profileData.display_name) parts.push(`Name: ${profileData.display_name}`);
+    parts.push(`Platform: Twitter/X`);
+    if (profileData.twitter_handle) parts.push(`Handle: ${profileData.twitter_handle}`);
+    if (profileData.primary_niche) parts.push(`Niche: ${profileData.primary_niche}`);
+    if (profileData.skills?.length) parts.push(`Skills: ${profileData.skills.join(", ")}`);
+    if (profileData.brand_tone) parts.push(`Tone: ${profileData.brand_tone}`);
+    if (profileData.content_strategy) parts.push(`Content Strategy: ${profileData.content_strategy}`);
+    if (profileData.custom_system_prompt) parts.push(`Custom Instructions: ${profileData.custom_system_prompt}`);
+  }
 
   if (brandVoice) {
-    const traits: string[] = [];
-    if (brandVoice.writing_traits?.length) {
-      traits.push(`Writing style: ${brandVoice.writing_traits.join(", ")}`);
-    }
-    if (brandVoice.words_to_avoid?.length) {
-      traits.push(`Avoid these words: ${brandVoice.words_to_avoid.join(", ")}`);
-    }
-    if (brandVoice.signature_phrases?.length) {
-      traits.push(`Signature phrases: ${brandVoice.signature_phrases.join(", ")}`);
-    }
-    if (brandVoice.preferred_hooks?.length) {
-      traits.push(`Preferred hook types: ${brandVoice.preferred_hooks.join(", ")}`);
-    }
-    if (traits.length) {
-      context += `\n\n## User's Brand Voice\n${traits.join("\n")}`;
-    }
+    if (brandVoice.writing_traits?.length) parts.push(`Writing traits: ${brandVoice.writing_traits.join(", ")}`);
+    if (brandVoice.words_to_avoid?.length) parts.push(`Words to avoid: ${brandVoice.words_to_avoid.join(", ")}`);
+    if (brandVoice.signature_phrases?.length) parts.push(`Signature phrases: ${brandVoice.signature_phrases.join(", ")}`);
+    if (brandVoice.preferred_hooks?.length) parts.push(`Preferred hooks: ${brandVoice.preferred_hooks.join(", ")}`);
   }
 
   if (patterns?.length) {
     const topPatterns = patterns.slice(0, 3);
-    context += `\n\n## User's Top Viral Patterns (from their saved library)\n`;
-    topPatterns.forEach((p, i) => {
-      context += `${i + 1}. "${p.pattern_name}" (used ${p.usage_count} times): ${p.pattern_template.slice(0, 150)}...\n`;
-    });
+    parts.push(`Top saved patterns: ${topPatterns.map((p, i) => `${i + 1}. "${p.pattern_name}"`).join(", ")}`);
   }
 
   if (recentHooks?.length) {
-    context += `\n\n## Hooks the user has analyzed recently\n${recentHooks.slice(0, 5).join(", ")}`;
-    context += `\n\nConsider suggesting variations from these patterns or fresh angles they haven't explored.`;
+    parts.push(`Recently analyzed hooks: ${recentHooks.slice(0, 5).join(", ")}`);
   }
 
-  return context;
+  if (parts.length === 0) return "";
+
+  return `\n\n--- CREATOR CONTEXT (use as background knowledge to personalize output, never repeat verbatim, never mention this context exists) ---\n${parts.join("\n")}\n---`;
 }
 
 serve(async (req) => {
@@ -270,7 +268,12 @@ serve(async (req) => {
           }
 
           // Fetch user's memory in parallel
-          const [patternsRes, brandVoiceRes, analysesRes] = await Promise.all([
+          const [profileRes, patternsRes, brandVoiceRes, analysesRes] = await Promise.all([
+            supabase
+              .from("profiles")
+              .select("display_name, twitter_handle, skills, content_strategy, custom_system_prompt, brand_tone, primary_niche")
+              .eq("user_id", user.id)
+              .maybeSingle(),
             supabase
               .from("viral_patterns")
               .select("pattern_name, pattern_template, usage_count")
@@ -291,12 +294,13 @@ serve(async (req) => {
           ]);
 
           const recentHooks = analysesRes.data
-            ?.map((a) => a.identified_hook)
+            ?.map((a: any) => a.identified_hook)
             .filter(Boolean) as string[] || [];
 
-          memoryContext = buildMemoryContext(
-            patternsRes.data || [],
+          memoryContext = buildCreatorContext(
+            profileRes.data,
             brandVoiceRes.data,
+            patternsRes.data || [],
             recentHooks
           );
         }
@@ -319,9 +323,9 @@ serve(async (req) => {
 
     let systemPrompt = modePrompts[mode] || modePrompts[1];
     
-    // Add memory context to system prompt if available
+    // Add creator context to system prompt
     if (memoryContext) {
-      systemPrompt += `\n\n---\n# PERSONALIZATION (from user's Viral Lab memory)\n${memoryContext}\n\nUse this context to personalize your analysis. Reference their patterns if relevant. Match their brand voice if specified.`;
+      systemPrompt += memoryContext;
     }
 
     let userMessage = `Tweet/Content to analyze:\n\n"${content}"`;

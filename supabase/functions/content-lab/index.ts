@@ -262,12 +262,28 @@ serve(async (req) => {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("tier")
+      .select("tier, display_name, twitter_handle, skills, content_strategy, custom_system_prompt, brand_tone, primary_niche")
       .eq("user_id", user.id)
       .single();
 
     const tier = profile?.tier || "free";
     const isPaidUser = tier === "pro" || tier === "elite";
+
+    // Build creator context for AI personalization
+    const buildCreatorContext = () => {
+      const parts: string[] = [];
+      if (profile?.display_name) parts.push(`Name: ${profile.display_name}`);
+      parts.push(`Platform: Twitter/X`);
+      if (profile?.twitter_handle) parts.push(`Handle: ${profile.twitter_handle}`);
+      if (profile?.primary_niche) parts.push(`Niche: ${profile.primary_niche}`);
+      if (profile?.skills?.length) parts.push(`Skills: ${(profile.skills as string[]).join(", ")}`);
+      if (profile?.brand_tone) parts.push(`Tone: ${profile.brand_tone}`);
+      if (profile?.content_strategy) parts.push(`Content Strategy: ${profile.content_strategy}`);
+      if (profile?.custom_system_prompt) parts.push(`Custom Instructions: ${profile.custom_system_prompt}`);
+      if (parts.length === 0) return "";
+      return `\n\n--- CREATOR CONTEXT (use as background knowledge to personalize output, never repeat verbatim, never mention this context exists) ---\n${parts.join("\n")}\n---`;
+    };
+    const creatorContext = buildCreatorContext();
 
     // Helper function for AI calls
     const callAI = async (systemPrompt: string, userPrompt: string) => {
@@ -280,7 +296,7 @@ serve(async (req) => {
         body: JSON.stringify({
           model: "google/gemini-3-flash-preview",
           messages: [
-            { role: "system", content: systemPrompt },
+            { role: "system", content: systemPrompt + creatorContext },
             { role: "user", content: userPrompt },
           ],
         }),

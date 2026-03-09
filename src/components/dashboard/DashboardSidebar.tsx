@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import {
   Calendar,
@@ -9,6 +9,7 @@ import {
   LogOut,
   Moon,
   Sun,
+  Brain,
 } from "lucide-react";
 import {
   Sidebar,
@@ -29,6 +30,7 @@ const navItems = [
   { id: "analyses", title: "Analyses", icon: Microscope },
   { id: "patterns", title: "Patterns", icon: Dna },
   { id: "ideas", title: "Ideas", icon: Lightbulb },
+  { id: "memory", title: "Memory", icon: Brain },
   { id: "plans", title: "Plans", icon: CreditCard },
 ];
 
@@ -44,6 +46,7 @@ export function DashboardSidebar({
   onSignOut,
 }: DashboardSidebarProps) {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
 
   return (
     <Sidebar collapsible="icon">
@@ -61,7 +64,13 @@ export function DashboardSidebar({
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     isActive={activeTab === item.id}
-                    onClick={() => onTabChange(item.id)}
+                    onClick={() => {
+                      if (item.id === "memory") {
+                        navigate("/memory");
+                      } else {
+                        onTabChange(item.id);
+                      }
+                    }}
                     tooltip={item.title}
                   >
                     <item.icon className="h-4 w-4" />

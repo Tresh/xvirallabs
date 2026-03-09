@@ -46,9 +46,9 @@ const modes = [
 
 export default function Analyze() {
   const navigate = useNavigate();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, profile, isLoading: authLoading } = useAuth();
   const { isAnalyzing, result, error, analyze, reset } = useViralAnalysis();
-  const { saveAnalysis } = useViralMemory();
+  const { saveAnalysis, savePattern, saveIdea } = useViralMemory();
   const {
     remaining,
     isUnlimited,
@@ -60,7 +60,7 @@ export default function Analyze() {
 
   const [input, setInput] = useState("");
   const [selectedMode, setSelectedMode] = useState(1);
-  const [niche, setNiche] = useState("");
+  const [niche, setNiche] = useState(profile?.primary_niche || "");
   const [hasSaved, setHasSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -83,24 +83,69 @@ export default function Analyze() {
     await analyze(input, selectedMode, niche || undefined);
   };
 
+  const getSaveLabel = () => {
+    if (selectedMode === 3) return "Save Pattern";
+    if (selectedMode === 8) return "Save Idea";
+    return "Save Analysis";
+  };
+
   const handleSave = async () => {
-    if (result && !hasSaved) {
-      const { error: saveError } = await saveAnalysis({
-        post_source: "text",
-        original_post: input,
-        mode_used: selectedMode,
-        analysis_result: result,
-        identified_hook: null,
-        psychology_triggers: [],
-        viral_pattern: null,
-        dwell_time_score: null,
-        reply_potential: null,
-        bookmark_potential: null
-      });
-      if (!saveError) {
-        setHasSaved(true);
-        toast({ title: "Analysis saved!", description: "View it in your Analyses tab." });
+    if (!result || hasSaved || !user) return;
+
+    try {
+      if (selectedMode === 3) {
+        // Extract pattern - save to viral_patterns
+        const titleMatch = result.match(/^#?\s*(.+)/m);
+        const title = titleMatch ? titleMatch[1].replace(/[#*]/g, "").trim().slice(0, 80) : "Extracted Pattern";
+        const { error: saveError } = await savePattern({
+          pattern_name: title,
+          pattern_template: result,
+          hook_framework: null,
+          best_for_niches: niche ? [niche] : [],
+          source_analysis_id: null,
+        });
+        if (!saveError) {
+          setHasSaved(true);
+          toast({ title: "Pattern saved!", description: "View it in your Patterns tab." });
+        }
+      } else if (selectedMode === 8) {
+        // Ideas - save to idea_vault
+        const titleMatch = result.match(/^#?\s*(.+)/m);
+        const title = titleMatch ? titleMatch[1].replace(/[#*]/g, "").trim().slice(0, 80) : "Generated Ideas";
+        const { error: saveError } = await saveIdea({
+          idea_title: title,
+          idea_content: result,
+          idea_status: "unused",
+          hook_type: null,
+          emotion_trigger: null,
+          generated_from_pattern_id: null,
+          generated_from_analysis_id: null,
+        });
+        if (!saveError) {
+          setHasSaved(true);
+          toast({ title: "Ideas saved!", description: "View them in your Ideas tab." });
+        }
+      } else {
+        // All other modes - save to viral_analyses
+        const { error: saveError } = await saveAnalysis({
+          post_source: "text",
+          original_post: input,
+          mode_used: selectedMode,
+          analysis_result: result,
+          identified_hook: null,
+          psychology_triggers: [],
+          viral_pattern: null,
+          dwell_time_score: null,
+          reply_potential: null,
+          bookmark_potential: null,
+        });
+        if (!saveError) {
+          setHasSaved(true);
+          toast({ title: "Analysis saved!", description: "View it in your Analyses tab." });
+        }
       }
+    } catch (e) {
+      toast({ title: "Error saving", variant: "destructive" });
     }
   };
 
@@ -260,7 +305,7 @@ export default function Analyze() {
                 </Button>
                 {!hasSaved &&
               <Button variant="viral" size="sm" onClick={handleSave}>
-                    Save to Library
+                    {getSaveLabel()}
                   </Button>
               }
               </div>

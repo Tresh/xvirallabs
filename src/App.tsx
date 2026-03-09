@@ -11,6 +11,7 @@ import Analyze from "./pages/Analyze";
 import Admin from "./pages/Admin";
 import Features from "./pages/Features";
 import Terms from "./pages/Terms";
+import Memory from "./pages/Memory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/features" element={<Features />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/memory" element={<Memory />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
