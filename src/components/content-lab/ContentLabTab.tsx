@@ -271,7 +271,7 @@ export function ContentLabTab() {
           <div className="flex items-center gap-2">
             <Badge variant="outline">{activeBank.name}</Badge>
             {activeBank.unhinged_mode && (
-              <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
+              <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 hover:bg-orange-500/20 pointer-events-none">
                 <Flame className="h-3 w-3 mr-1" />
                 Unhinged
               </Badge>

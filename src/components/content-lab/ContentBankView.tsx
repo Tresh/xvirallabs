@@ -264,7 +264,7 @@ export function ContentBankView({ calendarId, onNewBank }: ContentBankViewProps)
               <div className="flex items-center gap-2 mb-1">
                 <h2 className="text-xl font-bold">{bank.name}</h2>
                 {bank.unhinged_mode && (
-                  <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
+                  <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 hover:bg-orange-500/20 pointer-events-none">
                     <Flame className="h-3 w-3 mr-1" />
                     Unhinged
                   </Badge>
