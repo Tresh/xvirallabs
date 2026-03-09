@@ -255,6 +255,8 @@ export default function Dashboard() {
               )
             )}
 
+            {activeTab === "memory" && <MemoryTab />}
+
             {activeTab === "plans" && <PricingPlans />}
 
             {/* Refresh */}
