@@ -66,7 +66,7 @@ export function DashboardSidebar({
                     isActive={activeTab === item.id}
                     onClick={() => {
                       if (item.id === "memory") {
-                        window.location.href = "/memory";
+                        navigate("/memory");
                       } else {
                         onTabChange(item.id);
                       }
