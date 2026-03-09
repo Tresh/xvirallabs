@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import {
   Calendar,
@@ -46,7 +46,6 @@ export function DashboardSidebar({
   onSignOut,
 }: DashboardSidebarProps) {
   const { theme, toggleTheme } = useTheme();
-  const navigate = useNavigate();
 
   return (
     <Sidebar collapsible="icon">
@@ -64,13 +63,7 @@ export function DashboardSidebar({
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     isActive={activeTab === item.id}
-                    onClick={() => {
-                      if (item.id === "memory") {
-                        navigate("/memory");
-                      } else {
-                        onTabChange(item.id);
-                      }
-                    }}
+                    onClick={() => onTabChange(item.id)}
                     tooltip={item.title}
                   >
                     <item.icon className="h-4 w-4" />
