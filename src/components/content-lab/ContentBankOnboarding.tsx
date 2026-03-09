@@ -54,7 +54,7 @@ export function ContentBankOnboarding({ onComplete }: ContentBankOnboardingProps
   const [isLoading, setIsLoading] = useState(false);
   
   // Form state
-  const [nicheInput, setNicheInput] = useState("");
+  const [nicheInput, setNicheInput] = useState(profile?.primary_niche || "");
   const [mainGoal, setMainGoal] = useState("");
   const [audienceLevel, setAudienceLevel] = useState("intermediate");
   const [unhingedMode, setUnhingedMode] = useState(false);
