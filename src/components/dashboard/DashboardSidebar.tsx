@@ -10,6 +10,7 @@ import {
   Moon,
   Sun,
   Brain,
+  Settings,
 } from "lucide-react";
 import {
   Sidebar,
