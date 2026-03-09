@@ -46,6 +46,7 @@ export function DashboardSidebar({
   onSignOut,
 }: DashboardSidebarProps) {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
 
   return (
     <Sidebar collapsible="icon">
