@@ -105,7 +105,7 @@ Output three versions:
 
 Format each version with a label and the full rewritten tweet.`,
 
-  7: `You are Viral Labs, a thread conversion specialist.
+  7: `You are XViralLabs, a thread conversion specialist.
 
 Turn this content into a viral Twitter/X thread.
 
