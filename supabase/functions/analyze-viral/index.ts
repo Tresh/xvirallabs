@@ -122,7 +122,7 @@ Output:
 
 Make it engaging from start to finish.`,
 
-  8: `You are Viral Labs, an idea generation engine.
+  8: `You are XViralLabs, an idea generation engine.
 
 Based on this content and niche, generate 20 viral post ideas inspired by:
 • Current Twitter/X content trends
