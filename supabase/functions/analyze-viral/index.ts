@@ -24,7 +24,7 @@ Then summarize the core viral formula in one reusable sentence.
 
 Format your response with clear headers and bullet points for easy reading.`,
 
-  2: `You are Viral Labs, a behavioral psychology expert specializing in Twitter/X content.
+  2: `You are XViralLabs, a behavioral psychology expert specializing in Twitter/X content.
 
 Deconstruct this post using behavioral psychology.
 
