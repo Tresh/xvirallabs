@@ -13,12 +13,12 @@ const Terms = () => {
           <div className="space-y-8 text-foreground/80 text-[15px] leading-relaxed">
             <section>
               <h2 className="text-lg font-semibold text-foreground mb-3">1. Acceptance of Terms</h2>
-              <p>By accessing or using Viral Labs ("the Service"), you agree to be bound by these Terms and Conditions. If you do not agree, you may not use the Service.</p>
+              <p>By accessing or using XViralLabs ("the Service"), you agree to be bound by these Terms and Conditions. If you do not agree, you may not use the Service.</p>
             </section>
 
             <section>
               <h2 className="text-lg font-semibold text-foreground mb-3">2. Description of Service</h2>
-              <p>Viral Labs provides AI-powered tweet analysis, content generation, and virality tools. The Service is provided "as is" and may be updated, modified, or discontinued at any time.</p>
+              <p>XViralLabs provides AI-powered tweet analysis, content generation, and virality tools. The Service is provided "as is" and may be updated, modified, or discontinued at any time.</p>
             </section>
 
             <section>
@@ -33,7 +33,7 @@ const Terms = () => {
 
             <section>
               <h2 className="text-lg font-semibold text-foreground mb-3">5. Intellectual Property</h2>
-              <p>Content you create using the Service belongs to you. However, the Service, its design, features, and underlying technology remain the intellectual property of Viral Labs.</p>
+              <p>Content you create using the Service belongs to you. However, the Service, its design, features, and underlying technology remain the intellectual property of XViralLabs.</p>
             </section>
 
             <section>
@@ -48,7 +48,7 @@ const Terms = () => {
 
             <section>
               <h2 className="text-lg font-semibold text-foreground mb-3">8. Limitation of Liability</h2>
-              <p>Viral Labs shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Service. The Service does not guarantee specific results or viral outcomes.</p>
+              <p>XViralLabs shall not be liable for any indirect, incidental, or consequential damages arising from your use of the Service. The Service does not guarantee specific results or viral outcomes.</p>
             </section>
 
             <section>
@@ -63,7 +63,7 @@ const Terms = () => {
 
             <section>
               <h2 className="text-lg font-semibold text-foreground mb-3">11. Contact</h2>
-              <p>For questions about these Terms, please contact us at support@virallabs.com.</p>
+              <p>For questions about these Terms, please contact us at support@xvirallabs.com.</p>
             </section>
           </div>
         </div>

@@ -7,8 +7,8 @@ import {
 
 const faqs = [
   {
-    q: "What is Viral Labs?",
-    a: "Viral Labs is an AI-powered platform that reverse-engineers why tweets go viral. It analyzes psychology, hooks, patterns, and platform mechanics — then helps you create your own high-performing content.",
+    q: "What is XViralLabs?",
+    a: "XViralLabs is an AI-powered platform that reverse-engineers why tweets go viral. It analyzes psychology, hooks, patterns, and platform mechanics — then helps you create your own high-performing content.",
   },
   {
     q: "How does the analysis work?",

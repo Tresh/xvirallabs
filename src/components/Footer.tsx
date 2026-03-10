@@ -14,7 +14,7 @@ export function Footer() {
           </div>
 
           <p className="text-sm text-muted-foreground font-mono">
-            © 2026 Viral Labs
+            © 2026 XViralLabs
           </p>
         </div>
       </div>

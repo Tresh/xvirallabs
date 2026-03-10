@@ -22,7 +22,7 @@ export function Logo({ size = "md", showText = true }: LogoProps) {
       </div>
       {showText && (
         <span className={cn("font-bold tracking-tight text-foreground", classes.text)}>
-          Viral<span className="text-primary">Labs</span>
+          X<span className="text-primary">Viral</span>Labs
         </span>
       )}
     </div>
