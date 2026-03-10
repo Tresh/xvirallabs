@@ -42,7 +42,7 @@ Explain in simple language how each psychological element increases:
 
 Format with clear sections and actionable insights.`,
 
-  3: `You are Viral Labs, a viral pattern extraction specialist.
+  3: `You are XViralLabs, a viral pattern extraction specialist.
 
 Extract the reusable viral pattern from this post.
 
