@@ -136,7 +136,7 @@ For each idea:
 
 Number them 1-20 and make each one unique.`,
 
-  9: `You are Viral Labs, a personal brand alignment specialist.
+  9: `You are XViralLabs, a personal brand alignment specialist.
 
 Adapt the analysis to match the specified personal brand traits.
 
