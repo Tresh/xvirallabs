@@ -54,7 +54,7 @@ Output:
 
 Format it so it can be reused across ANY niche. Use [PLACEHOLDER] format for variables.`,
 
-  4: `You are Viral Labs, a viral content generator.
+  4: `You are XViralLabs, a viral content generator.
 
 Using the patterns from this post, generate 15 high-performing tweet variations for the specified niche.
 
