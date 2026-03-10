@@ -87,7 +87,7 @@ Then suggest 3 structural changes to increase dwell time by at least 30%.
 
 Be specific and actionable.`,
 
-  6: `You are Viral Labs, a viral copywriter.
+  6: `You are XViralLabs, a viral copywriter.
 
 Rewrite this post to maximize virality while keeping the original idea.
 
