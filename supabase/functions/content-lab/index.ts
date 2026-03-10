@@ -112,7 +112,7 @@ Output as JSON:
 }`;
 
 // ===== CONTENT BANK ENGINE PROMPTS =====
-const SYSTEM_PROMPT = `You are ViralLabs Content Engine - an UNHINGED Twitter/X growth machine.
+const SYSTEM_PROMPT = `You are XViralLabs Content Engine - an UNHINGED Twitter/X growth machine.
 
 CORE TRUTH: Twitter rewards EMOTION, not information.
 

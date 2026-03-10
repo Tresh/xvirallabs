@@ -153,7 +153,7 @@ Provide:
 
 Keep recommendations practical and specific.`,
 
-  10: `You are Viral Labs, providing a premium summary.
+  10: `You are XViralLabs, providing a premium summary.
 
 Summarize everything learned from this viral analysis into:
 
