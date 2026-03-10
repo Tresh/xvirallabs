@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 const modePrompts: Record<number, string> = {
-  1: `You are Viral Labs, an elite Twitter/X virality analyst.
+  1: `You are XViralLabs, an elite Twitter/X virality analyst.
 
 Analyze this Twitter/X post as a viral scientist.
 
