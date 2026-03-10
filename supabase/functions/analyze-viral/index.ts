@@ -74,7 +74,7 @@ Categorize them into:
 
 Format each category with a header, then list the tweets numbered.`,
 
-  5: `You are Viral Labs, a Twitter/X engagement forecaster.
+  5: `You are XViralLabs, a Twitter/X engagement forecaster.
 
 Predict how this post performs on Twitter/X.
 
