@@ -74,13 +74,9 @@ export default function Analyze() {
       toast({ title: "Daily limit reached", description: "Upgrade to Pro for unlimited access!", variant: "destructive" });
       return;
     }
-    if ((selectedMode === 4 || selectedMode === 8) && !niche.trim()) {
-      toast({ title: "Niche required", description: "Please enter your niche for this mode.", variant: "destructive" });
-      return;
-    }
     setHasSaved(false);
     if (!isUnlimited) decrementLocal();
-    await analyze(input, selectedMode, niche || undefined);
+    await analyze(input, selectedMode);
   };
 
   const getSaveLabel = () => {
