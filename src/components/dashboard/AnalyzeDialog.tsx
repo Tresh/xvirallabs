@@ -122,7 +122,6 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
   const handleReset = () => {
     reset();
     setInput("");
-    setNiche("");
     setHasSaved(false);
   };
 
