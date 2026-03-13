@@ -174,7 +174,7 @@ export function AnalyzeSection() {
   const handleReset = () => {
     reset();
     setInput("");
-    setNiche("");
+    
     setHasSaved(false);
     // Clean up image previews
     uploadedImages.forEach(img => URL.revokeObjectURL(img.preview));
