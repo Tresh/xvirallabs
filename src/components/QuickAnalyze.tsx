@@ -43,7 +43,7 @@ export function QuickAnalyze() {
   const handleAnalyze = async () => {
     if (!input.trim()) return;
     if (!user) return;
-    await analyze(input.trim(), selectedMode, niche || undefined);
+    await analyze(input.trim(), selectedMode);
   };
 
   return (
