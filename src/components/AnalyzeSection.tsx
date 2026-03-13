@@ -139,7 +139,7 @@ export function AnalyzeSection() {
       decrementLocal();
     }
     
-    await analyze(input, selectedMode, niche || undefined);
+    await analyze(input, selectedMode);
   };
 
   // Auto-save analysis when complete (for logged-in users)
