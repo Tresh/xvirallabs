@@ -54,7 +54,7 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [selectedMode, setSelectedMode] = useState(1);
-  const [niche, setNiche] = useState("");
+  
   const [hasSaved, setHasSaved] = useState(false);
 
   const { isAnalyzing, result, error, analyze, reset } = useViralAnalysis();
@@ -80,22 +80,13 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
       return;
     }
 
-    if ((selectedMode === 4 || selectedMode === 8) && !niche.trim()) {
-      toast({
-        title: "Niche required",
-        description: "Please enter your niche for this mode.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setHasSaved(false);
 
     if (!isUnlimited) {
       decrementLocal();
     }
 
-    await analyze(input, selectedMode, niche || undefined);
+    await analyze(input, selectedMode);
   };
 
   // Save analysis when complete
@@ -131,7 +122,6 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
   const handleReset = () => {
     reset();
     setInput("");
-    setNiche("");
     setHasSaved(false);
   };
 
@@ -167,16 +157,6 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
                 className="min-h-[120px] bg-background border-border resize-none"
               />
 
-              {/* Niche Input for Mode 4 and 8 */}
-              {(selectedMode === 4 || selectedMode === 8) && (
-                <input
-                  type="text"
-                  placeholder="Your niche (e.g., SaaS, Fitness)"
-                  value={niche}
-                  onChange={(e) => setNiche(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground"
-                />
-              )}
 
               {/* Mode Selector */}
               <div>

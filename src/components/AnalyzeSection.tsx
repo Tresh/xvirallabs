@@ -56,7 +56,7 @@ export function AnalyzeSection() {
   const [input, setInput] = useState("");
   const [inputType, setInputType] = useState<"text" | "url">("text");
   const [selectedMode, setSelectedMode] = useState(1);
-  const [niche, setNiche] = useState("");
+  
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [hasSaved, setHasSaved] = useState(false);
   
@@ -130,14 +130,6 @@ export function AnalyzeSection() {
       return;
     }
     
-    if (selectedMode === 4 && !niche.trim()) {
-      toast({
-        title: "Niche required",
-        description: "Please enter your niche for generating viral variations.",
-        variant: "destructive",
-      });
-      return;
-    }
     
     // TODO: Pass uploaded images to the analysis when backend supports it
     setHasSaved(false);
@@ -147,7 +139,7 @@ export function AnalyzeSection() {
       decrementLocal();
     }
     
-    await analyze(input, selectedMode, niche || undefined);
+    await analyze(input, selectedMode);
   };
 
   // Auto-save analysis when complete (for logged-in users)
@@ -182,7 +174,7 @@ export function AnalyzeSection() {
   const handleReset = () => {
     reset();
     setInput("");
-    setNiche("");
+    
     setHasSaved(false);
     // Clean up image previews
     uploadedImages.forEach(img => URL.revokeObjectURL(img.preview));
@@ -401,16 +393,6 @@ export function AnalyzeSection() {
               </div>
             )}
 
-            {/* Niche Input for Mode 4 and 8 */}
-            {(selectedMode === 4 || selectedMode === 8) && (
-              <input
-                type="text"
-                placeholder="Your niche (e.g., SaaS, Fitness, Personal Finance)"
-                value={niche}
-                onChange={(e) => setNiche(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground mb-6"
-              />
-            )}
 
             {/* Mode Selector */}
             <div className="mb-6">

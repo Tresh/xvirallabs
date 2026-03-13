@@ -38,12 +38,12 @@ export function QuickAnalyze() {
   const { analyze, isAnalyzing, result, reset } = useViralAnalysis();
   const [input, setInput] = useState("");
   const [selectedMode, setSelectedMode] = useState(1);
-  const [niche, setNiche] = useState("");
+  
 
   const handleAnalyze = async () => {
     if (!input.trim()) return;
     if (!user) return;
-    await analyze(input.trim(), selectedMode, niche || undefined);
+    await analyze(input.trim(), selectedMode);
   };
 
   return (
@@ -91,16 +91,6 @@ export function QuickAnalyze() {
                 </div>
               </div>
 
-              {/* Niche input for modes that need it */}
-              {(selectedMode === 4 || selectedMode === 8) && (
-                <input
-                  type="text"
-                  placeholder="Your niche (e.g., SaaS, Fitness)"
-                  value={niche}
-                  onChange={(e) => setNiche(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-                />
-              )}
 
               {user ? (
                 <Button
@@ -136,7 +126,7 @@ export function QuickAnalyze() {
                 <ReactMarkdown>{result}</ReactMarkdown>
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => { reset(); setInput(""); setNiche(""); }}>
+                <Button variant="outline" className="flex-1" onClick={() => { reset(); setInput(""); }}>
                   Try Another
                 </Button>
                 <Button variant="viral" className="flex-1" asChild>

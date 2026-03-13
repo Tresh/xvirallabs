@@ -60,7 +60,7 @@ export default function Analyze() {
 
   const [input, setInput] = useState("");
   const [selectedMode, setSelectedMode] = useState(1);
-  const [niche, setNiche] = useState(profile?.primary_niche || "");
+  
   const [hasSaved, setHasSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -74,13 +74,9 @@ export default function Analyze() {
       toast({ title: "Daily limit reached", description: "Upgrade to Pro for unlimited access!", variant: "destructive" });
       return;
     }
-    if ((selectedMode === 4 || selectedMode === 8) && !niche.trim()) {
-      toast({ title: "Niche required", description: "Please enter your niche for this mode.", variant: "destructive" });
-      return;
-    }
     setHasSaved(false);
     if (!isUnlimited) decrementLocal();
-    await analyze(input, selectedMode, niche || undefined);
+    await analyze(input, selectedMode);
   };
 
   const getSaveLabel = () => {
@@ -101,7 +97,7 @@ export default function Analyze() {
           pattern_name: title,
           pattern_template: result,
           hook_framework: null,
-          best_for_niches: niche ? [niche] : [],
+          best_for_niches: [],
           source_analysis_id: null,
         });
         if (!saveError) {
@@ -172,7 +168,7 @@ export default function Analyze() {
   const handleReset = () => {
     reset();
     setInput("");
-    setNiche("");
+    
     setHasSaved(false);
     setCopied(false);
   };
@@ -244,18 +240,6 @@ export default function Analyze() {
                   </div>
                 </div>
 
-                {(selectedMode === 4 || selectedMode === 8) && (
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Your Niche</label>
-                    <input
-                      type="text"
-                      placeholder="e.g., SaaS, Fitness, Personal Finance"
-                      value={niche}
-                      onChange={(e) => setNiche(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground placeholder:text-muted-foreground"
-                    />
-                  </div>
-                )}
 
                 {error && (
                   <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30">
