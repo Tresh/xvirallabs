@@ -91,16 +91,6 @@ export function QuickAnalyze() {
                 </div>
               </div>
 
-              {/* Niche input for modes that need it */}
-              {(selectedMode === 4 || selectedMode === 8) && (
-                <input
-                  type="text"
-                  placeholder="Your niche (e.g., SaaS, Fitness)"
-                  value={niche}
-                  onChange={(e) => setNiche(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-                />
-              )}
 
               {user ? (
                 <Button
