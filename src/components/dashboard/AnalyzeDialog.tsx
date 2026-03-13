@@ -80,22 +80,13 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
       return;
     }
 
-    if ((selectedMode === 4 || selectedMode === 8) && !niche.trim()) {
-      toast({
-        title: "Niche required",
-        description: "Please enter your niche for this mode.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setHasSaved(false);
 
     if (!isUnlimited) {
       decrementLocal();
     }
 
-    await analyze(input, selectedMode, niche || undefined);
+    await analyze(input, selectedMode);
   };
 
   // Save analysis when complete
