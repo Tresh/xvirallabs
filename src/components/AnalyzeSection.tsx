@@ -393,16 +393,6 @@ export function AnalyzeSection() {
               </div>
             )}
 
-            {/* Niche Input for Mode 4 and 8 */}
-            {(selectedMode === 4 || selectedMode === 8) && (
-              <input
-                type="text"
-                placeholder="Your niche (e.g., SaaS, Fitness, Personal Finance)"
-                value={niche}
-                onChange={(e) => setNiche(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground mb-6"
-              />
-            )}
 
             {/* Mode Selector */}
             <div className="mb-6">

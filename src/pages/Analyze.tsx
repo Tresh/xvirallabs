@@ -168,7 +168,7 @@ export default function Analyze() {
   const handleReset = () => {
     reset();
     setInput("");
-    setNiche("");
+    
     setHasSaved(false);
     setCopied(false);
   };
