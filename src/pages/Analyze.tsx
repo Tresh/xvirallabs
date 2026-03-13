@@ -60,7 +60,7 @@ export default function Analyze() {
 
   const [input, setInput] = useState("");
   const [selectedMode, setSelectedMode] = useState(1);
-  const [niche, setNiche] = useState(profile?.primary_niche || "");
+  
   const [hasSaved, setHasSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
