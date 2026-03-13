@@ -54,7 +54,7 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [selectedMode, setSelectedMode] = useState(1);
-  const [niche, setNiche] = useState("");
+  
   const [hasSaved, setHasSaved] = useState(false);
 
   const { isAnalyzing, result, error, analyze, reset } = useViralAnalysis();
