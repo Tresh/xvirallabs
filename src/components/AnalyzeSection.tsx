@@ -130,14 +130,6 @@ export function AnalyzeSection() {
       return;
     }
     
-    if (selectedMode === 4 && !niche.trim()) {
-      toast({
-        title: "Niche required",
-        description: "Please enter your niche for generating viral variations.",
-        variant: "destructive",
-      });
-      return;
-    }
     
     // TODO: Pass uploaded images to the analysis when backend supports it
     setHasSaved(false);
