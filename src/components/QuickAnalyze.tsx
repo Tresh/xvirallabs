@@ -38,7 +38,7 @@ export function QuickAnalyze() {
   const { analyze, isAnalyzing, result, reset } = useViralAnalysis();
   const [input, setInput] = useState("");
   const [selectedMode, setSelectedMode] = useState(1);
-  const [niche, setNiche] = useState("");
+  
 
   const handleAnalyze = async () => {
     if (!input.trim()) return;
