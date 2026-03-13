@@ -97,7 +97,7 @@ export default function Analyze() {
           pattern_name: title,
           pattern_template: result,
           hook_framework: null,
-          best_for_niches: niche ? [niche] : [],
+          best_for_niches: [],
           source_analysis_id: null,
         });
         if (!saveError) {
