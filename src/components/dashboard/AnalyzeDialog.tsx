@@ -157,16 +157,6 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
                 className="min-h-[120px] bg-background border-border resize-none"
               />
 
-              {/* Niche Input for Mode 4 and 8 */}
-              {(selectedMode === 4 || selectedMode === 8) && (
-                <input
-                  type="text"
-                  placeholder="Your niche (e.g., SaaS, Fitness)"
-                  value={niche}
-                  onChange={(e) => setNiche(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground"
-                />
-              )}
 
               {/* Mode Selector */}
               <div>

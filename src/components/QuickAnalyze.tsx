@@ -126,7 +126,7 @@ export function QuickAnalyze() {
                 <ReactMarkdown>{result}</ReactMarkdown>
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => { reset(); setInput(""); setNiche(""); }}>
+                <Button variant="outline" className="flex-1" onClick={() => { reset(); setInput(""); }}>
                   Try Another
                 </Button>
                 <Button variant="viral" className="flex-1" asChild>

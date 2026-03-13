@@ -240,18 +240,6 @@ export default function Analyze() {
                   </div>
                 </div>
 
-                {(selectedMode === 4 || selectedMode === 8) && (
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Your Niche</label>
-                    <input
-                      type="text"
-                      placeholder="e.g., SaaS, Fitness, Personal Finance"
-                      value={niche}
-                      onChange={(e) => setNiche(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg bg-background border border-border text-foreground placeholder:text-muted-foreground"
-                    />
-                  </div>
-                )}
 
                 {error && (
                   <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30">

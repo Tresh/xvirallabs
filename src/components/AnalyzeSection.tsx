@@ -56,7 +56,7 @@ export function AnalyzeSection() {
   const [input, setInput] = useState("");
   const [inputType, setInputType] = useState<"text" | "url">("text");
   const [selectedMode, setSelectedMode] = useState(1);
-  const [niche, setNiche] = useState("");
+  
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [hasSaved, setHasSaved] = useState(false);
   
