@@ -53,6 +53,9 @@ function TagInput({ value, onChange, onAdd, tags, onRemove, placeholder }: {
   );
 }
 
+const areStringArraysEqual = (a: string[] = [], b: string[] = []) =>
+  a.length === b.length && a.every((value, index) => value === b[index]);
+
 export function SettingsTab() {
   const { user, profile, brandVoice, signOut, isLoading: authLoading, refreshProfile } = useAuth();
   const { remaining, isUnlimited, dailyLimit } = useDailyUsage();
@@ -63,8 +66,8 @@ export function SettingsTab() {
   const [displayName, setDisplayName] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const [primaryNiche, setPrimaryNiche] = useState("");
-  const [brandTone, setBrandTone] = useState("authoritative");
-  const [growthGoal, setGrowthGoal] = useState("followers");
+  const [brandTone, setBrandTone] = useState<"authoritative" | "relatable" | "bold" | "playful">("authoritative");
+  const [growthGoal, setGrowthGoal] = useState<"followers" | "leads" | "sales" | "authority">("followers");
   const [skills, setSkills] = useState<string[]>([]);
   const [contentStrategy, setContentStrategy] = useState("");
   const [customSystemPrompt, setCustomSystemPrompt] = useState("");
@@ -79,6 +82,7 @@ export function SettingsTab() {
   const [hookInput, setHookInput] = useState("");
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [activeSection, setActiveSection] = useState("account");
+  const [isHydrated, setIsHydrated] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,8 +90,8 @@ export function SettingsTab() {
       setDisplayName(profile.display_name || "");
       setTwitterHandle(profile.twitter_handle || "");
       setPrimaryNiche(profile.primary_niche || "");
-      setBrandTone(profile.brand_tone || "authoritative");
-      setGrowthGoal(profile.growth_goal || "followers");
+      setBrandTone((profile.brand_tone as "authoritative" | "relatable" | "bold" | "playful") || "authoritative");
+      setGrowthGoal((profile.growth_goal as "followers" | "leads" | "sales" | "authority") || "followers");
       setSkills(profile.skills || []);
       setContentStrategy(profile.content_strategy || "");
       setCustomSystemPrompt(profile.custom_system_prompt || "");
@@ -97,6 +101,9 @@ export function SettingsTab() {
       setWordsToAvoid(brandVoice.words_to_avoid || []);
       setSignaturePhrases(brandVoice.signature_phrases || []);
       setPreferredHooks(brandVoice.preferred_hooks || []);
+    }
+    if (profile && brandVoice) {
+      setIsHydrated(true);
     }
   }, [profile, brandVoice]);
 
@@ -130,29 +137,63 @@ export function SettingsTab() {
   };
 
   const handleSave = async () => {
-    if (!user) return;
+    if (!user || !profile || !brandVoice || !isHydrated) {
+      toast({ title: "Settings are still loading", description: "Please wait a second and try again." });
+      return;
+    }
+
     setSaveStatus("saving");
+
     try {
-      const [profileRes, voiceRes] = await Promise.all([
-        supabase.from("profiles").update({
-          display_name: displayName || null,
-          twitter_handle: twitterHandle || null,
-          primary_niche: primaryNiche || null,
-          brand_tone: brandTone,
-          growth_goal: growthGoal,
-          skills,
-          content_strategy: contentStrategy || null,
-          custom_system_prompt: customSystemPrompt || null,
-        }).eq("user_id", user.id),
-        supabase.from("brand_voice").update({
-          writing_traits: writingTraits,
-          words_to_avoid: wordsToAvoid,
-          signature_phrases: signaturePhrases,
-          preferred_hooks: preferredHooks,
-        }).eq("user_id", user.id),
-      ]);
-      if (profileRes.error) throw profileRes.error;
-      if (voiceRes.error) throw voiceRes.error;
+      const normalizedDisplayName = displayName.trim() || null;
+      const normalizedTwitterHandle = twitterHandle.trim() || null;
+      const normalizedPrimaryNiche = primaryNiche.trim() || null;
+      const normalizedContentStrategy = contentStrategy.trim() || null;
+      const normalizedCustomSystemPrompt = customSystemPrompt.trim() || null;
+
+      const profileUpdates: Record<string, unknown> = {};
+      if (normalizedDisplayName !== (profile.display_name ?? null)) profileUpdates.display_name = normalizedDisplayName;
+      if (normalizedTwitterHandle !== (profile.twitter_handle ?? null)) profileUpdates.twitter_handle = normalizedTwitterHandle;
+      if (normalizedPrimaryNiche !== (profile.primary_niche ?? null)) profileUpdates.primary_niche = normalizedPrimaryNiche;
+      if (brandTone !== profile.brand_tone) profileUpdates.brand_tone = brandTone;
+      if (growthGoal !== profile.growth_goal) profileUpdates.growth_goal = growthGoal;
+      if (!areStringArraysEqual(skills, profile.skills || [])) profileUpdates.skills = skills;
+      if (normalizedContentStrategy !== (profile.content_strategy ?? null)) profileUpdates.content_strategy = normalizedContentStrategy;
+      if (normalizedCustomSystemPrompt !== (profile.custom_system_prompt ?? null)) profileUpdates.custom_system_prompt = normalizedCustomSystemPrompt;
+
+      const voiceUpdates: Record<string, unknown> = {};
+      if (!areStringArraysEqual(writingTraits, brandVoice.writing_traits || [])) voiceUpdates.writing_traits = writingTraits;
+      if (!areStringArraysEqual(wordsToAvoid, brandVoice.words_to_avoid || [])) voiceUpdates.words_to_avoid = wordsToAvoid;
+      if (!areStringArraysEqual(signaturePhrases, brandVoice.signature_phrases || [])) voiceUpdates.signature_phrases = signaturePhrases;
+      if (!areStringArraysEqual(preferredHooks, brandVoice.preferred_hooks || [])) voiceUpdates.preferred_hooks = preferredHooks;
+
+      const updateRequests: any[] = [];
+
+      if (Object.keys(profileUpdates).length > 0) {
+        updateRequests.push(
+          supabase.from("profiles").update(profileUpdates).eq("user_id", user.id),
+        );
+      }
+
+      if (Object.keys(voiceUpdates).length > 0) {
+        updateRequests.push(
+          supabase.from("brand_voice").update(voiceUpdates).eq("user_id", user.id),
+        );
+      }
+
+      if (updateRequests.length === 0) {
+        setSaveStatus("idle");
+        toast({ title: "No changes to save" });
+        return;
+      }
+
+      const responses = await Promise.all(updateRequests);
+      const firstError = responses.find((response) => response.error)?.error;
+
+      if (firstError) {
+        throw firstError;
+      }
+
       await refreshProfile();
       toast({ title: "Settings saved" });
       setSaveStatus("saved");
@@ -249,28 +290,25 @@ export function SettingsTab() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Brand Tone</Label>
-                  <Select value={brandTone} onValueChange={setBrandTone}>
+                  <Select value={brandTone} onValueChange={(value) => setBrandTone(value as "authoritative" | "relatable" | "bold" | "playful")}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="authoritative">Authoritative</SelectItem>
-                      <SelectItem value="casual">Casual</SelectItem>
-                      <SelectItem value="witty">Witty</SelectItem>
-                      <SelectItem value="provocative">Provocative</SelectItem>
-                      <SelectItem value="inspirational">Inspirational</SelectItem>
-                      <SelectItem value="educational">Educational</SelectItem>
+                      <SelectItem value="relatable">Relatable</SelectItem>
+                      <SelectItem value="bold">Bold</SelectItem>
+                      <SelectItem value="playful">Playful</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
                   <Label>Growth Goal</Label>
-                  <Select value={growthGoal} onValueChange={setGrowthGoal}>
+                  <Select value={growthGoal} onValueChange={(value) => setGrowthGoal(value as "followers" | "leads" | "sales" | "authority")}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="followers">Grow Followers</SelectItem>
-                      <SelectItem value="engagement">Boost Engagement</SelectItem>
-                      <SelectItem value="monetization">Monetization</SelectItem>
+                      <SelectItem value="leads">Get More Leads</SelectItem>
+                      <SelectItem value="sales">Drive Sales</SelectItem>
                       <SelectItem value="authority">Build Authority</SelectItem>
-                      <SelectItem value="community">Community Building</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -361,7 +399,7 @@ export function SettingsTab() {
 
           {/* Save */}
           <div className="sticky bottom-4 flex justify-end pb-4">
-            <Button onClick={handleSave} disabled={saveStatus === "saving"} variant="viral" className="gap-2 shadow-lg">
+            <Button onClick={handleSave} disabled={saveStatus === "saving" || !isHydrated || !profile || !brandVoice} variant="viral" className="gap-2 shadow-lg">
               {saveStatus === "saving" ? <Loader2 className="h-4 w-4 animate-spin" /> : saveStatus === "saved" ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
               {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved!" : "Save Settings"}
             </Button>
