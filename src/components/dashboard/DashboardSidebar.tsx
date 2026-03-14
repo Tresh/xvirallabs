@@ -50,8 +50,16 @@ interface DashboardSidebarProps {
   };
 }
 
-export function DashboardSidebar({ activeTab, onTabChange, onSignOut }: DashboardSidebarProps) {
+export function DashboardSidebar({ activeTab, onTabChange, onSignOut, memoryCounts }: DashboardSidebarProps) {
   const { theme, toggleTheme } = useTheme();
+
+  const getBadge = (id: string) => {
+    if (id === "daily-feed") return "NEW";
+    if (id === "analyses" && (memoryCounts?.analyses ?? 0) > 0) return String(memoryCounts?.analyses);
+    if (id === "patterns" && (memoryCounts?.patterns ?? 0) > 0) return String(memoryCounts?.patterns);
+    if (id === "ideas" && (memoryCounts?.ideas ?? 0) > 0) return String(memoryCounts?.ideas);
+    return null;
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -65,24 +73,28 @@ export function DashboardSidebar({ activeTab, onTabChange, onSignOut }: Dashboar
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    isActive={activeTab === item.id}
-                    onClick={() => onTabChange(item.id)}
-                    tooltip={item.title}
-                    className="relative"
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                    {item.badge && (
-                      <Badge className="ml-auto text-[9px] h-4 px-1.5 bg-primary/20 text-primary border-primary/30 font-bold">
-                        {item.badge}
-                      </Badge>
-                    )}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navItems.map((item) => {
+                const badge = getBadge(item.id);
+
+                return (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      isActive={activeTab === item.id}
+                      onClick={() => onTabChange(item.id)}
+                      tooltip={item.title}
+                      className="relative"
+                    >
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                      {badge && (
+                        <Badge className="ml-auto text-[9px] h-4 px-1.5 bg-primary/20 text-primary border-primary/30 font-bold">
+                          {badge}
+                        </Badge>
+                      )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
