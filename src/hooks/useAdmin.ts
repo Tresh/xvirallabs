@@ -51,15 +51,14 @@ export function useAdmin() {
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", user.id)
-        .maybeSingle();
+        .eq("user_id", user.id);
       
       if (error) {
         console.error("Error checking admin status:", error);
         return false;
       }
       
-      return data?.role === "admin";
+      return (data ?? []).some((row) => row.role === "admin");
     },
     enabled: !!user?.id,
   });
