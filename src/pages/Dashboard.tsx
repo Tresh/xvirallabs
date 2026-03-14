@@ -21,6 +21,7 @@ import { IdeaCard } from "@/components/dashboard/IdeaCard";
 import { ExpandToLongFormDialog } from "@/components/dashboard/ExpandToLongFormDialog";
 import { DailyFeed } from "@/components/dashboard/DailyFeed";
 import { GrowthTracker } from "@/components/dashboard/GrowthTracker";
+import { SettingsTab } from "@/components/dashboard/SettingsTab";
 
 export default function Dashboard() {
   const { user, profile, isLoading: authLoading, signOut } = useAuth();
