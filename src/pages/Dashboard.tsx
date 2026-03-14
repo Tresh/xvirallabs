@@ -164,6 +164,7 @@ export default function Dashboard() {
             {activeTab === "content-lab" && <ContentLabTab />}
             {activeTab === "memory" && <MemoryTab />}
             {activeTab === "plans" && <PricingPlans />}
+            {activeTab === "settings" && <SettingsTab />}
 
             {activeTab === "analyses" && (
               analyses.length === 0 ? (
