@@ -7,6 +7,7 @@ import {
   Zap,
   TrendingUp,
   Settings,
+  Sparkles,
 } from "lucide-react";
 import {
   Sidebar,
