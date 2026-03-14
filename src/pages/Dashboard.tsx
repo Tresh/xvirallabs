@@ -29,7 +29,9 @@ export default function Dashboard() {
     getStats, fetchMemory
   } = useViralMemory();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("daily-feed");
+  const [activeTab, setActiveTab] = useState(() => {
+    return sessionStorage.getItem("dashboard-tab") || "daily-feed";
+  });
   const [expandDialogOpen, setExpandDialogOpen] = useState(false);
   const [expandContent, setExpandContent] = useState("");
   const [expandTitle, setExpandTitle] = useState("");
