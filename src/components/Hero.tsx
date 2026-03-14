@@ -18,9 +18,9 @@ export function Hero() {
             </span>
           </div>
 
-          <h1 className="text-4xl font-bold tracking-tight mb-5 text-foreground animate-fade-in leading-[1.1] md:text-5xl" style={{ animationDelay: "0.1s" }}>
+          <h1 className="text-[2.25rem] sm:text-4xl md:text-5xl font-bold tracking-tight mb-5 text-foreground animate-fade-in leading-[1.15] sm:leading-[1.1]" style={{ animationDelay: "0.1s" }}>
             15 posts written in{" "}
-            <span className="text-primary">your voice.</span>
+            <span className="text-primary whitespace-nowrap">your voice.</span>
             <br />Every morning.
           </h1>
 
