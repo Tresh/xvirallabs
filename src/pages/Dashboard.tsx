@@ -24,6 +24,7 @@ import { GrowthTracker } from "@/components/dashboard/GrowthTracker";
 
 export default function Dashboard() {
   const { user, profile, isLoading: authLoading, signOut } = useAuth();
+  const { remaining, isUnlimited, isLoading: usageLoading, dailyLimit } = useDailyUsage();
   const {
     analyses, patterns, ideas, isLoading,
     deleteAnalysis, togglePinAnalysis, deletePattern,
