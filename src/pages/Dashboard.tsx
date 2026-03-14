@@ -47,6 +47,11 @@ export default function Dashboard() {
     return () => window.removeEventListener("switch-tab", handler);
   }, []);
 
+  // Persist active tab to sessionStorage
+  useEffect(() => {
+    sessionStorage.setItem("dashboard-tab", activeTab);
+  }, [activeTab]);
+
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
