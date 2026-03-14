@@ -33,9 +33,9 @@ function ViralScoreBadge({ score }: { score?: number }) {
     : score >= 70 ? "text-yellow-400 bg-yellow-400/10 border-yellow-400/20"
     : "text-muted-foreground bg-muted border-border";
   return (
-    <Badge variant="outline" className={`text-[10px] font-mono ${color}`}>
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-mono font-semibold transition-colors ${color}`}>
       ⚡ {score}
-    </Badge>
+    </span>
   );
 }
 

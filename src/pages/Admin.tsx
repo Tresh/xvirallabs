@@ -27,18 +27,19 @@ export default function Admin() {
   } = useAdmin();
 
   useEffect(() => {
-    if (!isAuthLoading && !user) {
+    // Only redirect after BOTH auth and admin check are fully resolved
+    if (isAuthLoading) return;
+    if (!user) {
       navigate("/auth");
+      return;
     }
-  }, [user, isAuthLoading, navigate]);
-
-  useEffect(() => {
+    // Wait for admin check to complete before redirecting
     if (!isCheckingAdmin && isAdmin === false) {
       navigate("/dashboard");
     }
-  }, [isAdmin, isCheckingAdmin, navigate]);
+  }, [user, isAuthLoading, isAdmin, isCheckingAdmin, navigate]);
 
-  if (isAuthLoading || isCheckingAdmin) {
+  if (isAuthLoading || isCheckingAdmin || isAdmin === undefined) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
