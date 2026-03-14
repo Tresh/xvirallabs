@@ -18,14 +18,14 @@ export function Hero() {
             </span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-5 text-foreground animate-fade-in leading-[1.1]" style={{ animationDelay: "0.1s" }}>
+          <h1 className="text-4xl font-bold tracking-tight mb-5 text-foreground animate-fade-in leading-[1.1] md:text-5xl" style={{ animationDelay: "0.1s" }}>
             15 posts written in{" "}
             <span className="text-primary">your voice.</span>
             <br />Every morning.
           </h1>
 
-          <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mb-10 animate-fade-in leading-relaxed" style={{ animationDelay: "0.2s" }}>
-            XViralLabs researches what's trending in your niche, writes tweets, threads, and articles in your voice — then you approve the best ones in 30 seconds.
+          <p className="text-base text-muted-foreground max-w-xl mx-auto mb-10 animate-fade-in leading-relaxed md:text-base" style={{ animationDelay: "0.2s" }}>XViralLabs researches what's trending in your niche, writes tweets, threads, and articles in your voice, then you approve the best ones in 30 seconds.
+
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-14 animate-fade-in" style={{ animationDelay: "0.3s" }}>
@@ -57,6 +57,6 @@ export function Hero() {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>);
+
 }
