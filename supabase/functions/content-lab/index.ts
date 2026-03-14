@@ -1145,6 +1145,83 @@ Generate comprehensive, well-researched content that expands on the original ide
         }
       }
 
+      // ===== DAILY GROWTH FEED =====
+      case "generate_daily_feed": {
+        const {
+          niche, brandTone, twitterHandle, displayName,
+          writingTraits, wordsToAvoid, signaturePhrases,
+          contentStrategy, skills, customSystemPrompt, postCount
+        } = params;
+
+        const count = Math.min(postCount || 15, 20);
+
+        const dailySystemPrompt = `You are an elite Twitter/X content strategist generating a personalized daily content batch for a creator.
+
+CREATOR PROFILE:
+- Name: ${displayName || "Creator"}
+- Niche: ${niche || "entrepreneurship"}  
+- Tone: ${brandTone || "authoritative"}
+${twitterHandle ? `- Handle: @${twitterHandle}` : ""}
+${skills?.length ? `- Expertise: ${skills.join(", ")}` : ""}
+${writingTraits?.length ? `- Writing style: ${writingTraits.join(", ")}` : ""}
+${wordsToAvoid?.length ? `- NEVER use these words: ${wordsToAvoid.join(", ")}` : ""}
+${signaturePhrases?.length ? `- Signature phrases to occasionally use: ${signaturePhrases.join(", ")}` : ""}
+${contentStrategy ? `- Content strategy: ${contentStrategy}` : ""}
+${customSystemPrompt ? `- Special instructions: ${customSystemPrompt}` : ""}
+
+CONTENT RULES:
+- Write in this creator's EXACT voice — not generic AI
+- Every post must feel native to the platform
+- No hashtags
+- No emoji spam (max 1 per post if it genuinely fits the tone)
+- Short punchy sentences
+- Each post must stop the scroll`;
+
+        const dailyUserPrompt = `Generate exactly ${count} pieces of content for today. Use this MIX:
+- ${Math.floor(count * 0.55)} tweets (under 280 chars, punchy, scroll-stopping)
+- ${Math.floor(count * 0.2)} thread starters (hook only, under 280 chars, creates curiosity gap)
+- ${Math.floor(count * 0.15)} LinkedIn-style posts (150-300 chars, professional but engaging)
+- ${Math.ceil(count * 0.1)} longer insights (300-450 chars, in-depth, screenshot-worthy)
+
+Vary psychology triggers across posts: curiosity, authority, relatability, controversy, fomo, identity, rage
+
+For EACH post output exactly this JSON structure:
+{
+  "content": "<the actual post text — raw and ready to copy-paste>",
+  "format": "<tweet|thread|article|linkedin>",
+  "psychology_trigger": "<curiosity|authority|relatability|controversy|fomo|identity|rage>",
+  "viral_score": <integer 60-98>,
+  "why_it_works": "<1-2 sentences explaining the specific psychology trigger used>"
+}
+
+Output ONLY a valid JSON array of exactly ${count} objects. No markdown. No explanation. Just the array.`;
+
+        try {
+          const dailyContent = await callAI(dailySystemPrompt, dailyUserPrompt);
+          const dailyPosts = parseAIJson(dailyContent);
+
+          if (!Array.isArray(dailyPosts) || dailyPosts.length === 0) {
+            throw new Error("Invalid response — no posts returned");
+          }
+
+          return new Response(
+            JSON.stringify({ success: true, posts: dailyPosts, count: dailyPosts.length }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          return new Response(
+            JSON.stringify({ error: e.message || "Generation failed" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+
       default:
         return new Response(
           JSON.stringify({ error: "Unknown action" }),
