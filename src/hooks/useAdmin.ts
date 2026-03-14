@@ -46,7 +46,7 @@ export function useAdmin() {
   const { data: isAdmin, isLoading: isCheckingAdmin } = useQuery({
     queryKey: ["user-role", user?.id],
     queryFn: async () => {
-      if (!user?.id) return false;
+      if (!user?.id) return false as const;
       
       const { data, error } = await supabase
         .from("user_roles")
