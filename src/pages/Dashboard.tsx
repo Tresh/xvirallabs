@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useViralMemory } from "@/hooks/useViralMemory";
 import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { UsageIndicator } from "@/components/analyze/UsageIndicator";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
@@ -15,6 +15,7 @@ import { DailyFeed } from "@/components/dashboard/DailyFeed";
 import { GrowthTracker } from "@/components/dashboard/GrowthTracker";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { UnifiedAnalysesTab } from "@/components/dashboard/UnifiedAnalysesTab";
+import { AnalyzeTab } from "@/components/dashboard/AnalyzeTab";
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
