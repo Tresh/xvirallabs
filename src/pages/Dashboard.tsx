@@ -4,38 +4,29 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useViralMemory } from "@/hooks/useViralMemory";
 import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Microscope, Dna, Lightbulb, BarChart3,
-  RefreshCw, ArrowRight, Loader2, TrendingUp, Zap,
-} from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { UsageIndicator } from "@/components/analyze/UsageIndicator";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { PricingPlans } from "@/components/dashboard/PricingPlans";
 import { ContentLabTab } from "@/components/content-lab/ContentLabTab";
-
-import { AnalysisCard } from "@/components/dashboard/AnalysisCard";
-import { PatternCard } from "@/components/dashboard/PatternCard";
-import { IdeaCard } from "@/components/dashboard/IdeaCard";
 import { ExpandToLongFormDialog } from "@/components/dashboard/ExpandToLongFormDialog";
 import { DailyFeed } from "@/components/dashboard/DailyFeed";
 import { GrowthTracker } from "@/components/dashboard/GrowthTracker";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
+import { UnifiedAnalysesTab } from "@/components/dashboard/UnifiedAnalysesTab";
 
 export default function Dashboard() {
-  const { user, profile, isLoading: authLoading, signOut } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { remaining, isUnlimited, isLoading: usageLoading, dailyLimit } = useDailyUsage();
   const {
     analyses, patterns, ideas, isLoading,
     deleteAnalysis, togglePinAnalysis, deletePattern,
     incrementPatternUsage, updateIdeaStatus, deleteIdea,
-    getStats, fetchMemory
+    fetchMemory,
   } = useViralMemory();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(() => {
-    return sessionStorage.getItem("dashboard-tab") || "daily-feed";
-  });
+  const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem("dashboard-tab") || "daily-feed");
   const [expandDialogOpen, setExpandDialogOpen] = useState(false);
   const [expandContent, setExpandContent] = useState("");
   const [expandTitle, setExpandTitle] = useState("");
@@ -44,31 +35,21 @@ export default function Dashboard() {
     if (!authLoading && !user) navigate("/auth");
   }, [user, authLoading, navigate]);
 
-  // Listen for tab-switch events from child components
   useEffect(() => {
     const handler = (e: any) => setActiveTab(e.detail);
     window.addEventListener("switch-tab", handler);
     return () => window.removeEventListener("switch-tab", handler);
   }, []);
 
-  // Persist active tab to sessionStorage
   useEffect(() => {
     sessionStorage.setItem("dashboard-tab", activeTab);
   }, [activeTab]);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
 
   const handleExpandToLongForm = (content: string, title: string) => {
     setExpandContent(content);
     setExpandTitle(title);
     setExpandDialogOpen(true);
   };
-
-  const stats = getStats();
-  const hasSavedLibrary = analyses.length + patterns.length + ideas.length > 0;
 
   if (authLoading || isLoading) {
     return (
@@ -95,161 +76,36 @@ export default function Dashboard() {
             <SidebarTrigger />
             <div className="flex items-center gap-3">
               <UsageIndicator remaining={remaining} isUnlimited={isUnlimited} isLoading={usageLoading} dailyLimit={dailyLimit} />
-            <Link to="/analyze">
-              <Button variant="viral" size="sm" className="gap-2">
-                New Analysis
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
-            </Link>
+              <Link to="/analyze">
+                <Button variant="viral" size="sm" className="gap-2">
+                  New Analysis
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </Link>
             </div>
           </header>
 
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-            {/* Quick stats — show on library tabs only */}
-            {!["daily-feed", "content-lab", "plans", "growth", "settings"].includes(activeTab) && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                {[
-                  { icon: Microscope, value: stats.totalAnalyses, label: "Analyses" },
-                  { icon: Dna, value: stats.totalPatterns, label: "Patterns" },
-                  { icon: Lightbulb, value: stats.unusedIdeas, label: "Ready Ideas" },
-                  { icon: TrendingUp, value: `${stats.avgReplyPotential}/10`, label: "Avg Reply Score" },
-                ].map(({ icon: Icon, value, label }) => (
-                  <Card key={label}>
-                    <CardContent className="pt-6">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-secondary">
-                          <Icon className="h-5 w-5 text-foreground" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold">{value}</p>
-                          <p className="text-xs text-muted-foreground">{label}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-
-            {/* Saved memory shortcut */}
-            {activeTab === "daily-feed" && hasSavedLibrary && (
-              <Card className="mb-6 border-primary/30 bg-secondary/30">
-                <CardContent className="pt-6">
-                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div>
-                      <h2 className="text-sm font-semibold">Your saved memory is available</h2>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {analyses.length} analyses • {patterns.length} patterns • {ideas.length} ideas
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button variant="outline" size="sm" onClick={() => setActiveTab("analyses")} disabled={analyses.length === 0}>
-                        Open Analyses
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => setActiveTab("patterns")} disabled={patterns.length === 0}>
-                        Open Patterns
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => setActiveTab("ideas")} disabled={ideas.length === 0}>
-                        Open Ideas
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Tab content */}
             {activeTab === "daily-feed" && <DailyFeed />}
             {activeTab === "growth" && <GrowthTracker />}
             {activeTab === "content-lab" && <ContentLabTab />}
             {activeTab === "settings" && <SettingsTab />}
             {activeTab === "plans" && <PricingPlans />}
-
             {activeTab === "analyses" && (
-              analyses.length === 0 ? (
-                <Card>
-                  <CardContent className="pt-6 text-center py-12">
-                    <Microscope className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                    <h3 className="font-semibold mb-2">No analyses yet</h3>
-                    <p className="text-sm text-muted-foreground mb-4">Analyze a viral tweet to build your library</p>
-                    <Link to="/analyze">
-                      <Button variant="viral">
-                        Analyze Your First Tweet <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {analyses.sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0)).map(analysis => (
-                    <AnalysisCard
-                      key={analysis.id}
-                      analysis={analysis}
-                      onTogglePin={togglePinAnalysis}
-                      onDelete={deleteAnalysis}
-                      onExpandToLongForm={handleExpandToLongForm}
-                    />
-                  ))}
-                </div>
-              )
-            )}
-
-            {activeTab === "patterns" && (
-              patterns.length === 0 ? (
-                <Card>
-                  <CardContent className="pt-6 text-center py-12">
-                    <Dna className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                    <h3 className="font-semibold mb-2">No patterns saved</h3>
-                    <p className="text-sm text-muted-foreground">Use Mode 3 (Extract Pattern) and save your findings</p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {patterns.map(pattern => (
-                    <PatternCard
-                      key={pattern.id}
-                      pattern={pattern}
-                      onDelete={deletePattern}
-                      onIncrementUsage={incrementPatternUsage}
-                      onExpandToLongForm={handleExpandToLongForm}
-                    />
-                  ))}
-                </div>
-              )
-            )}
-
-            {activeTab === "ideas" && (
-              ideas.length === 0 ? (
-                <Card>
-                  <CardContent className="pt-6 text-center py-12">
-                    <Lightbulb className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                    <h3 className="font-semibold mb-2">Idea vault is empty</h3>
-                    <p className="text-sm text-muted-foreground">Use Mode 8 (Ideas) to generate viral content ideas</p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {ideas.map(idea => (
-                    <IdeaCard
-                      key={idea.id}
-                      idea={idea}
-                      onUpdateStatus={updateIdeaStatus}
-                      onDelete={deleteIdea}
-                      onExpandToLongForm={handleExpandToLongForm}
-                    />
-                  ))}
-                </div>
-              )
-            )}
-
-            {/* Refresh button for library tabs */}
-            {["analyses", "patterns", "ideas"].includes(activeTab) && (
-              <div className="mt-6 text-center">
-                <Button variant="ghost" onClick={fetchMemory} disabled={isLoading}>
-                  <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
-                  Refresh
-                </Button>
-              </div>
+              <UnifiedAnalysesTab
+                analyses={analyses}
+                patterns={patterns}
+                ideas={ideas}
+                isLoading={isLoading}
+                onTogglePin={togglePinAnalysis}
+                onDeleteAnalysis={deleteAnalysis}
+                onDeletePattern={deletePattern}
+                onIncrementUsage={incrementPatternUsage}
+                onUpdateIdeaStatus={updateIdeaStatus}
+                onDeleteIdea={deleteIdea}
+                onExpandToLongForm={handleExpandToLongForm}
+                onRefresh={fetchMemory}
+              />
             )}
           </main>
         </div>
