@@ -294,24 +294,21 @@ export function SettingsTab() {
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="authoritative">Authoritative</SelectItem>
-                      <SelectItem value="casual">Casual</SelectItem>
-                      <SelectItem value="witty">Witty</SelectItem>
-                      <SelectItem value="provocative">Provocative</SelectItem>
-                      <SelectItem value="inspirational">Inspirational</SelectItem>
-                      <SelectItem value="educational">Educational</SelectItem>
+                      <SelectItem value="relatable">Relatable</SelectItem>
+                      <SelectItem value="bold">Bold</SelectItem>
+                      <SelectItem value="playful">Playful</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
                   <Label>Growth Goal</Label>
-                  <Select value={growthGoal} onValueChange={setGrowthGoal}>
+                  <Select value={growthGoal} onValueChange={(value) => setGrowthGoal(value as "followers" | "leads" | "sales" | "authority")}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="followers">Grow Followers</SelectItem>
-                      <SelectItem value="engagement">Boost Engagement</SelectItem>
-                      <SelectItem value="monetization">Monetization</SelectItem>
+                      <SelectItem value="leads">Get More Leads</SelectItem>
+                      <SelectItem value="sales">Drive Sales</SelectItem>
                       <SelectItem value="authority">Build Authority</SelectItem>
-                      <SelectItem value="community">Community Building</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
