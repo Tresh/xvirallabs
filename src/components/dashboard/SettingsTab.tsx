@@ -124,7 +124,7 @@ export function SettingsTab() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Brand Tone</Label>
-              <Select value={brandTone} onValueChange={setBrandTone}>
+              <Select value={brandTone} onValueChange={(v: string) => setBrandTone(v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="authoritative">Authoritative</SelectItem>
