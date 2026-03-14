@@ -138,7 +138,7 @@ export function SettingsTab() {
             </div>
             <div className="space-y-2">
               <Label>Growth Goal</Label>
-              <Select value={growthGoal} onValueChange={setGrowthGoal}>
+              <Select value={growthGoal} onValueChange={(v: string) => setGrowthGoal(v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="followers">Grow Followers</SelectItem>
