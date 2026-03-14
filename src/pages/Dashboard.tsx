@@ -57,6 +57,7 @@ export default function Dashboard() {
   };
 
   const stats = getStats();
+  const hasSavedLibrary = analyses.length + patterns.length + ideas.length > 0;
 
   if (authLoading || isLoading) {
     return (
@@ -76,6 +77,7 @@ export default function Dashboard() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           onSignOut={handleSignOut}
+          memoryCounts={{ analyses: analyses.length, patterns: patterns.length, ideas: ideas.length }}
         />
 
         <div className="flex-1 flex flex-col min-w-0">
