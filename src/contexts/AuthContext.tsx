@@ -52,25 +52,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", userId)
-      .maybeSingle();
-    
-    if (profileData) {
-      setProfile(profileData as Profile);
-    }
+    const [{ data: profileData }, { data: brandData }] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle(),
+      supabase
+        .from("brand_voice")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle(),
+    ]);
 
-    const { data: brandData } = await supabase
-      .from("brand_voice")
-      .select("*")
-      .eq("user_id", userId)
-      .maybeSingle();
-    
-    if (brandData) {
-      setBrandVoice(brandData as BrandVoice);
-    }
+    setProfile((profileData as Profile | null) ?? null);
+    setBrandVoice((brandData as BrandVoice | null) ?? null);
   };
 
   useEffect(() => {
