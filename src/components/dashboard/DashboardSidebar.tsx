@@ -10,6 +10,8 @@ import {
   Moon,
   Sun,
   Brain,
+  Zap,
+  TrendingUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -24,14 +26,17 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { useTheme } from "@/hooks/useTheme";
+import { Badge } from "@/components/ui/badge";
 
 const navItems = [
-  { id: "content-lab", title: "Content Lab", icon: Calendar },
-  { id: "analyses", title: "Analyses", icon: Microscope },
-  { id: "patterns", title: "Patterns", icon: Dna },
-  { id: "ideas", title: "Ideas", icon: Lightbulb },
-  { id: "memory", title: "Memory", icon: Brain },
-  { id: "plans", title: "Plans", icon: CreditCard },
+  { id: "daily-feed",  title: "Daily Feed",   icon: Zap,        badge: "NEW" as string | null },
+  { id: "content-lab", title: "Content Lab",  icon: Calendar,   badge: null },
+  { id: "growth",      title: "Growth",       icon: TrendingUp, badge: null },
+  { id: "analyses",    title: "Analyses",     icon: Microscope, badge: null },
+  { id: "patterns",    title: "Patterns",     icon: Dna,        badge: null },
+  { id: "ideas",       title: "Ideas",        icon: Lightbulb,  badge: null },
+  { id: "memory",      title: "Memory",       icon: Brain,      badge: null },
+  { id: "plans",       title: "Plans",        icon: CreditCard, badge: null },
 ];
 
 interface DashboardSidebarProps {
@@ -40,11 +45,7 @@ interface DashboardSidebarProps {
   onSignOut: () => void;
 }
 
-export function DashboardSidebar({
-  activeTab,
-  onTabChange,
-  onSignOut,
-}: DashboardSidebarProps) {
+export function DashboardSidebar({ activeTab, onTabChange, onSignOut }: DashboardSidebarProps) {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -65,9 +66,15 @@ export function DashboardSidebar({
                     isActive={activeTab === item.id}
                     onClick={() => onTabChange(item.id)}
                     tooltip={item.title}
+                    className="relative"
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.title}</span>
+                    {item.badge && (
+                      <Badge className="ml-auto text-[9px] h-4 px-1.5 bg-primary/20 text-primary border-primary/30 font-bold">
+                        {item.badge}
+                      </Badge>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
