@@ -98,11 +98,9 @@ export function UnifiedAnalysesTab({
           <Microscope className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
           <h3 className="font-semibold mb-2">No saved items yet</h3>
           <p className="text-sm text-muted-foreground mb-4">Analyze a viral tweet to start building your library</p>
-          <Link to="/analyze">
-            <Button variant="viral">
-              Analyze Your First Tweet <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+          <Button variant="viral" onClick={() => window.dispatchEvent(new CustomEvent("switch-tab", { detail: "analyze" }))}>
+            Analyze Your First Tweet <ArrowRight className="h-4 w-4" />
+          </Button>
         </CardContent>
       </Card>
     );
