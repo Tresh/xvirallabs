@@ -44,8 +44,8 @@ export function SettingsTab() {
       display_name: displayName || null,
       twitter_handle: twitterHandle || null,
       primary_niche: primaryNiche || null,
-      brand_tone: brandTone,
-      growth_goal: growthGoal,
+      brand_tone: brandTone as any,
+      growth_goal: growthGoal as any,
     });
 
     if (error) {
