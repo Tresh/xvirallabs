@@ -12,7 +12,7 @@ export function Hero() {
         <div className="max-w-2xl mx-auto text-center">
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-sm mb-8 animate-fade-in">
-            <Zap className="h-3.5 w-3.5 text-primary" />
+            
             <span className="font-mono text-primary text-xs font-medium tracking-wide">
               AI Content Co-Pilot for Twitter/X
             </span>
