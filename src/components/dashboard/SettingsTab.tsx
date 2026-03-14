@@ -24,8 +24,8 @@ export function SettingsTab() {
   const [displayName, setDisplayName] = useState(profile?.display_name || "");
   const [twitterHandle, setTwitterHandle] = useState(profile?.twitter_handle || "");
   const [primaryNiche, setPrimaryNiche] = useState(profile?.primary_niche || "");
-  const [brandTone, setBrandTone] = useState(profile?.brand_tone || "authoritative");
-  const [growthGoal, setGrowthGoal] = useState(profile?.growth_goal || "followers");
+  const [brandTone, setBrandTone] = useState<string>(profile?.brand_tone || "authoritative");
+  const [growthGoal, setGrowthGoal] = useState<string>(profile?.growth_goal || "followers");
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 
   useEffect(() => {
