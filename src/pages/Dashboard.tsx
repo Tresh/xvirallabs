@@ -101,6 +101,7 @@ export default function Dashboard() {
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </Link>
+            </div>
           </header>
 
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
