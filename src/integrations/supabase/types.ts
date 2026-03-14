@@ -439,6 +439,51 @@ export type Database = {
           },
         ]
       }
+      daily_posts: {
+        Row: {
+          content: string
+          created_at: string
+          format: string
+          generated_date: string
+          id: string
+          posted_at: string | null
+          psychology_trigger: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          viral_score: number | null
+          why_it_works: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          format?: string
+          generated_date?: string
+          id?: string
+          posted_at?: string | null
+          psychology_trigger?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          viral_score?: number | null
+          why_it_works?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          format?: string
+          generated_date?: string
+          id?: string
+          posted_at?: string | null
+          psychology_trigger?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          viral_score?: number | null
+          why_it_works?: string | null
+        }
+        Relationships: []
+      }
       daily_usage: {
         Row: {
           analysis_count: number
@@ -463,6 +508,51 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      growth_snapshots: {
+        Row: {
+          created_at: string
+          follower_count: number | null
+          following_count: number | null
+          id: string
+          notes: string | null
+          posts_published: number | null
+          snapshot_date: string
+          total_impressions: number | null
+          total_likes: number | null
+          total_replies: number | null
+          user_id: string
+          weekly_gain: number | null
+        }
+        Insert: {
+          created_at?: string
+          follower_count?: number | null
+          following_count?: number | null
+          id?: string
+          notes?: string | null
+          posts_published?: number | null
+          snapshot_date?: string
+          total_impressions?: number | null
+          total_likes?: number | null
+          total_replies?: number | null
+          user_id: string
+          weekly_gain?: number | null
+        }
+        Update: {
+          created_at?: string
+          follower_count?: number | null
+          following_count?: number | null
+          id?: string
+          notes?: string | null
+          posts_published?: number | null
+          snapshot_date?: string
+          total_impressions?: number | null
+          total_likes?: number | null
+          total_replies?: number | null
+          user_id?: string
+          weekly_gain?: number | null
         }
         Relationships: []
       }
