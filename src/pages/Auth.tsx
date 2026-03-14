@@ -9,8 +9,8 @@ import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, FlaskConical, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Loader2, FlaskConical } from "lucide-react";
+
 import { Separator } from "@/components/ui/separator";
 
 export default function Auth() {
@@ -66,10 +66,6 @@ export default function Auth() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
       <div className="w-full max-w-md relative z-10">
-        <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8">
-          <ArrowLeft className="h-4 w-4" />
-          Back to home
-        </Link>
         
         <div className="flex items-center justify-center mb-8">
           <Logo size="lg" />
