@@ -162,7 +162,7 @@ export default function Dashboard() {
             {activeTab === "daily-feed" && <DailyFeed />}
             {activeTab === "growth" && <GrowthTracker />}
             {activeTab === "content-lab" && <ContentLabTab />}
-            {activeTab === "memory" && <MemoryTab />}
+            {activeTab === "settings" && <SettingsTab />}
             {activeTab === "plans" && <PricingPlans />}
             {activeTab === "settings" && <SettingsTab />}
 
