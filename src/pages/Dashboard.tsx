@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useViralMemory } from "@/hooks/useViralMemory";
+import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Microscope, Dna, Lightbulb, BarChart3,
   RefreshCw, ArrowRight, Loader2, TrendingUp, Zap,
 } from "lucide-react";
+import { UsageIndicator } from "@/components/analyze/UsageIndicator";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { PricingPlans } from "@/components/dashboard/PricingPlans";
@@ -19,9 +21,11 @@ import { IdeaCard } from "@/components/dashboard/IdeaCard";
 import { ExpandToLongFormDialog } from "@/components/dashboard/ExpandToLongFormDialog";
 import { DailyFeed } from "@/components/dashboard/DailyFeed";
 import { GrowthTracker } from "@/components/dashboard/GrowthTracker";
+import { SettingsTab } from "@/components/dashboard/SettingsTab";
 
 export default function Dashboard() {
   const { user, profile, isLoading: authLoading, signOut } = useAuth();
+  const { remaining, isUnlimited, isLoading: usageLoading, dailyLimit } = useDailyUsage();
   const {
     analyses, patterns, ideas, isLoading,
     deleteAnalysis, togglePinAnalysis, deletePattern,
@@ -90,12 +94,15 @@ export default function Dashboard() {
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 flex items-center justify-between border-b border-border bg-background/90 backdrop-blur-md sticky top-0 z-50 px-4">
             <SidebarTrigger />
+            <div className="flex items-center gap-3">
+              <UsageIndicator remaining={remaining} isUnlimited={isUnlimited} isLoading={usageLoading} dailyLimit={dailyLimit} />
             <Link to="/analyze">
               <Button variant="viral" size="sm" className="gap-2">
                 New Analysis
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </Link>
+            </div>
           </header>
 
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
@@ -158,6 +165,7 @@ export default function Dashboard() {
             {activeTab === "content-lab" && <ContentLabTab />}
             {activeTab === "memory" && <MemoryTab />}
             {activeTab === "plans" && <PricingPlans />}
+            {activeTab === "settings" && <SettingsTab />}
 
             {activeTab === "analyses" && (
               analyses.length === 0 ? (

@@ -12,6 +12,7 @@ import {
   Brain,
   Zap,
   TrendingUp,
+  Settings,
 } from "lucide-react";
 import {
   Sidebar,
@@ -37,6 +38,7 @@ const navItems = [
   { id: "ideas", title: "Ideas", icon: Lightbulb },
   { id: "memory", title: "Memory", icon: Brain },
   { id: "plans", title: "Plans", icon: CreditCard },
+  { id: "settings", title: "Settings", icon: Settings },
 ] as const;
 
 interface DashboardSidebarProps {
