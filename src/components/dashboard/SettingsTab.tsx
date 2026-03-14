@@ -167,7 +167,7 @@ export function SettingsTab() {
       if (!areStringArraysEqual(signaturePhrases, brandVoice.signature_phrases || [])) voiceUpdates.signature_phrases = signaturePhrases;
       if (!areStringArraysEqual(preferredHooks, brandVoice.preferred_hooks || [])) voiceUpdates.preferred_hooks = preferredHooks;
 
-      const updateRequests: Promise<any>[] = [];
+      const updateRequests: any[] = [];
 
       if (Object.keys(profileUpdates).length > 0) {
         updateRequests.push(
