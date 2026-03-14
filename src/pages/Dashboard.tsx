@@ -14,7 +14,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { PricingPlans } from "@/components/dashboard/PricingPlans";
 import { ContentLabTab } from "@/components/content-lab/ContentLabTab";
-import { MemoryTab } from "@/components/dashboard/MemoryTab";
+
 import { AnalysisCard } from "@/components/dashboard/AnalysisCard";
 import { PatternCard } from "@/components/dashboard/PatternCard";
 import { IdeaCard } from "@/components/dashboard/IdeaCard";
