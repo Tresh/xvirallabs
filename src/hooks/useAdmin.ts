@@ -61,6 +61,8 @@ export function useAdmin() {
       return (data ?? []).some((row) => row.role === "admin");
     },
     enabled: !!user?.id,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 
   // Fetch platform stats (admin only)
