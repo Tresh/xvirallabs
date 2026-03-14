@@ -12,6 +12,7 @@ import {
   Brain,
   Zap,
   TrendingUp,
+  Settings,
 } from "lucide-react";
 import {
   Sidebar,
