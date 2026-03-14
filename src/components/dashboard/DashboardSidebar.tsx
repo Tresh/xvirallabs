@@ -3,10 +3,7 @@ import { Logo } from "@/components/Logo";
 import {
   Calendar,
   Microscope,
-  Dna,
-  Lightbulb,
   CreditCard,
-  Brain,
   Zap,
   TrendingUp,
   Settings,
@@ -28,8 +25,6 @@ const navItems = [
   { id: "content-lab", title: "Content Lab", icon: Calendar },
   { id: "growth", title: "Growth", icon: TrendingUp },
   { id: "analyses", title: "Analyses", icon: Microscope },
-  { id: "patterns", title: "Patterns", icon: Dna },
-  { id: "ideas", title: "Ideas", icon: Lightbulb },
   { id: "plans", title: "Plans", icon: CreditCard },
   { id: "settings", title: "Settings", icon: Settings },
 ] as const;
@@ -47,9 +42,10 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({ activeTab, onTabChange, memoryCounts }: DashboardSidebarProps) {
   const getBadge = (id: string) => {
     if (id === "daily-feed") return "NEW";
-    if (id === "analyses" && (memoryCounts?.analyses ?? 0) > 0) return String(memoryCounts?.analyses);
-    if (id === "patterns" && (memoryCounts?.patterns ?? 0) > 0) return String(memoryCounts?.patterns);
-    if (id === "ideas" && (memoryCounts?.ideas ?? 0) > 0) return String(memoryCounts?.ideas);
+    if (id === "analyses") {
+      const total = (memoryCounts?.analyses ?? 0) + (memoryCounts?.patterns ?? 0) + (memoryCounts?.ideas ?? 0);
+      return total > 0 ? String(total) : null;
+    }
     return null;
   };
 

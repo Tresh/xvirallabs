@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyUsage } from "@/hooks/useDailyUsage";
+import { useTheme } from "@/hooks/useTheme";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,8 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Zap, Shield, Save, Loader2, Check, Brain, Sparkles, MessageSquare, LogOut, X, Plus } from "lucide-react";
+import { User, Zap, Shield, Save, Loader2, Check, Brain, Sparkles, MessageSquare, LogOut, X, Plus, Moon, Sun } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -18,6 +20,7 @@ type SaveStatus = "idle" | "saving" | "saved";
 
 const sections = [
   { id: "account", label: "Account" },
+  { id: "appearance", label: "Appearance" },
   { id: "profile", label: "Profile" },
   { id: "memory", label: "Memory" },
   { id: "voice", label: "Voice & Style" },
@@ -51,25 +54,21 @@ function TagInput({ value, onChange, onAdd, tags, onRemove, placeholder }: {
 }
 
 export function SettingsTab() {
-  const { user, profile, brandVoice, updateProfile, signOut, isLoading: authLoading, refreshProfile } = useAuth();
+  const { user, profile, brandVoice, signOut, isLoading: authLoading, refreshProfile } = useAuth();
   const { remaining, isUnlimited, dailyLimit } = useDailyUsage();
+  const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Profile fields
   const [displayName, setDisplayName] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const [primaryNiche, setPrimaryNiche] = useState("");
   const [brandTone, setBrandTone] = useState("authoritative");
   const [growthGoal, setGrowthGoal] = useState("followers");
-
-  // Memory fields
   const [skills, setSkills] = useState<string[]>([]);
   const [contentStrategy, setContentStrategy] = useState("");
   const [customSystemPrompt, setCustomSystemPrompt] = useState("");
   const [skillInput, setSkillInput] = useState("");
-
-  // Voice fields
   const [writingTraits, setWritingTraits] = useState<string[]>([]);
   const [wordsToAvoid, setWordsToAvoid] = useState<string[]>([]);
   const [signaturePhrases, setSignaturePhrases] = useState<string[]>([]);
@@ -78,7 +77,6 @@ export function SettingsTab() {
   const [avoidInput, setAvoidInput] = useState("");
   const [phraseInput, setPhraseInput] = useState("");
   const [hookInput, setHookInput] = useState("");
-
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [activeSection, setActiveSection] = useState("account");
   const contentRef = useRef<HTMLDivElement>(null);
@@ -102,10 +100,7 @@ export function SettingsTab() {
     }
   }, [profile, brandVoice]);
 
-  // Scroll spy
   useEffect(() => {
-    const container = contentRef.current;
-    if (!container) return;
     const handleScroll = () => {
       const sectionEls = sections.map(s => document.getElementById(`section-${s.id}`));
       for (let i = sectionEls.length - 1; i >= 0; i--) {
@@ -178,206 +173,224 @@ export function SettingsTab() {
   }
 
   return (
-    <div className="flex gap-8 max-w-4xl mx-auto">
-      {/* Main content */}
-      <div ref={contentRef} className="flex-1 space-y-6 min-w-0">
-        <div>
-          <h1 className="text-2xl font-bold">Settings</h1>
-          <p className="text-sm text-muted-foreground">Manage your account, profile, and AI memory</p>
+    <div className="relative">
+      <div className="flex gap-8 max-w-4xl mx-auto">
+        {/* Main content */}
+        <div ref={contentRef} className="flex-1 space-y-6 min-w-0">
+
+          {/* Account */}
+          <Card id="section-account">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base"><User className="h-4 w-4" /> Account</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Email</p>
+                  <p className="text-sm text-muted-foreground">{profile?.email || user?.email}</p>
+                </div>
+                <Badge variant="secondary" className="capitalize">{profile?.tier || "free"}</Badge>
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Daily Analysis Credits</p>
+                  <p className="text-xs text-muted-foreground">
+                    {isUnlimited ? "Unlimited analyses with your plan" : `${remaining} of ${dailyLimit} remaining today`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-primary" />
+                  <span className="text-lg font-bold text-primary">{isUnlimited ? "∞" : remaining}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Appearance */}
+          <Card id="section-appearance">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                {theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />} Appearance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Dark Mode</p>
+                  <p className="text-xs text-muted-foreground">Switch between light and dark theme</p>
+                </div>
+                <Switch checked={theme === "dark"} onCheckedChange={toggleTheme} />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Profile */}
+          <Card id="section-profile">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base"><Shield className="h-4 w-4" /> Profile</CardTitle>
+              <CardDescription>How the AI personalizes content for you</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Display Name</Label>
+                  <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Twitter Handle</Label>
+                  <Input value={twitterHandle} onChange={(e) => setTwitterHandle(e.target.value)} placeholder="@handle" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Primary Niche</Label>
+                <Input value={primaryNiche} onChange={(e) => setPrimaryNiche(e.target.value)} placeholder="e.g. AI, Fitness, Finance" />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Brand Tone</Label>
+                  <Select value={brandTone} onValueChange={setBrandTone}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="authoritative">Authoritative</SelectItem>
+                      <SelectItem value="casual">Casual</SelectItem>
+                      <SelectItem value="witty">Witty</SelectItem>
+                      <SelectItem value="provocative">Provocative</SelectItem>
+                      <SelectItem value="inspirational">Inspirational</SelectItem>
+                      <SelectItem value="educational">Educational</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Growth Goal</Label>
+                  <Select value={growthGoal} onValueChange={setGrowthGoal}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="followers">Grow Followers</SelectItem>
+                      <SelectItem value="engagement">Boost Engagement</SelectItem>
+                      <SelectItem value="monetization">Monetization</SelectItem>
+                      <SelectItem value="authority">Build Authority</SelectItem>
+                      <SelectItem value="community">Community Building</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Memory */}
+          <Card id="section-memory">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base"><Brain className="h-4 w-4" /> Memory</CardTitle>
+              <CardDescription>Everything here is used by the AI to generate personalized content</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div>
+                <Label className="mb-1.5 block">Skills & Expertise</Label>
+                <TagInput value={skillInput} onChange={setSkillInput}
+                  onAdd={() => addTag(skillInput, skills, setSkills, setSkillInput)}
+                  tags={skills} onRemove={(t) => removeTag(t, skills, setSkills)}
+                  placeholder="e.g., Full-stack dev, Growth hacking" />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">Content Strategy</Label>
+                <Textarea value={contentStrategy} onChange={(e) => setContentStrategy(e.target.value)}
+                  placeholder="e.g., I'm building a personal brand around AI productivity..."
+                  className="min-h-[100px] resize-none" />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">AI Instructions</Label>
+                <Textarea value={customSystemPrompt} onChange={(e) => setCustomSystemPrompt(e.target.value)}
+                  placeholder="e.g., Always write in first person. Never use emojis."
+                  className="min-h-[100px] resize-none font-mono text-sm" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Voice & Style */}
+          <Card id="section-voice">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base"><MessageSquare className="h-4 w-4" /> Voice & Style</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div>
+                <Label className="mb-1.5 block">Writing Traits</Label>
+                <TagInput value={traitInput} onChange={setTraitInput}
+                  onAdd={() => addTag(traitInput, writingTraits, setWritingTraits, setTraitInput)}
+                  tags={writingTraits} onRemove={(t) => removeTag(t, writingTraits, setWritingTraits)}
+                  placeholder="e.g., Concise, data-driven" />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">Signature Phrases</Label>
+                <TagInput value={phraseInput} onChange={setPhraseInput}
+                  onAdd={() => addTag(phraseInput, signaturePhrases, setSignaturePhrases, setPhraseInput)}
+                  tags={signaturePhrases} onRemove={(t) => removeTag(t, signaturePhrases, setSignaturePhrases)}
+                  placeholder="e.g., Here's the thing" />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">Preferred Hook Types</Label>
+                <TagInput value={hookInput} onChange={setHookInput}
+                  onAdd={() => addTag(hookInput, preferredHooks, setPreferredHooks, setHookInput)}
+                  tags={preferredHooks} onRemove={(t) => removeTag(t, preferredHooks, setPreferredHooks)}
+                  placeholder="e.g., Curiosity, Authority" />
+              </div>
+              <div>
+                <Label className="mb-1.5 block">Words to Avoid</Label>
+                <TagInput value={avoidInput} onChange={setAvoidInput}
+                  onAdd={() => addTag(avoidInput, wordsToAvoid, setWordsToAvoid, setAvoidInput)}
+                  tags={wordsToAvoid} onRemove={(t) => removeTag(t, wordsToAvoid, setWordsToAvoid)}
+                  placeholder="e.g., Leverage, Synergy" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Sign Out */}
+          <Card id="section-signout" className="border-destructive/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Sign Out</p>
+                  <p className="text-xs text-muted-foreground">Sign out of your account on this device</p>
+                </div>
+                <Button variant="destructive" size="sm" onClick={handleSignOut} className="gap-2">
+                  <LogOut className="h-4 w-4" /> Sign Out
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Save */}
+          <div className="sticky bottom-4 flex justify-end pb-4">
+            <Button onClick={handleSave} disabled={saveStatus === "saving"} variant="viral" className="gap-2 shadow-lg">
+              {saveStatus === "saving" ? <Loader2 className="h-4 w-4 animate-spin" /> : saveStatus === "saved" ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+              {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved!" : "Save Settings"}
+            </Button>
+          </div>
         </div>
 
-        {/* Account */}
-        <Card id="section-account">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base"><User className="h-4 w-4" /> Account</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Email</p>
-                <p className="text-sm text-muted-foreground">{profile?.email || user?.email}</p>
-              </div>
-              <Badge variant="secondary" className="capitalize">{profile?.tier || "free"}</Badge>
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Daily Analysis Credits</p>
-                <p className="text-xs text-muted-foreground">
-                  {isUnlimited ? "Unlimited analyses with your plan" : `${remaining} of ${dailyLimit} remaining today`}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-primary" />
-                <span className="text-lg font-bold text-primary">{isUnlimited ? "∞" : remaining}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Profile */}
-        <Card id="section-profile">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base"><Shield className="h-4 w-4" /> Profile</CardTitle>
-            <CardDescription>How the AI personalizes content for you</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Display Name</Label>
-                <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Your name" />
-              </div>
-              <div className="space-y-2">
-                <Label>Twitter Handle</Label>
-                <Input value={twitterHandle} onChange={(e) => setTwitterHandle(e.target.value)} placeholder="@handle" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Primary Niche</Label>
-              <Input value={primaryNiche} onChange={(e) => setPrimaryNiche(e.target.value)} placeholder="e.g. AI, Fitness, Finance" />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Brand Tone</Label>
-                <Select value={brandTone} onValueChange={setBrandTone}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="authoritative">Authoritative</SelectItem>
-                    <SelectItem value="casual">Casual</SelectItem>
-                    <SelectItem value="witty">Witty</SelectItem>
-                    <SelectItem value="provocative">Provocative</SelectItem>
-                    <SelectItem value="inspirational">Inspirational</SelectItem>
-                    <SelectItem value="educational">Educational</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Growth Goal</Label>
-                <Select value={growthGoal} onValueChange={setGrowthGoal}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="followers">Grow Followers</SelectItem>
-                    <SelectItem value="engagement">Boost Engagement</SelectItem>
-                    <SelectItem value="monetization">Monetization</SelectItem>
-                    <SelectItem value="authority">Build Authority</SelectItem>
-                    <SelectItem value="community">Community Building</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Memory */}
-        <Card id="section-memory">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base"><Brain className="h-4 w-4" /> Memory</CardTitle>
-            <CardDescription>Everything here is used by the AI to generate personalized content</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div>
-              <Label className="mb-1.5 block">Skills & Expertise</Label>
-              <TagInput value={skillInput} onChange={setSkillInput}
-                onAdd={() => addTag(skillInput, skills, setSkills, setSkillInput)}
-                tags={skills} onRemove={(t) => removeTag(t, skills, setSkills)}
-                placeholder="e.g., Full-stack dev, Growth hacking" />
-            </div>
-            <div>
-              <Label className="mb-1.5 block">Content Strategy</Label>
-              <Textarea value={contentStrategy} onChange={(e) => setContentStrategy(e.target.value)}
-                placeholder="e.g., I'm building a personal brand around AI productivity..."
-                className="min-h-[100px] resize-none" />
-            </div>
-            <div>
-              <Label className="mb-1.5 block">AI Instructions</Label>
-              <Textarea value={customSystemPrompt} onChange={(e) => setCustomSystemPrompt(e.target.value)}
-                placeholder="e.g., Always write in first person. Never use emojis."
-                className="min-h-[100px] resize-none font-mono text-sm" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Voice & Style */}
-        <Card id="section-voice">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base"><MessageSquare className="h-4 w-4" /> Voice & Style</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div>
-              <Label className="mb-1.5 block">Writing Traits</Label>
-              <TagInput value={traitInput} onChange={setTraitInput}
-                onAdd={() => addTag(traitInput, writingTraits, setWritingTraits, setTraitInput)}
-                tags={writingTraits} onRemove={(t) => removeTag(t, writingTraits, setWritingTraits)}
-                placeholder="e.g., Concise, data-driven" />
-            </div>
-            <div>
-              <Label className="mb-1.5 block">Signature Phrases</Label>
-              <TagInput value={phraseInput} onChange={setPhraseInput}
-                onAdd={() => addTag(phraseInput, signaturePhrases, setSignaturePhrases, setPhraseInput)}
-                tags={signaturePhrases} onRemove={(t) => removeTag(t, signaturePhrases, setSignaturePhrases)}
-                placeholder="e.g., Here's the thing" />
-            </div>
-            <div>
-              <Label className="mb-1.5 block">Preferred Hook Types</Label>
-              <TagInput value={hookInput} onChange={setHookInput}
-                onAdd={() => addTag(hookInput, preferredHooks, setPreferredHooks, setHookInput)}
-                tags={preferredHooks} onRemove={(t) => removeTag(t, preferredHooks, setPreferredHooks)}
-                placeholder="e.g., Curiosity, Authority" />
-            </div>
-            <div>
-              <Label className="mb-1.5 block">Words to Avoid</Label>
-              <TagInput value={avoidInput} onChange={setAvoidInput}
-                onAdd={() => addTag(avoidInput, wordsToAvoid, setWordsToAvoid, setAvoidInput)}
-                tags={wordsToAvoid} onRemove={(t) => removeTag(t, wordsToAvoid, setWordsToAvoid)}
-                placeholder="e.g., Leverage, Synergy" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Sign Out */}
-        <Card id="section-signout" className="border-destructive/30">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Sign Out</p>
-                <p className="text-xs text-muted-foreground">Sign out of your account on this device</p>
-              </div>
-              <Button variant="destructive" size="sm" onClick={handleSignOut} className="gap-2">
-                <LogOut className="h-4 w-4" /> Sign Out
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Save */}
-        <div className="sticky bottom-4 flex justify-end pb-4">
-          <Button onClick={handleSave} disabled={saveStatus === "saving"} variant="viral" className="gap-2 shadow-lg">
-            {saveStatus === "saving" ? <Loader2 className="h-4 w-4 animate-spin" /> : saveStatus === "saved" ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
-            {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved!" : "Save Settings"}
-          </Button>
-        </div>
+        {/* Floating right-side TOC */}
+        <nav className="hidden lg:block w-44 shrink-0">
+          <div className="fixed top-1/2 -translate-y-1/2 w-44">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">On this page</p>
+            <ul className="space-y-1 border-l border-border">
+              {sections.map((s) => (
+                <li key={s.id}>
+                  <button
+                    onClick={() => scrollTo(s.id)}
+                    className={`block w-full text-left text-sm pl-3 py-1.5 -ml-px border-l-2 transition-colors ${
+                      activeSection === s.id
+                        ? "border-primary text-foreground font-medium"
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </nav>
       </div>
-
-      {/* Right-side TOC */}
-      <nav className="hidden lg:block w-44 shrink-0 sticky top-20 self-start">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">On this page</p>
-        <ul className="space-y-1 border-l border-border">
-          {sections.map((s) => (
-            <li key={s.id}>
-              <button
-                onClick={() => scrollTo(s.id)}
-                className={`block w-full text-left text-sm pl-3 py-1.5 -ml-px border-l-2 transition-colors ${
-                  activeSection === s.id
-                    ? "border-primary text-foreground font-medium"
-                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/50"
-                }`}
-              >
-                {s.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </nav>
     </div>
   );
 }
