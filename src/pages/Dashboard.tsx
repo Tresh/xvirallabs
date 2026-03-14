@@ -118,6 +118,33 @@ export default function Dashboard() {
               </div>
             )}
 
+            {/* Saved memory shortcut */}
+            {activeTab === "daily-feed" && hasSavedLibrary && (
+              <Card className="mb-6 border-primary/30 bg-secondary/30">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <h2 className="text-sm font-semibold">Your saved memory is available</h2>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {analyses.length} analyses • {patterns.length} patterns • {ideas.length} ideas
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button variant="outline" size="sm" onClick={() => setActiveTab("analyses")} disabled={analyses.length === 0}>
+                        Open Analyses
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => setActiveTab("patterns")} disabled={patterns.length === 0}>
+                        Open Patterns
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => setActiveTab("ideas")} disabled={ideas.length === 0}>
+                        Open Ideas
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Tab content */}
             {activeTab === "daily-feed" && <DailyFeed />}
             {activeTab === "growth" && <GrowthTracker />}
