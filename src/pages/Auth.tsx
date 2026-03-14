@@ -9,7 +9,7 @@ import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, FlaskConical, ArrowLeft } from "lucide-react";
+import { Loader2, FlaskConical } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 
