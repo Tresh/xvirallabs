@@ -75,15 +75,7 @@ export default function Dashboard() {
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 flex items-center justify-between border-b border-border bg-background/90 backdrop-blur-md sticky top-0 z-50 px-4">
             <SidebarTrigger />
-            <div className="flex items-center gap-3">
-              <UsageIndicator remaining={remaining} isUnlimited={isUnlimited} isLoading={usageLoading} dailyLimit={dailyLimit} />
-              <Link to="/analyze">
-                <Button variant="viral" size="sm" className="gap-2">
-                  New Analysis
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Button>
-              </Link>
-            </div>
+            <UsageIndicator remaining={remaining} isUnlimited={isUnlimited} isLoading={usageLoading} dailyLimit={dailyLimit} />
           </header>
 
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
