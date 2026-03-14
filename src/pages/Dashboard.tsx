@@ -87,7 +87,6 @@ export default function Dashboard() {
         <DashboardSidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          onSignOut={handleSignOut}
           memoryCounts={{ analyses: analyses.length, patterns: patterns.length, ideas: ideas.length }}
         />
 
