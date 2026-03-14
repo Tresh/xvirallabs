@@ -106,7 +106,7 @@ export default function Dashboard() {
 
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
             {/* Quick stats — show on library tabs only */}
-            {!["daily-feed", "content-lab", "memory", "plans", "growth"].includes(activeTab) && (
+            {!["daily-feed", "content-lab", "plans", "growth", "settings"].includes(activeTab) && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 {[
                   { icon: Microscope, value: stats.totalAnalyses, label: "Analyses" },
