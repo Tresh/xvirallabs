@@ -2,7 +2,7 @@ import { Heart, Repeat2, MessageCircle, Bookmark } from "lucide-react";
 
 const viralPosts = [
   {
-    content: "I spent 6 months studying why tweets go viral.\n\n→ Pattern interrupt in first 3 words\n→ Emotional polarity (not neutral)\n→ Identity-level resonance\n→ Low-friction engagement hooks\n\nBookmark this.",
+    content: "I spent 6 months studying why tweets go viral.\n\n➮ Pattern interrupt in first 3 words\n➮ Emotional polarity (not neutral)\n➮ Identity-level resonance\n➮ Low-friction engagement hooks\n\nBookmark this.",
     likes: "12.4K",
     retweets: "3.2K",
     replies: "847",
@@ -23,7 +23,7 @@ const viralPosts = [
     bookmarks: "14.7K",
   },
   {
-    content: "The algorithm doesn't care about your feelings.\n\nIt cares about:\n— Dwell time\n— Saves\n— Replies with 3+ words\n— Profile clicks\n\nOptimize for these. Watch everything change.",
+    content: "The algorithm doesn't care about your feelings.\n\nIt cares about:\n➮ Dwell time\n➮ Saves\n➮ Replies with 3+ words\n➮ Profile clicks\n\nOptimize for these. Watch everything change.",
     likes: "15.9K",
     retweets: "4.4K",
     replies: "956",
