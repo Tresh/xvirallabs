@@ -14,7 +14,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { PricingPlans } from "@/components/dashboard/PricingPlans";
 import { ContentLabTab } from "@/components/content-lab/ContentLabTab";
-import { MemoryTab } from "@/components/dashboard/MemoryTab";
+
 import { AnalysisCard } from "@/components/dashboard/AnalysisCard";
 import { PatternCard } from "@/components/dashboard/PatternCard";
 import { IdeaCard } from "@/components/dashboard/IdeaCard";
@@ -87,7 +87,6 @@ export default function Dashboard() {
         <DashboardSidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          onSignOut={handleSignOut}
           memoryCounts={{ analyses: analyses.length, patterns: patterns.length, ideas: ideas.length }}
         />
 
@@ -107,7 +106,7 @@ export default function Dashboard() {
 
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
             {/* Quick stats — show on library tabs only */}
-            {!["daily-feed", "content-lab", "memory", "plans", "growth"].includes(activeTab) && (
+            {!["daily-feed", "content-lab", "plans", "growth", "settings"].includes(activeTab) && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 {[
                   { icon: Microscope, value: stats.totalAnalyses, label: "Analyses" },
@@ -163,9 +162,8 @@ export default function Dashboard() {
             {activeTab === "daily-feed" && <DailyFeed />}
             {activeTab === "growth" && <GrowthTracker />}
             {activeTab === "content-lab" && <ContentLabTab />}
-            {activeTab === "memory" && <MemoryTab />}
-            {activeTab === "plans" && <PricingPlans />}
             {activeTab === "settings" && <SettingsTab />}
+            {activeTab === "plans" && <PricingPlans />}
 
             {activeTab === "analyses" && (
               analyses.length === 0 ? (
