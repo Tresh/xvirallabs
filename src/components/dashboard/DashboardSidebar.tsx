@@ -29,20 +29,25 @@ import { useTheme } from "@/hooks/useTheme";
 import { Badge } from "@/components/ui/badge";
 
 const navItems = [
-  { id: "daily-feed",  title: "Daily Feed",   icon: Zap,        badge: "NEW" as string | null },
-  { id: "content-lab", title: "Content Lab",  icon: Calendar,   badge: null },
-  { id: "growth",      title: "Growth",       icon: TrendingUp, badge: null },
-  { id: "analyses",    title: "Analyses",     icon: Microscope, badge: null },
-  { id: "patterns",    title: "Patterns",     icon: Dna,        badge: null },
-  { id: "ideas",       title: "Ideas",        icon: Lightbulb,  badge: null },
-  { id: "memory",      title: "Memory",       icon: Brain,      badge: null },
-  { id: "plans",       title: "Plans",        icon: CreditCard, badge: null },
-];
+  { id: "daily-feed", title: "Daily Feed", icon: Zap },
+  { id: "content-lab", title: "Content Lab", icon: Calendar },
+  { id: "growth", title: "Growth", icon: TrendingUp },
+  { id: "analyses", title: "Analyses", icon: Microscope },
+  { id: "patterns", title: "Patterns", icon: Dna },
+  { id: "ideas", title: "Ideas", icon: Lightbulb },
+  { id: "memory", title: "Memory", icon: Brain },
+  { id: "plans", title: "Plans", icon: CreditCard },
+] as const;
 
 interface DashboardSidebarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onSignOut: () => void;
+  memoryCounts?: {
+    analyses: number;
+    patterns: number;
+    ideas: number;
+  };
 }
 
 export function DashboardSidebar({ activeTab, onTabChange, onSignOut }: DashboardSidebarProps) {
