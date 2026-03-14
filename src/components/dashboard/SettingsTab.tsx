@@ -399,7 +399,7 @@ export function SettingsTab() {
 
           {/* Save */}
           <div className="sticky bottom-4 flex justify-end pb-4">
-            <Button onClick={handleSave} disabled={saveStatus === "saving"} variant="viral" className="gap-2 shadow-lg">
+            <Button onClick={handleSave} disabled={saveStatus === "saving" || !isHydrated || !profile || !brandVoice} variant="viral" className="gap-2 shadow-lg">
               {saveStatus === "saving" ? <Loader2 className="h-4 w-4 animate-spin" /> : saveStatus === "saved" ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
               {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved!" : "Save Settings"}
             </Button>
