@@ -236,6 +236,11 @@ export function SettingsTab() {
       wordsToAvoid,
       signaturePhrases,
       preferredHooks,
+      skillInput,
+      traitInput,
+      avoidInput,
+      phraseInput,
+      hookInput,
     };
 
     sessionStorage.setItem(draftKey, JSON.stringify(draft));
@@ -254,6 +259,11 @@ export function SettingsTab() {
     wordsToAvoid,
     signaturePhrases,
     preferredHooks,
+    skillInput,
+    traitInput,
+    avoidInput,
+    phraseInput,
+    hookInput,
   ]);
 
   // Auto-save: detect changes and save after 2s of inactivity
