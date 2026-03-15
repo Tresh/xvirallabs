@@ -201,6 +201,11 @@ export function SettingsTab() {
           setWordsToAvoid(draft.wordsToAvoid ?? brandVoice.words_to_avoid ?? []);
           setSignaturePhrases(draft.signaturePhrases ?? brandVoice.signature_phrases ?? []);
           setPreferredHooks(draft.preferredHooks ?? brandVoice.preferred_hooks ?? []);
+          setSkillInput(draft.skillInput ?? "");
+          setTraitInput(draft.traitInput ?? "");
+          setAvoidInput(draft.avoidInput ?? "");
+          setPhraseInput(draft.phraseInput ?? "");
+          setHookInput(draft.hookInput ?? "");
         }
       } catch (error) {
         console.warn("Failed to read settings draft:", error);
