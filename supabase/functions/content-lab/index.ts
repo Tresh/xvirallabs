@@ -406,7 +406,8 @@ serve(async (req) => {
     const creditActions = [
       "generate_pillars", "generate_mind_map", "generate_tweet", "improve_tweet",
       "generate_content_bank", "regenerate_post", "generate_next_day",
-      "analyze_performance", "analyze_screenshot", "expand_content", "generate_daily_feed"
+      "analyze_performance", "analyze_screenshot", "expand_content", "generate_daily_feed",
+      "suggest_pillars", "generate_content_os"
     ];
 
     if (creditActions.includes(action)) {
@@ -1266,6 +1267,190 @@ Output ONLY a valid JSON array of exactly ${count} objects. No markdown. No expl
           }
           return new Response(
             JSON.stringify({ error: e.message || "Generation failed" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+
+      // ===== SUGGEST CONTENT PILLARS =====
+      case "suggest_pillars": {
+        const { niche, brandTone } = params;
+
+        if (!niche || !String(niche).trim()) {
+          return new Response(
+            JSON.stringify({ error: "Niche is required" }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const pillarSystemPrompt = `You are a content strategy expert. Suggest 6 content pillars for a creator.
+
+The pillars must:
+- Cover clearly different angles of the niche
+- Balance reach, authority, and relatability
+- Be concrete enough to create posts daily
+- Avoid overlap between pillar topics
+
+Return ONLY a valid JSON array of exactly 6 objects:
+{
+  "name": "<short pillar name>",
+  "description": "<one sentence on what belongs here>"
+}`;
+
+        const pillarUserPrompt = `Niche: ${niche}\nTone: ${brandTone || "relatable"}\n\nMake these pillars specific to this creator.`;
+
+        try {
+          const content = await callAI(pillarSystemPrompt, pillarUserPrompt);
+          const raw = parseAIJson(content);
+
+          if (!Array.isArray(raw)) {
+            throw new Error("Invalid pillar response");
+          }
+
+          const pillars = raw
+            .slice(0, 6)
+            .map((pillar: any, index: number) => ({
+              name: String(pillar?.name || `Pillar ${index + 1}`).trim(),
+              description: String(pillar?.description || "").trim(),
+            }))
+            .filter((pillar: any) => pillar.name.length > 0);
+
+          if (pillars.length === 0) {
+            throw new Error("No pillars returned");
+          }
+
+          return new Response(
+            JSON.stringify({ success: true, pillars }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+
+          return new Response(
+            JSON.stringify({ error: e.message || "Failed to suggest pillars" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+
+      // ===== GENERATE CONTENT OPERATING SYSTEM =====
+      case "generate_content_os": {
+        const {
+          niche,
+          brandTone,
+          twitterHandle,
+          displayName,
+          writingTraits,
+          wordsToAvoid,
+          signaturePhrases,
+          contentStrategy,
+          skills,
+          customSystemPrompt,
+          pillars,
+          generatedDate,
+        } = params;
+
+        if (!Array.isArray(pillars) || pillars.length === 0) {
+          return new Response(
+            JSON.stringify({ error: "No content pillars defined" }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const generationDate = generatedDate || new Date().toISOString().split("T")[0];
+        const dayOfWeek = new Date(generationDate).getDay();
+        const featuredPillar = pillars[dayOfWeek % pillars.length];
+
+        const contentOSSystem = `You are an elite content strategist generating a complete daily content mix.
+
+CREATOR PROFILE:
+- Name: ${displayName || "Creator"}
+- Niche: ${niche || "content creation"}
+- Tone: ${brandTone || "relatable"}
+${twitterHandle ? `- Handle: @${twitterHandle}` : ""}
+${Array.isArray(skills) && skills.length ? `- Expertise: ${skills.join(", ")}` : ""}
+${Array.isArray(writingTraits) && writingTraits.length ? `- Writing style: ${writingTraits.join(", ")}` : ""}
+${Array.isArray(wordsToAvoid) && wordsToAvoid.length ? `- Never use: ${wordsToAvoid.join(", ")}` : ""}
+${Array.isArray(signaturePhrases) && signaturePhrases.length ? `- Signature phrases: ${signaturePhrases.join(", ")}` : ""}
+${contentStrategy ? `- Strategy: ${contentStrategy}` : ""}
+${customSystemPrompt ? `- Special instructions: ${customSystemPrompt}` : ""}
+
+CONTENT PILLARS:
+${pillars.map((p: any, i: number) => `${i + 1}. ${p.name}: ${p.description || ""}`).join("\n")}
+
+TODAY'S FEATURED PILLAR: ${featuredPillar?.name || "Featured pillar"}
+
+RULES:
+- Match the creator voice exactly
+- Vary hooks and psychology triggers across pieces
+- Use specific, practical details
+- Keep each piece platform-native and publishable`;
+
+        const includeFullArticle = isPaidUser;
+        const isSunday = dayOfWeek === 0;
+
+        const contentOSUserPrompt = `Generate today's complete content mix as a JSON array.
+
+For EACH pillar, include:
+1) two_liner
+{
+  "format": "two_liner",
+  "pillar_name": "<pillar>",
+  "content": "<1-2 lines, under 140 chars>",
+  "psychology_trigger": "<trigger>",
+  "viral_score": <75-98>
+}
+
+2) medium_tweet
+{
+  "format": "medium_tweet",
+  "pillar_name": "<pillar>",
+  "content": "<5-8 lines with value>",
+  "psychology_trigger": "<trigger>",
+  "viral_score": <70-95>
+}
+
+Also include for featured pillar (${featuredPillar?.name || "featured"}):
+3) thread with 10-15 tweets in thread_tweets array
+4) article (${includeFullArticle ? "1000-3000 words" : "300-500 words preview"})
+5) video_script with video_prompt
+
+${isSunday ? "Also include one newsletter item summarizing key insights this week." : "Newsletter is optional unless Sunday."}
+
+Return ONLY valid JSON array. No markdown.`;
+
+        try {
+          const content = await callAI(contentOSSystem, contentOSUserPrompt);
+          const items = parseAIJson(content);
+
+          if (!Array.isArray(items) || items.length === 0) {
+            throw new Error("Invalid response format");
+          }
+
+          return new Response(
+            JSON.stringify({
+              success: true,
+              items,
+              count: items.length,
+              featuredPillar: featuredPillar?.name || null,
+            }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+
+          return new Response(
+            JSON.stringify({ error: e.message || "Content OS generation failed" }),
             { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }

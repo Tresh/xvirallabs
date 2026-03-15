@@ -19,6 +19,7 @@ import {
   Check,
   Save,
 } from "lucide-react";
+import { ContentPillarSetup } from "@/components/dashboard/ContentPillarSetup";
 
 type SaveStatus = "idle" | "saving" | "saved";
 
@@ -337,6 +338,10 @@ export function MemoryTab() {
           </div>
         </CardContent>
       </Card>
+
+      <div className="pt-2">
+        <ContentPillarSetup />
+      </div>
 
       {/* Save Button */}
       <div className="sticky bottom-4 flex justify-end">

@@ -8,6 +8,7 @@ import {
   TrendingUp,
   Settings,
   Sparkles,
+  Layers,
 } from "lucide-react";
 import {
   Sidebar,
@@ -23,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 
 const navItems = [
   { id: "daily-feed", title: "Daily Feed", icon: Zap },
+  { id: "content-os", title: "Content OS", icon: Layers },
   { id: "analyze", title: "Analyze", icon: Sparkles },
   { id: "content-lab", title: "Content Lab", icon: Calendar },
   { id: "growth", title: "Growth", icon: TrendingUp },
@@ -43,7 +45,7 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ activeTab, onTabChange, memoryCounts }: DashboardSidebarProps) {
   const getBadge = (id: string) => {
-    if (id === "daily-feed") return "NEW";
+    if (id === "content-os") return "NEW";
     if (id === "analyses") {
       const total = (memoryCounts?.analyses ?? 0) + (memoryCounts?.patterns ?? 0) + (memoryCounts?.ideas ?? 0);
       return total > 0 ? String(total) : null;

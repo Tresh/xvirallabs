@@ -16,6 +16,7 @@ import { GrowthTracker } from "@/components/dashboard/GrowthTracker";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { UnifiedAnalysesTab } from "@/components/dashboard/UnifiedAnalysesTab";
 import { AnalyzeTab } from "@/components/dashboard/AnalyzeTab";
+import { ContentOS } from "@/components/dashboard/ContentOS";
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -88,6 +89,7 @@ export default function Dashboard() {
 
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
             {activeTab === "daily-feed" && <DailyFeed />}
+            {activeTab === "content-os" && <ContentOS />}
             {activeTab === "analyze" && <AnalyzeTab />}
             {activeTab === "growth" && <GrowthTracker />}
             {activeTab === "content-lab" && <ContentLabTab />}

@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { User, Zap, Shield, Save, Loader2, Check, Brain, Sparkles, MessageSquare, LogOut, X, Plus, Moon, Sun, RefreshCw, Database, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { ContentPillarSetup } from "@/components/dashboard/ContentPillarSetup";
 
 type SaveStatus = "idle" | "saving" | "saved";
 
@@ -582,6 +583,10 @@ export function SettingsTab() {
                 <Textarea value={customSystemPrompt} onChange={(e) => setCustomSystemPrompt(e.target.value)}
                   placeholder="e.g., Always write in first person. Never use emojis."
                   className="min-h-[100px] resize-none font-mono text-sm" />
+              </div>
+
+              <div className="pt-1">
+                <ContentPillarSetup />
               </div>
             </CardContent>
           </Card>

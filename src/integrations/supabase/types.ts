@@ -439,6 +439,110 @@ export type Database = {
           },
         ]
       }
+      content_os_items: {
+        Row: {
+          content: string
+          created_at: string
+          format: string
+          generated_date: string
+          id: string
+          pillar_id: string | null
+          pillar_name: string | null
+          posted_at: string | null
+          psychology_trigger: string | null
+          status: string
+          thread_tweets: Json | null
+          title: string | null
+          updated_at: string
+          user_id: string
+          video_prompt: string | null
+          viral_score: number | null
+          word_count: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          format: string
+          generated_date?: string
+          id?: string
+          pillar_id?: string | null
+          pillar_name?: string | null
+          posted_at?: string | null
+          psychology_trigger?: string | null
+          status?: string
+          thread_tweets?: Json | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          video_prompt?: string | null
+          viral_score?: number | null
+          word_count?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          format?: string
+          generated_date?: string
+          id?: string
+          pillar_id?: string | null
+          pillar_name?: string | null
+          posted_at?: string | null
+          psychology_trigger?: string | null
+          status?: string
+          thread_tweets?: Json | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          video_prompt?: string | null
+          viral_score?: number | null
+          word_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_os_items_pillar_id_fkey"
+            columns: ["pillar_id"]
+            isOneToOne: false
+            referencedRelation: "content_pillars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_pillars: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          pillar_description: string | null
+          pillar_name: string
+          pillar_order: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          pillar_description?: string | null
+          pillar_name: string
+          pillar_order?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          pillar_description?: string | null
+          pillar_name?: string
+          pillar_order?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_posts: {
         Row: {
           content: string
