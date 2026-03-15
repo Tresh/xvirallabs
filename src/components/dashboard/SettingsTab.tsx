@@ -394,12 +394,14 @@ export function SettingsTab() {
   };
 
   const handleRefreshFromBackend = async () => {
+    if (draftKey) sessionStorage.removeItem(draftKey);
     await refreshProfile();
     await fetchDataHealth();
     toast({ title: "Refreshed from backend" });
   };
 
   const handleSignOut = async () => {
+    if (draftKey) sessionStorage.removeItem(draftKey);
     await signOut();
     navigate("/");
   };
