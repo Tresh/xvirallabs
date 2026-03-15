@@ -112,6 +112,7 @@ export function SettingsTab() {
   const [activeSection, setActiveSection] = useState("account");
   const [isHydrated, setIsHydrated] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const draftKey = user ? `settings-draft:${user.id}` : null;
 
   // Data health
   const [dataHealth, setDataHealth] = useState<DataHealthCounts | null>(null);
