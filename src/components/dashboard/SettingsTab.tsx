@@ -381,6 +381,7 @@ export function SettingsTab() {
 
       await Promise.all(updateRequests);
 
+      if (draftKey) sessionStorage.removeItem(draftKey);
       await refreshProfile();
       await fetchDataHealth();
       toast({ title: "Settings saved" });
