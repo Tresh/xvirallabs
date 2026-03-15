@@ -323,50 +323,72 @@ serve(async (req) => {
       
       // Remove markdown code blocks
       if (cleaned.startsWith("```json")) cleaned = cleaned.slice(7);
-      if (cleaned.startsWith("```")) cleaned = cleaned.slice(3);
+      else if (cleaned.startsWith("```")) cleaned = cleaned.slice(3);
       if (cleaned.endsWith("```")) cleaned = cleaned.slice(0, -3);
       cleaned = cleaned.trim();
       
       // Try direct parse first
       try {
         return JSON.parse(cleaned);
-      } catch (e) {
+      } catch (_e) {
         console.log("Direct JSON parse failed, attempting cleanup...");
-        
-        // Fix common JSON issues from AI responses
-        // 1. Fix unescaped newlines inside strings
-        cleaned = cleaned.replace(/(?<!\\)\n(?=(?:[^"]*"[^"]*")*[^"]*$)/g, '\\n');
-        
-        // 2. Fix control characters
-        cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (char) => {
-          if (char === '\n') return '\\n';
-          if (char === '\r') return '\\r';
-          if (char === '\t') return '\\t';
-          return '';
-        });
-        
-        // 3. Try extracting just the array portion if present
-        const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
-        if (arrayMatch) {
-          try {
-            return JSON.parse(arrayMatch[0]);
-          } catch (e2) {
-            // Continue to next attempt
-          }
+      }
+
+      // Extract the array or object portion
+      const arrayMatch = cleaned.match(/\[[\s\S]*\]/);
+      const objectMatch = cleaned.match(/\{[\s\S]*\}/);
+      const candidate = arrayMatch ? arrayMatch[0] : objectMatch ? objectMatch[0] : cleaned;
+
+      // Try parsing the candidate directly
+      try {
+        return JSON.parse(candidate);
+      } catch (_e2) {
+        // Continue to deeper cleanup
+      }
+
+      // Robust fix: escape unescaped newlines/tabs inside JSON string values
+      // Walk through char by char, tracking whether we're inside a string
+      let fixed = "";
+      let inString = false;
+      let escaped = false;
+      for (let i = 0; i < candidate.length; i++) {
+        const ch = candidate[i];
+        if (escaped) {
+          fixed += ch;
+          escaped = false;
+          continue;
         }
-        
-        // 4. Try extracting just the object portion if present
-        const objectMatch = cleaned.match(/\{[\s\S]*\}/);
-        if (objectMatch) {
-          try {
-            return JSON.parse(objectMatch[0]);
-          } catch (e3) {
-            // Continue to fallback
-          }
+        if (ch === '\\' && inString) {
+          fixed += ch;
+          escaped = true;
+          continue;
         }
-        
-        console.error("All JSON parse attempts failed. Raw content:", cleaned.substring(0, 500));
-        throw new Error("AI returned invalid JSON format");
+        if (ch === '"') {
+          inString = !inString;
+          fixed += ch;
+          continue;
+        }
+        if (inString) {
+          if (ch === '\n') { fixed += '\\n'; continue; }
+          if (ch === '\r') { fixed += '\\r'; continue; }
+          if (ch === '\t') { fixed += '\\t'; continue; }
+          // Remove other control chars inside strings
+          if (ch.charCodeAt(0) < 32) continue;
+        }
+        fixed += ch;
+      }
+
+      try {
+        return JSON.parse(fixed);
+      } catch (_e3) {
+        // Last resort: try to fix trailing commas and retry
+        const noTrailing = fixed.replace(/,\s*([\]}])/g, '$1');
+        try {
+          return JSON.parse(noTrailing);
+        } catch (_e4) {
+          console.error("All JSON parse attempts failed. Raw content:", candidate.substring(0, 500));
+          throw new Error("AI returned invalid JSON format");
+        }
       }
     };
 
