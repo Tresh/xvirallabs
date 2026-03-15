@@ -339,6 +339,10 @@ export function MemoryTab() {
         </CardContent>
       </Card>
 
+      <div className="pt-2">
+        <ContentPillarSetup />
+      </div>
+
       {/* Save Button */}
       <div className="sticky bottom-4 flex justify-end">
         <Button onClick={saveAll} disabled={saveStatus === "saving"} variant="viral" size="lg" className="gap-2 shadow-lg">
