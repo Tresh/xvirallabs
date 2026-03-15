@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { User, Zap, Shield, Save, Loader2, Check, Brain, Sparkles, MessageSquare, LogOut, X, Plus, Moon, Sun, RefreshCw, Database, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { ContentPillarSetup } from "@/components/dashboard/ContentPillarSetup";
 
 type SaveStatus = "idle" | "saving" | "saved";
 
