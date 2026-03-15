@@ -82,6 +82,11 @@ interface SettingsDraft {
   wordsToAvoid: string[];
   signaturePhrases: string[];
   preferredHooks: string[];
+  skillInput: string;
+  traitInput: string;
+  avoidInput: string;
+  phraseInput: string;
+  hookInput: string;
 }
 
 export function SettingsTab() {
@@ -196,6 +201,11 @@ export function SettingsTab() {
           setWordsToAvoid(draft.wordsToAvoid ?? brandVoice.words_to_avoid ?? []);
           setSignaturePhrases(draft.signaturePhrases ?? brandVoice.signature_phrases ?? []);
           setPreferredHooks(draft.preferredHooks ?? brandVoice.preferred_hooks ?? []);
+          setSkillInput(draft.skillInput ?? "");
+          setTraitInput(draft.traitInput ?? "");
+          setAvoidInput(draft.avoidInput ?? "");
+          setPhraseInput(draft.phraseInput ?? "");
+          setHookInput(draft.hookInput ?? "");
         }
       } catch (error) {
         console.warn("Failed to read settings draft:", error);
@@ -226,6 +236,11 @@ export function SettingsTab() {
       wordsToAvoid,
       signaturePhrases,
       preferredHooks,
+      skillInput,
+      traitInput,
+      avoidInput,
+      phraseInput,
+      hookInput,
     };
 
     sessionStorage.setItem(draftKey, JSON.stringify(draft));
@@ -244,6 +259,11 @@ export function SettingsTab() {
     wordsToAvoid,
     signaturePhrases,
     preferredHooks,
+    skillInput,
+    traitInput,
+    avoidInput,
+    phraseInput,
+    hookInput,
   ]);
 
   // Auto-save: detect changes and save after 2s of inactivity
