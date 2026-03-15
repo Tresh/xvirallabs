@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { useTheme } from "@/hooks/useTheme";
@@ -166,6 +166,42 @@ export function SettingsTab() {
       setIsHydrated(true);
     }
   }, [profile, brandVoice]);
+
+  // Auto-save: detect changes and save after 2s of inactivity
+  const hasChanges = useCallback(() => {
+    if (!profile || !brandVoice || !isHydrated) return false;
+    const pChanged =
+      (displayName.trim() || null) !== (profile.display_name ?? null) ||
+      (twitterHandle.trim() || null) !== (profile.twitter_handle ?? null) ||
+      (primaryNiche.trim() || null) !== (profile.primary_niche ?? null) ||
+      brandTone !== profile.brand_tone ||
+      growthGoal !== profile.growth_goal ||
+      !areStringArraysEqual(skills, profile.skills || []) ||
+      (contentStrategy.trim() || null) !== (profile.content_strategy ?? null) ||
+      (customSystemPrompt.trim() || null) !== (profile.custom_system_prompt ?? null);
+    const vChanged =
+      !areStringArraysEqual(writingTraits, brandVoice.writing_traits || []) ||
+      !areStringArraysEqual(wordsToAvoid, brandVoice.words_to_avoid || []) ||
+      !areStringArraysEqual(signaturePhrases, brandVoice.signature_phrases || []) ||
+      !areStringArraysEqual(preferredHooks, brandVoice.preferred_hooks || []);
+    return pChanged || vChanged;
+  }, [profile, brandVoice, isHydrated, displayName, twitterHandle, primaryNiche, brandTone, growthGoal, skills, contentStrategy, customSystemPrompt, writingTraits, wordsToAvoid, signaturePhrases, preferredHooks]);
+
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!isHydrated || saveStatus === "saving") return;
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    if (hasChanges()) {
+      setSaveStatus("idle");
+      autoSaveTimerRef.current = setTimeout(() => {
+        handleSave();
+      }, 2000);
+    }
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+  }, [displayName, twitterHandle, primaryNiche, brandTone, growthGoal, skills, contentStrategy, customSystemPrompt, writingTraits, wordsToAvoid, signaturePhrases, preferredHooks, isHydrated]);
 
   // Fetch data health on mount and when profile loads
   useEffect(() => {
@@ -571,7 +607,7 @@ export function SettingsTab() {
           <div className="sticky bottom-4 flex justify-end pb-4">
             <Button onClick={handleSave} disabled={saveStatus === "saving" || !isHydrated || !profile || !brandVoice} variant="viral" className="gap-2 shadow-lg">
               {saveStatus === "saving" ? <Loader2 className="h-4 w-4 animate-spin" /> : saveStatus === "saved" ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
-              {saveStatus === "saving" ? "Saving..." : saveStatus === "saved" ? "Saved!" : "Save Settings"}
+              {saveStatus === "saving" ? "Auto-saving..." : saveStatus === "saved" ? "Saved!" : hasChanges() ? "Unsaved changes" : "Save Settings"}
             </Button>
           </div>
         </div>
