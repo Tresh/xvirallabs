@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyPosts } from "@/hooks/useDailyPosts";
+import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
