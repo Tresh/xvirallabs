@@ -45,7 +45,7 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ activeTab, onTabChange, memoryCounts }: DashboardSidebarProps) {
   const getBadge = (id: string) => {
-    if (id === "daily-feed") return "NEW";
+    if (id === "content-os") return "NEW";
     if (id === "analyses") {
       const total = (memoryCounts?.analyses ?? 0) + (memoryCounts?.patterns ?? 0) + (memoryCounts?.ideas ?? 0);
       return total > 0 ? String(total) : null;
