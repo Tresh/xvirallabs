@@ -16,6 +16,7 @@ import { GrowthTracker } from "@/components/dashboard/GrowthTracker";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { UnifiedAnalysesTab } from "@/components/dashboard/UnifiedAnalysesTab";
 import { AnalyzeTab } from "@/components/dashboard/AnalyzeTab";
+import { ContentOS } from "@/components/dashboard/ContentOS";
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
