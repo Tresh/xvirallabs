@@ -8,16 +8,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, FlaskConical, AlertCircle } from "lucide-react";
+import { Loader2, FlaskConical, AlertCircle, ArrowLeft, Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+
+type AuthView = "main" | "verify-otp";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("signin");
-  
+  const [view, setView] = useState<AuthView>("main");
+  const [otpCode, setOtpCode] = useState("");
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
+
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -26,6 +34,13 @@ export default function Auth() {
       navigate("/dashboard");
     }
   }, [user, navigate]);
+
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,8 +62,48 @@ export default function Auth() {
     if (error) {
       toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Check your email", description: "We've sent you a confirmation link to verify your account." });
-      setActiveTab("signin");
+      setPendingEmail(email);
+      setView("verify-otp");
+      setResendCooldown(60);
+      toast({ title: "Verification code sent", description: `We've sent a 6-digit code to ${email}` });
+    }
+    setIsLoading(false);
+  };
+
+  const handleVerifyOtp = async () => {
+    if (otpCode.length !== 6) return;
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: pendingEmail,
+        token: otpCode,
+        type: "signup",
+      });
+      if (error) {
+        toast({ title: "Verification failed", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Email verified!", description: "Your account is ready. Welcome to the Lab!" });
+        navigate("/dashboard");
+      }
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Something went wrong", variant: "destructive" });
+    }
+    setIsLoading(false);
+  };
+
+  const handleResendCode = async () => {
+    if (resendCooldown > 0) return;
+    setIsLoading(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: pendingEmail,
+    });
+    if (error) {
+      toast({ title: "Failed to resend", description: error.message, variant: "destructive" });
+    } else {
+      setResendCooldown(60);
+      setOtpCode("");
+      toast({ title: "Code resent", description: `A new code has been sent to ${pendingEmail}` });
     }
     setIsLoading(false);
   };
@@ -65,10 +120,101 @@ export default function Auth() {
     }
   };
 
+  // OTP Verification Screen
+  if (view === "verify-otp") {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="flex items-center justify-center mb-8">
+            <Logo size="lg" />
+          </div>
+
+          <Card className="border-border bg-card">
+            <CardHeader className="text-center">
+              <div className="mx-auto p-3 rounded-xl bg-primary/10 w-fit mb-4">
+                <Mail className="h-8 w-8 text-primary" />
+              </div>
+              <CardTitle className="text-2xl">Verify Your Email</CardTitle>
+              <CardDescription>
+                Enter the 6-digit code we sent to{" "}
+                <span className="font-medium text-foreground">{pendingEmail}</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex justify-center">
+                <InputOTP
+                  maxLength={6}
+                  value={otpCode}
+                  onChange={setOtpCode}
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                  </InputOTPGroup>
+                  <span className="text-muted-foreground text-2xl mx-1">–</span>
+                  <InputOTPGroup>
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+
+              <Button
+                variant="viral"
+                className="w-full"
+                disabled={isLoading || otpCode.length !== 6}
+                onClick={handleVerifyOtp}
+              >
+                {isLoading ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" /> Verifying...</>
+                ) : (
+                  "Verify & Enter the Lab"
+                )}
+              </Button>
+
+              <div className="flex items-center justify-between text-sm">
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                  onClick={() => {
+                    setView("main");
+                    setOtpCode("");
+                    setPendingEmail("");
+                  }}
+                >
+                  <ArrowLeft className="h-3 w-3" /> Back to sign up
+                </button>
+
+                <button
+                  type="button"
+                  className={`transition-colors ${
+                    resendCooldown > 0
+                      ? "text-muted-foreground/50 cursor-not-allowed"
+                      : "text-primary hover:text-primary/80 cursor-pointer"
+                  }`}
+                  disabled={resendCooldown > 0 || isLoading}
+                  onClick={handleResendCode}
+                >
+                  {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
+                </button>
+              </div>
+
+              <p className="text-xs text-center text-muted-foreground">
+                Check your spam folder if you don't see the email. The code expires in 10 minutes.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Main Auth Screen
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
       <div className="w-full max-w-md relative z-10">
-        
         <div className="flex items-center justify-center mb-8">
           <Logo size="lg" />
         </div>
@@ -82,7 +228,6 @@ export default function Auth() {
             <CardDescription>Sign in to save your viral analyses and build your pattern library</CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Account consistency helper */}
             <div className="flex items-start gap-2 mb-4 p-3 rounded-lg bg-muted/50 border border-border">
               <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
               <p className="text-xs text-muted-foreground">
@@ -90,7 +235,6 @@ export default function Auth() {
               </p>
             </div>
 
-            {/* Google Sign In */}
             <Button variant="outline" className="w-full gap-2 mb-4" onClick={handleGoogleSignIn}>
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -111,7 +255,7 @@ export default function Auth() {
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
@@ -127,7 +271,7 @@ export default function Auth() {
                   </Button>
                 </form>
               </TabsContent>
-              
+
               <TabsContent value="signup">
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
