@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Zap, Shield, Save, Loader2, Check, Brain, Sparkles, MessageSquare, LogOut, X, Plus, Moon, Sun } from "lucide-react";
+import { User, Zap, Shield, Save, Loader2, Check, Brain, Sparkles, MessageSquare, LogOut, X, Plus, Moon, Sun, RefreshCw, Database, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -24,6 +24,7 @@ const sections = [
   { id: "profile", label: "Profile" },
   { id: "memory", label: "Memory" },
   { id: "voice", label: "Voice & Style" },
+  { id: "data-health", label: "Data Health" },
   { id: "signout", label: "Sign Out" },
 ] as const;
 
@@ -56,8 +57,20 @@ function TagInput({ value, onChange, onAdd, tags, onRemove, placeholder }: {
 const areStringArraysEqual = (a: string[] = [], b: string[] = []) =>
   a.length === b.length && a.every((value, index) => value === b[index]);
 
+interface DataHealthCounts {
+  analyses: number;
+  patterns: number;
+  ideas: number;
+  dailyPosts: number;
+  calendars: number;
+  profileComplete: number;
+  voiceComplete: number;
+  profileUpdatedAt: string | null;
+  voiceUpdatedAt: string | null;
+}
+
 export function SettingsTab() {
-  const { user, profile, brandVoice, signOut, isLoading: authLoading, refreshProfile } = useAuth();
+  const { user, profile, brandVoice, signOut, isLoading: authLoading, refreshProfile, authError, loginProvider } = useAuth();
   const { remaining, isUnlimited, dailyLimit } = useDailyUsage();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
@@ -85,6 +98,53 @@ export function SettingsTab() {
   const [isHydrated, setIsHydrated] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Data health
+  const [dataHealth, setDataHealth] = useState<DataHealthCounts | null>(null);
+  const [healthLoading, setHealthLoading] = useState(false);
+
+  const fetchDataHealth = async () => {
+    if (!user) return;
+    setHealthLoading(true);
+    try {
+      const [analyses, patterns, ideas, dailyPosts, calendars] = await Promise.all([
+        supabase.from("viral_analyses").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("viral_patterns").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("idea_vault").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("daily_posts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("content_calendars").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      ]);
+
+      // Profile completeness
+      const profileFields = [profile?.display_name, profile?.twitter_handle, profile?.primary_niche, profile?.content_strategy];
+      const profileComplete = Math.round((profileFields.filter(Boolean).length / profileFields.length) * 100);
+
+      // Voice completeness
+      const voiceFields = [
+        (brandVoice?.writing_traits?.length ?? 0) > 0,
+        (brandVoice?.words_to_avoid?.length ?? 0) > 0,
+        (brandVoice?.signature_phrases?.length ?? 0) > 0,
+        (brandVoice?.preferred_hooks?.length ?? 0) > 0,
+      ];
+      const voiceComplete = Math.round((voiceFields.filter(Boolean).length / voiceFields.length) * 100);
+
+      setDataHealth({
+        analyses: analyses.count ?? 0,
+        patterns: patterns.count ?? 0,
+        ideas: ideas.count ?? 0,
+        dailyPosts: dailyPosts.count ?? 0,
+        calendars: calendars.count ?? 0,
+        profileComplete,
+        voiceComplete,
+        profileUpdatedAt: (profile as any)?.updated_at ?? null,
+        voiceUpdatedAt: (brandVoice as any)?.updated_at ?? null,
+      });
+    } catch (err) {
+      console.error("Failed to fetch data health:", err);
+    } finally {
+      setHealthLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name || "");
@@ -106,6 +166,13 @@ export function SettingsTab() {
       setIsHydrated(true);
     }
   }, [profile, brandVoice]);
+
+  // Fetch data health on mount and when profile loads
+  useEffect(() => {
+    if (user && profile) {
+      fetchDataHealth();
+    }
+  }, [user, profile?.id]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -167,17 +234,25 @@ export function SettingsTab() {
       if (!areStringArraysEqual(signaturePhrases, brandVoice.signature_phrases || [])) voiceUpdates.signature_phrases = signaturePhrases;
       if (!areStringArraysEqual(preferredHooks, brandVoice.preferred_hooks || [])) voiceUpdates.preferred_hooks = preferredHooks;
 
-      const updateRequests: any[] = [];
+      const updateRequests: Promise<any>[] = [];
 
       if (Object.keys(profileUpdates).length > 0) {
         updateRequests.push(
-          supabase.from("profiles").update(profileUpdates).eq("user_id", user.id),
+          supabase.from("profiles").update(profileUpdates).eq("user_id", user.id).select().then(res => {
+            if (res.error) throw res.error;
+            if (!res.data || res.data.length === 0) throw new Error("Profile update affected 0 rows — your profile row may be missing.");
+            return res;
+          })
         );
       }
 
       if (Object.keys(voiceUpdates).length > 0) {
         updateRequests.push(
-          supabase.from("brand_voice").update(voiceUpdates).eq("user_id", user.id),
+          supabase.from("brand_voice").update(voiceUpdates).eq("user_id", user.id).select().then(res => {
+            if (res.error) throw res.error;
+            if (!res.data || res.data.length === 0) throw new Error("Brand voice update affected 0 rows — your voice row may be missing.");
+            return res;
+          })
         );
       }
 
@@ -187,14 +262,10 @@ export function SettingsTab() {
         return;
       }
 
-      const responses = await Promise.all(updateRequests);
-      const firstError = responses.find((response) => response.error)?.error;
-
-      if (firstError) {
-        throw firstError;
-      }
+      await Promise.all(updateRequests);
 
       await refreshProfile();
+      await fetchDataHealth();
       toast({ title: "Settings saved" });
       setSaveStatus("saved");
       setTimeout(() => setSaveStatus("idle"), 2000);
@@ -202,6 +273,12 @@ export function SettingsTab() {
       toast({ title: "Error saving", description: e.message, variant: "destructive" });
       setSaveStatus("idle");
     }
+  };
+
+  const handleRefreshFromBackend = async () => {
+    await refreshProfile();
+    await fetchDataHealth();
+    toast({ title: "Refreshed from backend" });
   };
 
   const handleSignOut = async () => {
@@ -213,11 +290,24 @@ export function SettingsTab() {
     return <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
   }
 
+  const shortUserId = user?.id?.slice(0, 8) ?? "—";
+
   return (
     <div className="relative">
       <div className="flex gap-8 max-w-4xl mx-auto">
         {/* Main content */}
         <div ref={contentRef} className="flex-1 space-y-6 min-w-0">
+
+          {/* Auth error banner */}
+          {authError && (
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+              <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-destructive">Data loading issue</p>
+                <p className="text-xs text-destructive/80">{authError}</p>
+              </div>
+            </div>
+          )}
 
           {/* Account */}
           <Card id="section-account">
@@ -231,6 +321,17 @@ export function SettingsTab() {
                   <p className="text-sm text-muted-foreground">{profile?.email || user?.email}</p>
                 </div>
                 <Badge variant="secondary" className="capitalize">{profile?.tier || "free"}</Badge>
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Login Method</p>
+                  <p className="text-xs text-muted-foreground capitalize">{loginProvider || "unknown"}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Account ID</p>
+                  <p className="text-xs text-muted-foreground font-mono">{shortUserId}</p>
+                </div>
               </div>
               <Separator />
               <div className="flex items-center justify-between">
@@ -379,6 +480,73 @@ export function SettingsTab() {
                   tags={wordsToAvoid} onRemove={(t) => removeTag(t, wordsToAvoid, setWordsToAvoid)}
                   placeholder="e.g., Leverage, Synergy" />
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Data Health */}
+          <Card id="section-data-health">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base"><Database className="h-4 w-4" /> Data Health</CardTitle>
+                <Button variant="ghost" size="sm" onClick={handleRefreshFromBackend} className="gap-1.5">
+                  <RefreshCw className={`h-3.5 w-3.5 ${healthLoading ? "animate-spin" : ""}`} />
+                  Refresh
+                </Button>
+              </div>
+              <CardDescription>Live counts of your saved data in the backend</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {dataHealth ? (
+                <div className="space-y-4">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-lg border border-border p-3">
+                      <p className="text-xs text-muted-foreground">Profile Completeness</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                          <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${dataHealth.profileComplete}%` }} />
+                        </div>
+                        <span className="text-sm font-medium">{dataHealth.profileComplete}%</span>
+                      </div>
+                      {dataHealth.profileUpdatedAt && (
+                        <p className="text-[10px] text-muted-foreground mt-1">Updated: {new Date(dataHealth.profileUpdatedAt).toLocaleDateString()}</p>
+                      )}
+                    </div>
+                    <div className="rounded-lg border border-border p-3">
+                      <p className="text-xs text-muted-foreground">Voice Completeness</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                          <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${dataHealth.voiceComplete}%` }} />
+                        </div>
+                        <span className="text-sm font-medium">{dataHealth.voiceComplete}%</span>
+                      </div>
+                      {dataHealth.voiceUpdatedAt && (
+                        <p className="text-[10px] text-muted-foreground mt-1">Updated: {new Date(dataHealth.voiceUpdatedAt).toLocaleDateString()}</p>
+                      )}
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                    {[
+                      { label: "Analyses", count: dataHealth.analyses },
+                      { label: "Patterns", count: dataHealth.patterns },
+                      { label: "Ideas", count: dataHealth.ideas },
+                      { label: "Daily Posts", count: dataHealth.dailyPosts },
+                      { label: "Calendars", count: dataHealth.calendars },
+                    ].map((item) => (
+                      <div key={item.label} className="text-center">
+                        <p className="text-xl font-bold text-foreground">{item.count}</p>
+                        <p className="text-[10px] text-muted-foreground">{item.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : healthLoading ? (
+                <div className="flex items-center justify-center py-6">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Unable to load data health.</p>
+              )}
             </CardContent>
           </Card>
 

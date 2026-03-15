@@ -9,8 +9,7 @@ import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "@/hooks/use-toast";
-import { Loader2, FlaskConical } from "lucide-react";
-
+import { Loader2, FlaskConical, AlertCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 export default function Auth() {
@@ -57,6 +56,9 @@ export default function Auth() {
   const handleGoogleSignIn = async () => {
     const { error } = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
+      extraParams: {
+        prompt: "select_account",
+      },
     });
     if (error) {
       toast({ title: "Google sign in failed", description: String(error), variant: "destructive" });
@@ -80,6 +82,14 @@ export default function Auth() {
             <CardDescription>Sign in to save your viral analyses and build your pattern library</CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Account consistency helper */}
+            <div className="flex items-start gap-2 mb-4 p-3 rounded-lg bg-muted/50 border border-border">
+              <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <p className="text-xs text-muted-foreground">
+                Use the same sign-in method you used before (Google or Email) to access your saved data.
+              </p>
+            </div>
+
             {/* Google Sign In */}
             <Button variant="outline" className="w-full gap-2 mb-4" onClick={handleGoogleSignIn}>
               <svg className="h-4 w-4" viewBox="0 0 24 24">

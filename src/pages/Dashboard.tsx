@@ -74,7 +74,15 @@ export default function Dashboard() {
 
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 flex items-center justify-between border-b border-border bg-background/90 backdrop-blur-md sticky top-0 z-50 px-4">
-            <SidebarTrigger />
+            <div className="flex items-center gap-3">
+              <SidebarTrigger />
+              {user && (
+                <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="truncate max-w-[150px]">{user.email}</span>
+                  <span className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded">{user.id.slice(0, 8)}</span>
+                </div>
+              )}
+            </div>
             <UsageIndicator remaining={remaining} isUnlimited={isUnlimited} isLoading={usageLoading} dailyLimit={dailyLimit} />
           </header>
 

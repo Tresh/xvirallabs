@@ -16,6 +16,7 @@ interface Profile {
   skills: string[];
   content_strategy: string | null;
   custom_system_prompt: string | null;
+  updated_at?: string | null;
 }
 
 interface BrandVoice {
@@ -26,6 +27,7 @@ interface BrandVoice {
   signature_phrases: string[];
   preferred_hooks: string[];
   avoid_hooks: string[];
+  updated_at?: string | null;
 }
 
 interface AuthContextType {
@@ -34,12 +36,14 @@ interface AuthContextType {
   profile: Profile | null;
   brandVoice: BrandVoice | null;
   isLoading: boolean;
+  authError: string | null;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: Error | null }>;
   updateBrandVoice: (updates: Partial<BrandVoice>) => Promise<{ error: Error | null }>;
+  loginProvider: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,23 +54,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [brandVoice, setBrandVoice] = useState<BrandVoice | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [loginProvider, setLoginProvider] = useState<string | null>(null);
 
-  const fetchProfile = async (userId: string) => {
-    const [{ data: profileData }, { data: brandData }] = await Promise.all([
-      supabase
+  const ensureAndFetchProfile = async (userId: string, email: string | undefined) => {
+    setAuthError(null);
+
+    try {
+      // Ensure profile row exists (self-heal)
+      const { data: existingProfile } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id")
         .eq("user_id", userId)
-        .maybeSingle(),
-      supabase
-        .from("brand_voice")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle(),
-    ]);
+        .maybeSingle();
 
-    setProfile((profileData as Profile | null) ?? null);
-    setBrandVoice((brandData as BrandVoice | null) ?? null);
+      if (!existingProfile) {
+        console.warn("[Auth] Profile row missing for user, creating...");
+        await supabase.from("profiles").insert({ user_id: userId, email: email || null });
+      }
+
+      // Ensure brand_voice row exists (self-heal)
+      const { data: existingVoice } = await supabase
+        .from("brand_voice")
+        .select("id")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (!existingVoice) {
+        console.warn("[Auth] Brand voice row missing for user, creating...");
+        await supabase.from("brand_voice").insert({ user_id: userId });
+      }
+
+      // Now fetch both
+      const [{ data: profileData, error: pErr }, { data: brandData, error: bErr }] = await Promise.all([
+        supabase.from("profiles").select("*").eq("user_id", userId).maybeSingle(),
+        supabase.from("brand_voice").select("*").eq("user_id", userId).maybeSingle(),
+      ]);
+
+      if (pErr) {
+        console.error("[Auth] Failed to fetch profile:", pErr.message);
+        setAuthError(`Failed to load profile: ${pErr.message}`);
+      }
+      if (bErr) {
+        console.error("[Auth] Failed to fetch brand voice:", bErr.message);
+        setAuthError(`Failed to load brand voice: ${bErr.message}`);
+      }
+
+      setProfile((profileData as Profile | null) ?? null);
+      setBrandVoice((brandData as BrandVoice | null) ?? null);
+    } catch (err: any) {
+      console.error("[Auth] Error in ensureAndFetchProfile:", err);
+      setAuthError(err.message || "Unknown error loading profile");
+    }
   };
 
   useEffect(() => {
@@ -79,10 +118,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(nextSession?.user ?? null);
 
       if (nextSession?.user) {
-        await fetchProfile(nextSession.user.id);
+        // Detect login provider
+        const provider = nextSession.user.app_metadata?.provider || "email";
+        setLoginProvider(provider);
+        await ensureAndFetchProfile(nextSession.user.id, nextSession.user.email);
       } else {
         setProfile(null);
         setBrandVoice(null);
+        setLoginProvider(null);
       }
 
       if (isMounted) {
@@ -131,11 +174,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setProfile(null);
     setBrandVoice(null);
+    setLoginProvider(null);
+    setAuthError(null);
   };
 
   const refreshProfile = async () => {
     if (user) {
-      await fetchProfile(user.id);
+      await ensureAndFetchProfile(user.id, user.email ?? undefined);
     }
   };
 
@@ -177,12 +222,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile,
         brandVoice,
         isLoading,
+        authError,
         signUp,
         signIn,
         signOut,
         refreshProfile,
         updateProfile,
         updateBrandVoice,
+        loginProvider,
       }}
     >
       {children}
