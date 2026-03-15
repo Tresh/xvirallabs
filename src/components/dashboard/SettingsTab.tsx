@@ -82,6 +82,11 @@ interface SettingsDraft {
   wordsToAvoid: string[];
   signaturePhrases: string[];
   preferredHooks: string[];
+  skillInput: string;
+  traitInput: string;
+  avoidInput: string;
+  phraseInput: string;
+  hookInput: string;
 }
 
 export function SettingsTab() {
