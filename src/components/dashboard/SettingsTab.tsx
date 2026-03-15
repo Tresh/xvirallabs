@@ -209,6 +209,43 @@ export function SettingsTab() {
     }
   }, [profile, brandVoice, draftKey]);
 
+  // Persist unsaved draft locally so tab switches don't lose in-progress edits
+  useEffect(() => {
+    if (!draftKey || !isHydrated) return;
+
+    const draft: SettingsDraft = {
+      displayName,
+      twitterHandle,
+      primaryNiche,
+      brandTone,
+      growthGoal,
+      skills,
+      contentStrategy,
+      customSystemPrompt,
+      writingTraits,
+      wordsToAvoid,
+      signaturePhrases,
+      preferredHooks,
+    };
+
+    sessionStorage.setItem(draftKey, JSON.stringify(draft));
+  }, [
+    draftKey,
+    isHydrated,
+    displayName,
+    twitterHandle,
+    primaryNiche,
+    brandTone,
+    growthGoal,
+    skills,
+    contentStrategy,
+    customSystemPrompt,
+    writingTraits,
+    wordsToAvoid,
+    signaturePhrases,
+    preferredHooks,
+  ]);
+
   // Auto-save: detect changes and save after 2s of inactivity
   const hasChanges = useCallback(() => {
     if (!profile || !brandVoice || !isHydrated) return false;
