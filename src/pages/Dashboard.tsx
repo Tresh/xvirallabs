@@ -17,14 +17,23 @@ import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { UnifiedAnalysesTab } from "@/components/dashboard/UnifiedAnalysesTab";
 import { AnalyzeTab } from "@/components/dashboard/AnalyzeTab";
 import { ContentOS } from "@/components/dashboard/ContentOS";
+import { VideoBank } from "@/components/dashboard/VideoBank";
+import { MemoryTab } from "@/components/dashboard/MemoryTab";
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
   const { remaining, isUnlimited, isLoading: usageLoading, dailyLimit } = useDailyUsage();
   const {
-    analyses, patterns, ideas, isLoading,
-    deleteAnalysis, togglePinAnalysis, deletePattern,
-    incrementPatternUsage, updateIdeaStatus, deleteIdea,
+    analyses,
+    patterns,
+    ideas,
+    isLoading,
+    deleteAnalysis,
+    togglePinAnalysis,
+    deletePattern,
+    incrementPatternUsage,
+    updateIdeaStatus,
+    deleteIdea,
     fetchMemory,
   } = useViralMemory();
   const navigate = useNavigate();
@@ -84,12 +93,19 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-            <UsageIndicator remaining={remaining} isUnlimited={isUnlimited} isLoading={usageLoading} dailyLimit={dailyLimit} />
+            <UsageIndicator
+              remaining={remaining}
+              isUnlimited={isUnlimited}
+              isLoading={usageLoading}
+              dailyLimit={dailyLimit}
+            />
           </header>
 
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
             {activeTab === "daily-feed" && <DailyFeed />}
             {activeTab === "content-os" && <ContentOS />}
+            {activeTab === "video-bank" && <VideoBank />}
+            {activeTab === "memory" && <MemoryTab />}
             {activeTab === "analyze" && <AnalyzeTab />}
             {activeTab === "growth" && <GrowthTracker />}
             {activeTab === "content-lab" && <ContentLabTab />}
