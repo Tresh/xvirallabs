@@ -9,6 +9,10 @@ import {
   Settings,
   Sparkles,
   Layers,
+  Video,
+  Dna,
+  Lightbulb,
+  Brain,
 } from "lucide-react";
 import {
   Sidebar,
