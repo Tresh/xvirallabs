@@ -28,12 +28,11 @@ import { Badge } from "@/components/ui/badge";
 
 const navItems = [
   { id: "daily-feed", title: "Daily Feed", icon: Zap },
+  { id: "content-os", title: "Content OS", icon: Layers },
   { id: "video-bank", title: "Video Bank", icon: Video },
   { id: "content-lab", title: "Content Lab", icon: Calendar },
   { id: "growth", title: "Growth", icon: TrendingUp },
   { id: "analyses", title: "Analyses", icon: Microscope },
-  { id: "patterns", title: "Patterns", icon: Dna },
-  { id: "ideas", title: "Ideas", icon: Lightbulb },
   { id: "memory", title: "Memory", icon: Brain },
   { id: "plans", title: "Plans", icon: CreditCard },
 ] as const;
