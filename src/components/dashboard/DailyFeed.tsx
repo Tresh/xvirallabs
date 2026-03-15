@@ -143,6 +143,7 @@ function PostCard({ post, onApprove, onSkip, onCopy }: {
 export function DailyFeed() {
   const { profile, brandVoice } = useAuth();
   const { posts, isLoading, isGenerating, generate, updateStatus, approveAll } = useDailyPosts();
+  const { remaining, isUnlimited, hasReachedLimit, decrementLocal, refresh: refreshUsage } = useDailyUsage();
   const [filter, setFilter] = useState<"all" | "pending" | "approved">("all");
 
   const handleGenerate = async () => {
@@ -154,10 +155,24 @@ export function DailyFeed() {
       });
       return;
     }
+    if (hasReachedLimit) {
+      toast({
+        title: "Daily credits used up",
+        description: "You've used all 5 free credits today. Upgrade to Pro for unlimited.",
+        variant: "destructive",
+      });
+      return;
+    }
     const result = await generate(profile, brandVoice);
     if (result?.error) {
-      toast({ title: "Generation failed", description: result.error, variant: "destructive" });
+      if (result.error.includes("credit limit") || result.error.includes("LIMIT_REACHED")) {
+        toast({ title: "No credits remaining", description: "Upgrade to Pro for unlimited generations.", variant: "destructive" });
+      } else {
+        toast({ title: "Generation failed", description: result.error, variant: "destructive" });
+      }
     } else {
+      decrementLocal();
+      refreshUsage();
       toast({ title: `${result?.count || 15} posts ready! 🚀`, description: "Approve the ones you love." });
     }
   };
