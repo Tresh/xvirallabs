@@ -392,6 +392,33 @@ serve(async (req) => {
       }
     };
 
+    // Helper: check and consume a credit (returns remaining, 0 = denied, -1 = unlimited)
+    const consumeCredit = async (): Promise<number> => {
+      const { data, error } = await supabaseAdmin.rpc("check_and_increment_usage", { p_user_id: user.id });
+      if (error) {
+        console.error("Credit check error:", error);
+        throw new Error("Failed to check usage credits");
+      }
+      return data as number;
+    };
+
+    // Actions that consume credits
+    const creditActions = [
+      "generate_pillars", "generate_mind_map", "generate_tweet", "improve_tweet",
+      "generate_content_bank", "regenerate_post", "generate_next_day",
+      "analyze_performance", "analyze_screenshot", "expand_content", "generate_daily_feed"
+    ];
+
+    if (creditActions.includes(action)) {
+      const remaining = await consumeCredit();
+      if (remaining === 0 && !isPaidUser) {
+        return new Response(
+          JSON.stringify({ error: "Daily credit limit reached. Upgrade to Pro for unlimited generations.", code: "LIMIT_REACHED" }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     switch (action) {
       // ===== LAYER 1: GENERATE BRAND PILLARS =====
       case "generate_pillars": {

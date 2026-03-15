@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyPosts } from "@/hooks/useDailyPosts";
+import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
@@ -142,6 +143,7 @@ function PostCard({ post, onApprove, onSkip, onCopy }: {
 export function DailyFeed() {
   const { profile, brandVoice } = useAuth();
   const { posts, isLoading, isGenerating, generate, updateStatus, approveAll } = useDailyPosts();
+  const { remaining, isUnlimited, hasReachedLimit, decrementLocal, refresh: refreshUsage } = useDailyUsage();
   const [filter, setFilter] = useState<"all" | "pending" | "approved">("all");
 
   const handleGenerate = async () => {
@@ -153,10 +155,24 @@ export function DailyFeed() {
       });
       return;
     }
+    if (hasReachedLimit) {
+      toast({
+        title: "Daily credits used up",
+        description: "You've used all 5 free credits today. Upgrade to Pro for unlimited.",
+        variant: "destructive",
+      });
+      return;
+    }
     const result = await generate(profile, brandVoice);
     if (result?.error) {
-      toast({ title: "Generation failed", description: result.error, variant: "destructive" });
+      if (result.error.includes("credit limit") || result.error.includes("LIMIT_REACHED")) {
+        toast({ title: "No credits remaining", description: "Upgrade to Pro for unlimited generations.", variant: "destructive" });
+      } else {
+        toast({ title: "Generation failed", description: result.error, variant: "destructive" });
+      }
     } else {
+      decrementLocal();
+      refreshUsage();
       toast({ title: `${result?.count || 15} posts ready! 🚀`, description: "Approve the ones you love." });
     }
   };
@@ -207,14 +223,21 @@ export function DailyFeed() {
           variant="viral"
           size="lg"
           onClick={handleGenerate}
-          disabled={isGenerating || !profile?.primary_niche}
+          disabled={isGenerating || !profile?.primary_niche || hasReachedLimit}
         >
           {isGenerating ? (
             <><Loader2 className="h-4 w-4 animate-spin" /> Writing your posts...</>
+          ) : hasReachedLimit ? (
+            <><X className="h-4 w-4" /> No Credits Left</>
           ) : (
             <><Zap className="h-4 w-4" /> Generate Today's Posts</>
           )}
         </Button>
+        {!isUnlimited && (
+          <p className="text-xs text-muted-foreground mt-3">
+            {hasReachedLimit ? "You've used all 5 free daily credits. Upgrade to Pro for unlimited." : `${remaining} credit${remaining !== 1 ? "s" : ""} remaining today`}
+          </p>
+        )}
         {!profile?.primary_niche && (
           <p className="text-xs text-muted-foreground mt-3">
             ↑ Set your niche in <strong>Memory</strong> tab first
@@ -249,10 +272,13 @@ export function DailyFeed() {
               <CheckCheck className="h-3 w-3 mr-1" /> Approve All
             </Button>
           )}
-          <Button size="sm" variant="outline" onClick={handleGenerate} disabled={isGenerating} className="h-8 text-xs">
+          <Button size="sm" variant="outline" onClick={handleGenerate} disabled={isGenerating || hasReachedLimit} className="h-8 text-xs">
             {isGenerating ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <RefreshCw className="h-3 w-3 mr-1" />}
-            {isGenerating ? "Writing..." : "Regenerate"}
+            {isGenerating ? "Writing..." : hasReachedLimit ? "No Credits" : "Regenerate"}
           </Button>
+          {!isUnlimited && !hasReachedLimit && (
+            <span className="text-[10px] text-muted-foreground">{remaining} left</span>
+          )}
         </div>
       </div>
 
