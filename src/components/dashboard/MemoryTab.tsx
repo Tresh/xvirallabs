@@ -19,6 +19,7 @@ import {
   Check,
   Save,
 } from "lucide-react";
+import { ContentPillarSetup } from "@/components/dashboard/ContentPillarSetup";
 
 type SaveStatus = "idle" | "saving" | "saved";
 
