@@ -223,14 +223,21 @@ export function DailyFeed() {
           variant="viral"
           size="lg"
           onClick={handleGenerate}
-          disabled={isGenerating || !profile?.primary_niche}
+          disabled={isGenerating || !profile?.primary_niche || hasReachedLimit}
         >
           {isGenerating ? (
             <><Loader2 className="h-4 w-4 animate-spin" /> Writing your posts...</>
+          ) : hasReachedLimit ? (
+            <><X className="h-4 w-4" /> No Credits Left</>
           ) : (
             <><Zap className="h-4 w-4" /> Generate Today's Posts</>
           )}
         </Button>
+        {!isUnlimited && (
+          <p className="text-xs text-muted-foreground mt-3">
+            {hasReachedLimit ? "You've used all 5 free daily credits. Upgrade to Pro for unlimited." : `${remaining} credit${remaining !== 1 ? "s" : ""} remaining today`}
+          </p>
+        )}
         {!profile?.primary_niche && (
           <p className="text-xs text-muted-foreground mt-3">
             ↑ Set your niche in <strong>Memory</strong> tab first
