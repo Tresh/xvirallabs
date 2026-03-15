@@ -8,6 +8,7 @@ import {
   TrendingUp,
   Settings,
   Sparkles,
+  Layers,
 } from "lucide-react";
 import {
   Sidebar,
