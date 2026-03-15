@@ -238,21 +238,23 @@ export function SettingsTab() {
 
       if (Object.keys(profileUpdates).length > 0) {
         updateRequests.push(
-          supabase.from("profiles").update(profileUpdates).eq("user_id", user.id).select().then(res => {
+          (async () => {
+            const res = await supabase.from("profiles").update(profileUpdates).eq("user_id", user.id).select();
             if (res.error) throw res.error;
             if (!res.data || res.data.length === 0) throw new Error("Profile update affected 0 rows — your profile row may be missing.");
             return res;
-          })
+          })()
         );
       }
 
       if (Object.keys(voiceUpdates).length > 0) {
         updateRequests.push(
-          supabase.from("brand_voice").update(voiceUpdates).eq("user_id", user.id).select().then(res => {
+          (async () => {
+            const res = await supabase.from("brand_voice").update(voiceUpdates).eq("user_id", user.id).select();
             if (res.error) throw res.error;
             if (!res.data || res.data.length === 0) throw new Error("Brand voice update affected 0 rows — your voice row may be missing.");
             return res;
-          })
+          })()
         );
       }
 
