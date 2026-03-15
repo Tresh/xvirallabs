@@ -584,6 +584,10 @@ export function SettingsTab() {
                   placeholder="e.g., Always write in first person. Never use emojis."
                   className="min-h-[100px] resize-none font-mono text-sm" />
               </div>
+
+              <div className="pt-1">
+                <ContentPillarSetup />
+              </div>
             </CardContent>
           </Card>
 
