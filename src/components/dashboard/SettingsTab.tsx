@@ -69,6 +69,21 @@ interface DataHealthCounts {
   voiceUpdatedAt: string | null;
 }
 
+interface SettingsDraft {
+  displayName: string;
+  twitterHandle: string;
+  primaryNiche: string;
+  brandTone: "authoritative" | "relatable" | "bold" | "playful";
+  growthGoal: "followers" | "leads" | "sales" | "authority";
+  skills: string[];
+  contentStrategy: string;
+  customSystemPrompt: string;
+  writingTraits: string[];
+  wordsToAvoid: string[];
+  signaturePhrases: string[];
+  preferredHooks: string[];
+}
+
 export function SettingsTab() {
   const { user, profile, brandVoice, signOut, isLoading: authLoading, refreshProfile, authError, loginProvider } = useAuth();
   const { remaining, isUnlimited, dailyLimit } = useDailyUsage();
@@ -97,6 +112,7 @@ export function SettingsTab() {
   const [activeSection, setActiveSection] = useState("account");
   const [isHydrated, setIsHydrated] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const draftKey = user ? `settings-draft:${user.id}` : null;
 
   // Data health
   const [dataHealth, setDataHealth] = useState<DataHealthCounts | null>(null);
@@ -162,10 +178,73 @@ export function SettingsTab() {
       setSignaturePhrases(brandVoice.signature_phrases || []);
       setPreferredHooks(brandVoice.preferred_hooks || []);
     }
+
+    if (profile && brandVoice && draftKey) {
+      try {
+        const rawDraft = sessionStorage.getItem(draftKey);
+        if (rawDraft) {
+          const draft = JSON.parse(rawDraft) as Partial<SettingsDraft>;
+          setDisplayName(draft.displayName ?? profile.display_name ?? "");
+          setTwitterHandle(draft.twitterHandle ?? profile.twitter_handle ?? "");
+          setPrimaryNiche(draft.primaryNiche ?? profile.primary_niche ?? "");
+          setBrandTone(draft.brandTone ?? (profile.brand_tone as "authoritative" | "relatable" | "bold" | "playful") ?? "authoritative");
+          setGrowthGoal(draft.growthGoal ?? (profile.growth_goal as "followers" | "leads" | "sales" | "authority") ?? "followers");
+          setSkills(draft.skills ?? profile.skills ?? []);
+          setContentStrategy(draft.contentStrategy ?? profile.content_strategy ?? "");
+          setCustomSystemPrompt(draft.customSystemPrompt ?? profile.custom_system_prompt ?? "");
+          setWritingTraits(draft.writingTraits ?? brandVoice.writing_traits ?? []);
+          setWordsToAvoid(draft.wordsToAvoid ?? brandVoice.words_to_avoid ?? []);
+          setSignaturePhrases(draft.signaturePhrases ?? brandVoice.signature_phrases ?? []);
+          setPreferredHooks(draft.preferredHooks ?? brandVoice.preferred_hooks ?? []);
+        }
+      } catch (error) {
+        console.warn("Failed to read settings draft:", error);
+      }
+      setIsHydrated(true);
+      return;
+    }
+
     if (profile && brandVoice) {
       setIsHydrated(true);
     }
-  }, [profile, brandVoice]);
+  }, [profile, brandVoice, draftKey]);
+
+  // Persist unsaved draft locally so tab switches don't lose in-progress edits
+  useEffect(() => {
+    if (!draftKey || !isHydrated) return;
+
+    const draft: SettingsDraft = {
+      displayName,
+      twitterHandle,
+      primaryNiche,
+      brandTone,
+      growthGoal,
+      skills,
+      contentStrategy,
+      customSystemPrompt,
+      writingTraits,
+      wordsToAvoid,
+      signaturePhrases,
+      preferredHooks,
+    };
+
+    sessionStorage.setItem(draftKey, JSON.stringify(draft));
+  }, [
+    draftKey,
+    isHydrated,
+    displayName,
+    twitterHandle,
+    primaryNiche,
+    brandTone,
+    growthGoal,
+    skills,
+    contentStrategy,
+    customSystemPrompt,
+    writingTraits,
+    wordsToAvoid,
+    signaturePhrases,
+    preferredHooks,
+  ]);
 
   // Auto-save: detect changes and save after 2s of inactivity
   const hasChanges = useCallback(() => {
@@ -302,6 +381,7 @@ export function SettingsTab() {
 
       await Promise.all(updateRequests);
 
+      if (draftKey) sessionStorage.removeItem(draftKey);
       await refreshProfile();
       await fetchDataHealth();
       toast({ title: "Settings saved" });
@@ -314,12 +394,14 @@ export function SettingsTab() {
   };
 
   const handleRefreshFromBackend = async () => {
+    if (draftKey) sessionStorage.removeItem(draftKey);
     await refreshProfile();
     await fetchDataHealth();
     toast({ title: "Refreshed from backend" });
   };
 
   const handleSignOut = async () => {
+    if (draftKey) sessionStorage.removeItem(draftKey);
     await signOut();
     navigate("/");
   };
