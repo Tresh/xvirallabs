@@ -272,10 +272,13 @@ export function DailyFeed() {
               <CheckCheck className="h-3 w-3 mr-1" /> Approve All
             </Button>
           )}
-          <Button size="sm" variant="outline" onClick={handleGenerate} disabled={isGenerating} className="h-8 text-xs">
+          <Button size="sm" variant="outline" onClick={handleGenerate} disabled={isGenerating || hasReachedLimit} className="h-8 text-xs">
             {isGenerating ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <RefreshCw className="h-3 w-3 mr-1" />}
-            {isGenerating ? "Writing..." : "Regenerate"}
+            {isGenerating ? "Writing..." : hasReachedLimit ? "No Credits" : "Regenerate"}
           </Button>
+          {!isUnlimited && !hasReachedLimit && (
+            <span className="text-[10px] text-muted-foreground">{remaining} left</span>
+          )}
         </div>
       </div>
 
