@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { useTheme } from "@/hooks/useTheme";
