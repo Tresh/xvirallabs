@@ -69,6 +69,21 @@ interface DataHealthCounts {
   voiceUpdatedAt: string | null;
 }
 
+interface SettingsDraft {
+  displayName: string;
+  twitterHandle: string;
+  primaryNiche: string;
+  brandTone: "authoritative" | "relatable" | "bold" | "playful";
+  growthGoal: "followers" | "leads" | "sales" | "authority";
+  skills: string[];
+  contentStrategy: string;
+  customSystemPrompt: string;
+  writingTraits: string[];
+  wordsToAvoid: string[];
+  signaturePhrases: string[];
+  preferredHooks: string[];
+}
+
 export function SettingsTab() {
   const { user, profile, brandVoice, signOut, isLoading: authLoading, refreshProfile, authError, loginProvider } = useAuth();
   const { remaining, isUnlimited, dailyLimit } = useDailyUsage();
