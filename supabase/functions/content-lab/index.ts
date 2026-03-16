@@ -1456,6 +1456,193 @@ Return ONLY valid JSON array. No markdown.`;
         }
       }
 
+      // ===== VIDEO CONTENT BANK =====
+      case "generate_video_bank": {
+        const {
+          niche, brandTone, twitterHandle, displayName,
+          writingTraits, signaturePhrases, contentStrategy,
+          skills, customSystemPrompt, count,
+        } = params;
+
+        const videoCount = Math.min(count || 5, 10);
+
+        const VIDEO_SYSTEM_PROMPT = `You are an elite short-form video content strategist for Twitter/X.
+
+CREATOR PROFILE:
+- Name: ${displayName || "Creator"}
+- Niche: ${niche || "content creation"}
+- Tone: ${brandTone || "relatable"}
+${twitterHandle ? `- Handle: @${twitterHandle}` : ""}
+${skills?.length ? `- Skills/Topics: ${skills.join(", ")}` : ""}
+${writingTraits?.length ? `- Writing style: ${writingTraits.join(", ")}` : ""}
+${signaturePhrases?.length ? `- Signature phrases: ${signaturePhrases.join(", ")}` : ""}
+${contentStrategy ? `- Strategy: ${contentStrategy}` : ""}
+${customSystemPrompt ? `- Special instructions: ${customSystemPrompt}` : ""}
+
+VIDEO STYLES TO USE:
+1. text_explainer — Bold text on black screen, white text, no face. Words appear one by one.
+2. shock_reveal — "Did you know?" reveal format. Builds tension then drops the value.
+3. step_by_step — Tutorial walkthrough. Each step gets its own screen.
+4. trending_overlay — Fast-cut clips with text overlays riding a trending topic energy.
+5. cinematic — Movie-like opening, dramatic music, storytelling arc, reveal at end.
+
+AI VIDEO TOOLS THIS PROMPT WILL BE USED WITH:
+- Sora (OpenAI), Runway ML, CapCut AI, Pika Labs, Kling AI`;
+
+        const videoUserPrompt = `Generate exactly ${videoCount} complete video content packages.
+
+Mix these styles across the ${videoCount} videos:
+- At least 1 shock_reveal
+- At least 1 step_by_step
+- At least 1 text_explainer
+
+For EACH video, output this exact JSON structure:
+{
+  "title": "<short internal title for the video>",
+  "video_style": "<text_explainer|shock_reveal|step_by_step|trending_overlay|cinematic>",
+  "hook": "<the exact first 3 seconds of text/speech — must stop the scroll immediately, under 100 chars>",
+  "hook_type": "<curiosity|shock|fomo|controversy|relatability|authority>",
+  "script": "<full 60-90 second video script with [CUT], [TEXT ON SCREEN: ___], [VOICEOVER] markers>",
+  "voiceover_text": "<clean voiceover text only — no markers, ready to paste into ElevenLabs>",
+  "ai_video_prompt": "<detailed 100+ word prompt for Sora/Runway/Pika to generate the visual>",
+  "text_overlays": [
+    {"time": "0:00-0:03", "text": "<hook text>", "style": "LARGE WHITE BOLD"},
+    {"time": "0:03-0:08", "text": "<second text>", "style": "medium white"},
+    {"time": "0:08-0:15", "text": "<third text>", "style": "accent color bold"}
+  ],
+  "caption": "<X/Twitter post caption for when you post the video>",
+  "viral_score": <integer 70-98>
+}
+
+CRITICAL RULES:
+- Every hook must make someone STOP scrolling in 0.3 seconds
+- The AI video prompt must be detailed enough that ANY AI video tool can execute it perfectly
+- Each video must feel completely different from the others
+- Include specific details, real tool names, concrete steps
+
+Output ONLY a valid JSON array. No markdown.`;
+
+        try {
+          const content = await callAI(VIDEO_SYSTEM_PROMPT, videoUserPrompt);
+          const videos = parseAIJson(content);
+
+          if (!Array.isArray(videos) || videos.length === 0) {
+            throw new Error("Invalid response format");
+          }
+
+          return new Response(
+            JSON.stringify({ success: true, videos, count: videos.length }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          return new Response(
+            JSON.stringify({ error: e.message || "Video generation failed" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+
+      // ===== SALES CONTENT ENGINE =====
+      case "generate_sales_campaign": {
+        const {
+          product, niche, brandTone, displayName, twitterHandle,
+          writingTraits, signaturePhrases, contentStrategy,
+          customSystemPrompt, campaignDays,
+        } = params;
+
+        const days = Math.min(campaignDays || 14, 21);
+
+        const SALES_SYSTEM = `You are an elite organic content marketer who sells products through value-first content on Twitter/X.
+
+CREATOR PROFILE:
+- Name: ${displayName || "Creator"}
+- Niche: ${niche}
+- Tone: ${brandTone}
+${twitterHandle ? `- Handle: @${twitterHandle}` : ""}
+${writingTraits?.length ? `- Writing style: ${writingTraits.join(", ")}` : ""}
+${signaturePhrases?.length ? `- Signature phrases: ${signaturePhrases.join(", ")}` : ""}
+${contentStrategy ? `- Strategy: ${contentStrategy}` : ""}
+${customSystemPrompt ? `- Special: ${customSystemPrompt}` : ""}
+
+PRODUCT:
+- Name: ${product.name}
+- Type: ${product.type}
+- Description: ${product.description}
+- Target audience: ${product.targetAudience}
+- Price: ${product.price || "Not specified"}
+- Link: ${product.link || "Not specified"}
+- Transformation: ${product.transformation || "Not specified"}
+- Proof: ${product.proof || "Not specified"}
+
+THE GOLDEN RULE OF SALES CONTENT:
+Never make it feel like an ad. Deliver so much genuine free value that buying the product feels like a bonus.
+
+POST TYPE RULES:
+- value_thread: 10-15 tweets. Deliver REAL actionable value. Product mentioned only in last 1-2 tweets.
+- fomo: Social proof + urgency. Real numbers, real results. Never fake.
+- story: Personal journey from the exact problem the audience has → product as the solution.
+- controversy: Challenge a common belief in the niche → reframe with your product's angle.
+- list: "X free ways to [outcome] (and 1 shortcut)" — the shortcut is the product.
+- result: Show a specific transformation/result. Screenshot style. Product as the method.
+- soft_sell: Natural organic mention of product in context of valuable post.
+- hard_sell: Direct offer. Only use 1-2 times in the whole campaign. Must have irresistible CTA.
+
+CAMPAIGN RULES:
+- Never 2 sell-heavy posts back to back
+- First 3 days = pure value, no sell at all — build trust first
+- Ratio: 70% value / 20% soft sell / 10% direct CTA
+- Every post must work even if they never buy — that's what makes people buy`;
+
+        const salesUserPrompt = `Generate a complete ${days}-day sales campaign as a JSON array.
+
+For each post output:
+{
+  "scheduled_day": <1-${days}>,
+  "post_type": "<value_thread|fomo|story|controversy|list|result|soft_sell|hard_sell>",
+  "title": "<short internal title>",
+  "content": "<the actual post text, under 280 chars for single tweets>",
+  "thread_tweets": [<array of tweet strings if post_type is value_thread, null otherwise>],
+  "viral_score": <integer 60-98>,
+  "sell_intensity": "<soft|medium|hard>",
+  "estimated_reach": "<low|medium|high|viral>"
+}
+
+Generate exactly 15 posts spread across ${days} days. Mix all post types strategically.
+
+Output ONLY a valid JSON array. No markdown.`;
+
+        try {
+          const content = await callAI(SALES_SYSTEM, salesUserPrompt);
+          const posts = parseAIJson(content);
+
+          if (!Array.isArray(posts) || posts.length === 0) {
+            throw new Error("Invalid response format");
+          }
+
+          return new Response(
+            JSON.stringify({ success: true, posts, count: posts.length }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          if (e.message === "RATE_LIMIT") {
+            return new Response(
+              JSON.stringify({ error: "Rate limit exceeded. Please try again." }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          return new Response(
+            JSON.stringify({ error: e.message || "Sales campaign generation failed" }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+
       default:
         return new Response(
           JSON.stringify({ error: "Unknown action" }),
