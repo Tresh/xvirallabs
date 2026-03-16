@@ -797,6 +797,57 @@ export type Database = {
           },
         ]
       }
+      products: {
+        Row: {
+          brand_id: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          price: string | null
+          product_description: string
+          product_link: string | null
+          product_name: string
+          product_type: string | null
+          proof: string | null
+          target_audience: string
+          transformation: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          price?: string | null
+          product_description: string
+          product_link?: string | null
+          product_name: string
+          product_type?: string | null
+          proof?: string | null
+          target_audience: string
+          transformation?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          price?: string | null
+          product_description?: string
+          product_link?: string | null
+          product_name?: string
+          product_type?: string | null
+          proof?: string | null
+          target_audience?: string
+          transformation?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           brand_tone: string | null
@@ -850,6 +901,125 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      sales_campaigns: {
+        Row: {
+          campaign_name: string
+          created_at: string
+          end_date: string | null
+          id: string
+          product_id: string | null
+          start_date: string | null
+          status: string
+          total_posts: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          campaign_name: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          product_id?: string | null
+          start_date?: string | null
+          status?: string
+          total_posts?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          campaign_name?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          product_id?: string | null
+          start_date?: string | null
+          status?: string
+          total_posts?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_campaigns_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_posts: {
+        Row: {
+          campaign_id: string | null
+          content: string
+          created_at: string
+          estimated_reach: string | null
+          id: string
+          post_type: string
+          product_id: string | null
+          scheduled_date: string | null
+          scheduled_day: number | null
+          sell_intensity: string | null
+          status: string
+          thread_tweets: Json | null
+          title: string | null
+          updated_at: string
+          user_id: string
+          viral_score: number | null
+        }
+        Insert: {
+          campaign_id?: string | null
+          content: string
+          created_at?: string
+          estimated_reach?: string | null
+          id?: string
+          post_type: string
+          product_id?: string | null
+          scheduled_date?: string | null
+          scheduled_day?: number | null
+          sell_intensity?: string | null
+          status?: string
+          thread_tweets?: Json | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          viral_score?: number | null
+        }
+        Update: {
+          campaign_id?: string | null
+          content?: string
+          created_at?: string
+          estimated_reach?: string | null
+          id?: string
+          post_type?: string
+          product_id?: string | null
+          scheduled_date?: string | null
+          scheduled_day?: number | null
+          sell_intensity?: string | null
+          status?: string
+          thread_tweets?: Json | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          viral_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_posts_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "sales_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_posts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

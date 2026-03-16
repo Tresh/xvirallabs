@@ -18,6 +18,7 @@ import { UnifiedAnalysesTab } from "@/components/dashboard/UnifiedAnalysesTab";
 import { AnalyzeTab } from "@/components/dashboard/AnalyzeTab";
 import { ContentOS } from "@/components/dashboard/ContentOS";
 import { VideoBank } from "@/components/dashboard/VideoBank";
+import { SalesEngine } from "@/components/dashboard/SalesEngine";
 import { MemoryTab } from "@/components/dashboard/MemoryTab";
 
 export default function Dashboard() {
@@ -105,6 +106,7 @@ export default function Dashboard() {
             {activeTab === "daily-feed" && <DailyFeed />}
             {activeTab === "content-os" && <ContentOS />}
             {activeTab === "video-bank" && <VideoBank />}
+            {activeTab === "sales-engine" && <SalesEngine />}
             {activeTab === "memory" && <MemoryTab />}
             {activeTab === "analyze" && <AnalyzeTab />}
             {activeTab === "growth" && <GrowthTracker />}
