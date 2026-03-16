@@ -872,6 +872,63 @@ export type Database = {
         }
         Relationships: []
       }
+      video_bank: {
+        Row: {
+          ai_video_prompt: string
+          caption: string | null
+          created_at: string
+          hook: string
+          hook_type: string | null
+          id: string
+          platform: string
+          script: string
+          status: string
+          text_overlays: Json | null
+          title: string
+          updated_at: string
+          user_id: string
+          video_style: string
+          viral_score: number | null
+          voiceover_text: string | null
+        }
+        Insert: {
+          ai_video_prompt: string
+          caption?: string | null
+          created_at?: string
+          hook: string
+          hook_type?: string | null
+          id?: string
+          platform?: string
+          script: string
+          status?: string
+          text_overlays?: Json | null
+          title: string
+          updated_at?: string
+          user_id: string
+          video_style?: string
+          viral_score?: number | null
+          voiceover_text?: string | null
+        }
+        Update: {
+          ai_video_prompt?: string
+          caption?: string | null
+          created_at?: string
+          hook?: string
+          hook_type?: string | null
+          id?: string
+          platform?: string
+          script?: string
+          status?: string
+          text_overlays?: Json | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          video_style?: string
+          viral_score?: number | null
+          voiceover_text?: string | null
+        }
+        Relationships: []
+      }
       viral_analyses: {
         Row: {
           analysis_result: string
