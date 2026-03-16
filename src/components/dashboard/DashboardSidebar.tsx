@@ -6,13 +6,10 @@ import {
   CreditCard,
   Zap,
   TrendingUp,
-  Settings,
-  Sparkles,
   Layers,
   Video,
-  Dna,
-  Lightbulb,
   Brain,
+  ShoppingBag,
 } from "lucide-react";
 import {
   Sidebar,
@@ -30,6 +27,7 @@ const navItems = [
   { id: "daily-feed", title: "Daily Feed", icon: Zap },
   { id: "content-os", title: "Content OS", icon: Layers },
   { id: "video-bank", title: "Video Bank", icon: Video },
+  { id: "sales-engine", title: "Sales Engine", icon: ShoppingBag },
   { id: "content-lab", title: "Content Lab", icon: Calendar },
   { id: "growth", title: "Growth", icon: TrendingUp },
   { id: "analyses", title: "Analyses", icon: Microscope },
