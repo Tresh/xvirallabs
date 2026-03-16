@@ -6,13 +6,10 @@ import {
   CreditCard,
   Zap,
   TrendingUp,
-  Settings,
-  Sparkles,
   Layers,
   Video,
-  Dna,
-  Lightbulb,
   Brain,
+  ShoppingBag,
 } from "lucide-react";
 import {
   Sidebar,
