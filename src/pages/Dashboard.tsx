@@ -106,6 +106,7 @@ export default function Dashboard() {
             {activeTab === "daily-feed" && <DailyFeed />}
             {activeTab === "content-os" && <ContentOS />}
             {activeTab === "video-bank" && <VideoBank />}
+            {activeTab === "sales-engine" && <SalesEngine />}
             {activeTab === "memory" && <MemoryTab />}
             {activeTab === "analyze" && <AnalyzeTab />}
             {activeTab === "growth" && <GrowthTracker />}

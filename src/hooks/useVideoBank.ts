@@ -33,7 +33,7 @@ export function useVideoBank() {
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
-    if (data) setVideos(data as VideoPackage[]);
+    if (data) setVideos(data as unknown as VideoPackage[]);
     setIsLoading(false);
   }, [user]);
 

@@ -140,7 +140,7 @@ export function useContentOS() {
         pillar_name: item.pillar_name || null,
         format: item.format,
         title: item.title || null,
-        content: item.content,
+        content: item.content || "Content generating...",
         thread_tweets: item.thread_tweets || null,
         video_prompt: item.video_prompt || null,
         word_count: item.word_count || null,

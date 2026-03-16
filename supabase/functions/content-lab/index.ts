@@ -407,7 +407,7 @@ serve(async (req) => {
       "generate_pillars", "generate_mind_map", "generate_tweet", "improve_tweet",
       "generate_content_bank", "regenerate_post", "generate_next_day",
       "analyze_performance", "analyze_screenshot", "expand_content", "generate_daily_feed",
-      "suggest_pillars", "generate_content_os"
+      "suggest_pillars", "generate_content_os", "generate_video_bank", "generate_sales_campaign"
     ];
 
     if (creditActions.includes(action)) {
