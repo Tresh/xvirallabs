@@ -11,6 +11,7 @@ import {
   Brain,
   ShoppingBag,
   BookMarked,
+  Sparkles,
 } from "lucide-react";
 import {
   Sidebar,
