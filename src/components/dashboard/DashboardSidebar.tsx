@@ -10,6 +10,7 @@ import {
   Video,
   Brain,
   ShoppingBag,
+  BookMarked,
 } from "lucide-react";
 import {
   Sidebar,
@@ -26,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 const navItems = [
   { id: "daily-feed", title: "Daily Feed", icon: Zap },
   { id: "content-os", title: "Content OS", icon: Layers },
+  { id: "content-bank", title: "Content Bank", icon: BookMarked },
   { id: "video-bank", title: "Video Bank", icon: Video },
   { id: "sales-engine", title: "Sales Engine", icon: ShoppingBag },
   { id: "content-lab", title: "Content Lab", icon: Calendar },
