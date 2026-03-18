@@ -10,8 +10,6 @@ export interface DailyPost {
   viral_score?: number;
   psychology_trigger?: string;
   why_it_works?: string;
-  pillar_name?: string;
-  hook_type?: string;
   generated_date: string;
   is_approved?: boolean;
   is_archived?: boolean;
@@ -83,10 +81,12 @@ export function useDailyPosts() {
           viral_score: p.viral_score,
           psychology_trigger: p.psychology_trigger,
           why_it_works: p.why_it_works,
-          pillar_name: p.pillar_name || null,
-          hook_type: p.hook_type || null,
         }));
-        await (supabase.from("daily_posts" as any) as any).insert(inserts);
+        const { error: insertError } = await (supabase.from("daily_posts" as any) as any).insert(inserts);
+        if (insertError) {
+          console.error("Insert error:", insertError);
+          return { error: insertError.message };
+        }
         await load();
         return { error: null, count: inserts.length };
       }
@@ -117,7 +117,7 @@ export function useDailyPosts() {
       user_id: user.id,
       original_id: id,
       source: "daily_feed",
-      pillar_name: post.pillar_name || null,
+      pillar_name: null,
       format: post.format,
       title: null,
       content: post.content,
@@ -146,7 +146,7 @@ export function useDailyPosts() {
       user_id: user.id,
       original_id: p.id,
       source: "daily_feed",
-      pillar_name: p.pillar_name || null,
+      pillar_name: null,
       format: p.format,
       content: p.content,
       viral_score: p.viral_score,
