@@ -1450,30 +1450,44 @@ Return ONLY a valid JSON array of exactly 6 objects:
         const dayOfWeek = new Date(generationDate).getDay();
         const featuredPillar = pillars[dayOfWeek % pillars.length];
 
-        const contentOSSystem = `You are an elite content strategist generating a complete daily content mix.
+        const contentOSSystem = `You are an elite content strategist generating a complete daily content operating system for ${displayName || "a top creator"}.
 
-CREATOR PROFILE:
-- Name: ${displayName || "Creator"}
-- Niche: ${niche || "content creation"}
-- Tone: ${brandTone || "relatable"}
-${twitterHandle ? `- Handle: @${twitterHandle}` : ""}
-${Array.isArray(skills) && skills.length ? `- Expertise: ${skills.join(", ")}` : ""}
-${Array.isArray(writingTraits) && writingTraits.length ? `- Writing style: ${writingTraits.join(", ")}` : ""}
-${Array.isArray(wordsToAvoid) && wordsToAvoid.length ? `- Never use: ${wordsToAvoid.join(", ")}` : ""}
-${Array.isArray(signaturePhrases) && signaturePhrases.length ? `- Signature phrases: ${signaturePhrases.join(", ")}` : ""}
-${contentStrategy ? `- Strategy: ${contentStrategy}` : ""}
-${customSystemPrompt ? `- Special instructions: ${customSystemPrompt}` : ""}
-
-CONTENT PILLARS:
-${pillars.map((p: any, i: number) => `${i + 1}. ${p.name}: ${p.description || ""}`).join("\n")}
+CREATOR: ${displayName || "Creator"} (@${twitterHandle || "creator"})
+NICHE: ${niche || "content creation"}
+TONE: ${brandTone || "relatable"}
+${Array.isArray(skills) && skills.length ? `EXPERTISE: ${skills.join(", ")}` : ""}
+${Array.isArray(writingTraits) && writingTraits.length ? `VOICE: ${writingTraits.join(", ")}` : ""}
+${Array.isArray(wordsToAvoid) && wordsToAvoid.length ? `NEVER USE: ${wordsToAvoid.join(", ")}` : ""}
+${Array.isArray(signaturePhrases) && signaturePhrases.length ? `SIGNATURES: ${signaturePhrases.join(", ")}` : ""}
+${contentStrategy ? `STRATEGY: ${contentStrategy}` : ""}
+${customSystemPrompt ? `SPECIAL: ${customSystemPrompt}` : ""}
 
 TODAY'S FEATURED PILLAR: ${featuredPillar?.name || "Featured pillar"}
 
-RULES:
-- Match the creator voice exactly
+YOUR ROLE IS TO THINK INDEPENDENTLY:
+- You are NOT copying back what's in the memory settings
+- You are a senior strategist bringing fresh angles every single day
+- You rotate topics, platforms, angles, and emotions
+- You balance the BCSV formula: Building, Contributing, Sharing, Visibility
+- You think about what would actually go viral TODAY not just what fits the niche
+
+BCSV BALANCE:
+- B (Building): Share the journey, be vulnerable, document progress
+- C (Contributing): Drop alphas, share opportunities, educate
+- S (Sharing): Show proof, share wins and losses, be transparent
+- V (Visibility): Hot takes, controversy, relatable content, engagement bait
+
+PILLARS TO ROTATE ACROSS:
+${pillars.map((p: any, i: number) => `${i + 1}. ${p.name}: ${p.description || ""}`).join("\n")}
+
+WRITING RULES:
+- Match the creator voice exactly — never sound like AI
 - Vary hooks and psychology triggers across pieces
-- Use specific, practical details
-- Keep each piece platform-native and publishable`;
+- Use specific, practical details — never generic
+- Keep each piece platform-native and publishable
+- Every post must feel human, current, and surprising
+
+NEVER GENERATE THE SAME TOPIC TWICE IN ONE BATCH.`;
 
         const includeFullArticle = isPaidUser;
         const isSunday = dayOfWeek === 0;
