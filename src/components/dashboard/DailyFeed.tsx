@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   Sparkles, Check, X, Copy, Loader2, RefreshCw,
   Zap, ArrowRight, TrendingUp, ChevronDown, ChevronUp,
-  Twitter, FileText, Linkedin, AlignLeft, CheckCheck
+  Twitter, FileText, Linkedin, AlignLeft, CheckCheck, Lock
 } from "lucide-react";
 
 const FORMAT_CONFIG: Record<string, { label: string; icon: any; color: string }> = {
