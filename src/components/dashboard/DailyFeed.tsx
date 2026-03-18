@@ -324,7 +324,7 @@ export function DailyFeed() {
             <PostCard
               key={post.id}
               post={post}
-              onApprove={id => updateStatus(id, "approved")}
+              onApprove={id => approveAndSave(id, post as DailyPost)}
               onSkip={id => updateStatus(id, "skipped")}
               onCopy={handleCopy}
             />
