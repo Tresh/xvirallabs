@@ -117,7 +117,7 @@ export function useDailyPosts() {
       user_id: user.id,
       original_id: id,
       source: "daily_feed",
-      pillar_name: post.pillar_name || null,
+      pillar_name: null,
       format: post.format,
       title: null,
       content: post.content,
