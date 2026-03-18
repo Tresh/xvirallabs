@@ -31,6 +31,7 @@ const navItems = [
   { id: "video-bank", title: "Video Bank", icon: Video },
   { id: "sales-engine", title: "Sales Engine", icon: ShoppingBag },
   { id: "content-lab", title: "Content Lab", icon: Calendar },
+  { id: "analyze", title: "Analyze", icon: Sparkles },
   { id: "growth", title: "Growth", icon: TrendingUp },
   { id: "analyses", title: "Analyses", icon: Microscope },
   { id: "memory", title: "Memory", icon: Brain },
