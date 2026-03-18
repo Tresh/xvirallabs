@@ -10,8 +10,6 @@ export interface DailyPost {
   viral_score?: number;
   psychology_trigger?: string;
   why_it_works?: string;
-  pillar_name?: string;
-  hook_type?: string;
   generated_date: string;
   is_approved?: boolean;
   is_archived?: boolean;
