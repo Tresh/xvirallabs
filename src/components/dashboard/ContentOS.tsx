@@ -22,7 +22,9 @@ function ContentCard({
   const [expanded, setExpanded] = useState(false);
   const config = FORMAT_CONFIG[item.format];
   const isThread = item.format === "thread" && Array.isArray(item.thread_tweets) && item.thread_tweets.length > 0;
-  const threadTweets = isThread ? item.thread_tweets ?? [] : [];
+  const threadTweets: string[] = isThread
+    ? (item.thread_tweets ?? []).map((t: any) => (typeof t === "string" ? t : t?.content || t?.text || t?.tweet || String(t)))
+    : [];
 
   return (
     <Card className={item.status === "approved" ? "border-primary/40" : undefined}>
