@@ -83,10 +83,12 @@ export function useDailyPosts() {
           viral_score: p.viral_score,
           psychology_trigger: p.psychology_trigger,
           why_it_works: p.why_it_works,
-          pillar_name: p.pillar_name || null,
-          hook_type: p.hook_type || null,
         }));
-        await (supabase.from("daily_posts" as any) as any).insert(inserts);
+        const { error: insertError } = await (supabase.from("daily_posts" as any) as any).insert(inserts);
+        if (insertError) {
+          console.error("Insert error:", insertError);
+          return { error: insertError.message };
+        }
         await load();
         return { error: null, count: inserts.length };
       }
