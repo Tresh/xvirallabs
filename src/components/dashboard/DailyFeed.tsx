@@ -75,7 +75,7 @@ function PostCard({ post, onApprove, onSkip, onCopy }: {
         <ViralScoreBadge score={post.viral_score} />
         {isApproved && (
           <Badge className="ml-auto text-[10px] bg-primary/20 text-primary border-primary/30">
-            <Check className="h-3 w-3 mr-1" /> Approved
+            <Lock className="h-3 w-3 mr-1" /> Saved to Bank
           </Badge>
         )}
         {isPosted && (
