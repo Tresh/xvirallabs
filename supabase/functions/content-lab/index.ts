@@ -252,13 +252,15 @@ serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
       return new Response(
         JSON.stringify({ error: "Invalid authentication" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+    const user = { id: claimsData.claims.sub as string };
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -1432,11 +1434,21 @@ Return ONLY valid JSON array. No markdown.`;
             throw new Error("Invalid response format");
           }
 
+          // Sanitize items: ensure content is never null/empty
+          const sanitizedItems = items
+            .map((item: any) => ({
+              ...item,
+              content: item.content || item.post_text || item.tweet || item.body || "Content generating...",
+              pillar_name: item.pillar_name || "General",
+              format: item.format || "medium_tweet",
+            }))
+            .filter((item: any) => item.content && item.content.trim().length > 0);
+
           return new Response(
             JSON.stringify({
               success: true,
-              items,
-              count: items.length,
+              items: sanitizedItems,
+              count: sanitizedItems.length,
               featuredPillar: featuredPillar?.name || null,
             }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } }
