@@ -142,7 +142,7 @@ function PostCard({ post, onApprove, onSkip, onCopy }: {
 
 export function DailyFeed() {
   const { profile, brandVoice } = useAuth();
-  const { posts, isLoading, isGenerating, generate, updateStatus, approveAll } = useDailyPosts();
+  const { posts, isLoading, isGenerating, generate, updateStatus, approveAndSave, approveAll } = useDailyPosts();
   const { remaining, isUnlimited, hasReachedLimit, decrementLocal, refresh: refreshUsage } = useDailyUsage();
   const [filter, setFilter] = useState<"all" | "pending" | "approved">("all");
 
