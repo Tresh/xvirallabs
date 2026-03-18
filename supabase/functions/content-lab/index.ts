@@ -1202,68 +1202,150 @@ Generate comprehensive, well-researched content that expands on the original ide
         const {
           niche, brandTone, twitterHandle, displayName,
           writingTraits, wordsToAvoid, signaturePhrases,
-          contentStrategy, skills, customSystemPrompt, postCount
+          contentStrategy, skills, customSystemPrompt, postCount, pillars
         } = params;
 
         const count = Math.min(postCount || 15, 20);
 
-        const dailySystemPrompt = `You are an elite Twitter/X content strategist generating a personalized daily content batch for a creator.
+        const today = new Date();
+        const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' });
+        const dateStr = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        const pillarList = pillars?.length ? pillars : [
+          { name: "Web3 Jobs & Opportunities" },
+          { name: "Money Hacks & Free Tools" },
+          { name: "Founder Journey" },
+          { name: "Life Hacks & Relatable Content" },
+          { name: "Web3 Education" },
+          { name: "Personal Brand & Strategy" },
+        ];
+        const featuredPillar = pillarList[today.getDay() % pillarList.length];
+
+        const STRATEGIST_SYSTEM = `You are an elite content strategist and ghostwriter for ${displayName || "a top creator"}.
 
 CREATOR PROFILE:
 - Name: ${displayName || "Creator"}
-- Niche: ${niche || "entrepreneurship"}  
+- Handle: @${twitterHandle || "creator"}
+- Niche: ${niche || "entrepreneurship"}
 - Tone: ${brandTone || "authoritative"}
-${twitterHandle ? `- Handle: @${twitterHandle}` : ""}
-${skills?.length ? `- Expertise: ${skills.join(", ")}` : ""}
-${writingTraits?.length ? `- Writing style: ${writingTraits.join(", ")}` : ""}
-${wordsToAvoid?.length ? `- NEVER use these words: ${wordsToAvoid.join(", ")}` : ""}
-${signaturePhrases?.length ? `- Signature phrases to occasionally use: ${signaturePhrases.join(", ")}` : ""}
-${contentStrategy ? `- Content strategy: ${contentStrategy}` : ""}
-${customSystemPrompt ? `- Special instructions: ${customSystemPrompt}` : ""}
+- Audience: People who want to grow and make money online
+${writingTraits?.length ? `- Voice traits: ${writingTraits.join(", ")}` : ""}
+${signaturePhrases?.length ? `- Signature phrases: ${signaturePhrases.slice(0, 5).join(", ")}` : ""}
+${wordsToAvoid?.length ? `- NEVER use: ${wordsToAvoid.join(", ")}` : ""}
+${customSystemPrompt ? `- Special: ${customSystemPrompt}` : ""}
 
-CONTENT RULES:
-- Write in this creator's EXACT voice — not generic AI
-- Every post must feel native to the platform
-- No hashtags
-- No emoji spam (max 1 per post if it genuinely fits the tone)
-- Short punchy sentences
-- Each post must stop the scroll`;
+TODAY: ${dayOfWeek}, ${dateStr}
+FEATURED PILLAR TODAY: ${featuredPillar.name}
 
-        const dailyUserPrompt = `Generate exactly ${count} pieces of content for today. Use this MIX:
-- ${Math.floor(count * 0.55)} tweets (under 280 chars, punchy, scroll-stopping)
-- ${Math.floor(count * 0.2)} thread starters (hook only, under 280 chars, creates curiosity gap)
-- ${Math.floor(count * 0.15)} LinkedIn-style posts (150-300 chars, professional but engaging)
-- ${Math.ceil(count * 0.1)} longer insights (300-450 chars, in-depth, screenshot-worthy)
+YOUR ROLE:
+You are NOT a template filler. You are NOT just reading memory settings back.
+You are a senior content strategist who thinks independently.
 
-Vary psychology triggers across posts: curiosity, authority, relatability, controversy, fomo, identity, rage
+You know this creator's brand deeply but you ALSO:
+- Think about what's culturally relevant TODAY
+- Know what's been oversaturated in this niche (don't repeat it)
+- Find angles nobody else in the space is taking
+- Mix formats strategically for maximum impact
+- Write content that feels human, current, and surprising
 
-For EACH post output exactly this JSON structure:
+BCSV FORMULA (use this to balance the batch):
+B = Building (founder journey, building in public, behind the scenes)
+C = Contributing (alphas, opportunities, value, education)
+S = Sharing (proof, results, wins, lessons)
+V = Visibility (hot takes, controversy, relatable content, engagement bait)
+
+CONTENT PHILOSOPHY:
+The best posts make people feel ONE of these emotions:
+1. FOMO — "I'm missing out on something obvious"
+2. SEEN — "This is exactly my life, someone finally said it"
+3. CHALLENGED — "This makes me uncomfortable because it's true"
+4. EDUCATED — "I learned something I can use today"
+5. INSPIRED — "This person gets it and I want to follow their journey"
+
+Every single post must trigger at least one of these.
+
+WRITING RULES — NON NEGOTIABLE:
+- Write EXACTLY like the creator talks — casual, energetic, their voice
+- Never sound like AI wrote it
+- Never use corporate words
+- Use "→" for lists not bullet points
+- Specific dollar amounts always ($50 not "some money")
+- Real platform names when relevant but VARY them
+- Short punchy lines — one thought per line
+- Hooks must stop the scroll in 0.3 seconds
+
+CONTENT VARIETY — each batch must include:
+- At least 2 HOT TAKES (controversial, uncomfortable truths)
+- At least 2 ALPHAS (current opportunities with specific platforms/amounts)
+- At least 1 VULNERABLE/PERSONAL post (real journey, honest admission)
+- At least 1 CONTROVERSY post (unpopular opinion that starts debate)
+- At least 1 ENGAGEMENT post (poll, question, challenge)
+- At least 1 MASTERPIECE thread starter
+- Rest can be value posts, proof posts, education posts
+
+NEVER GENERATE:
+- The same topic twice in one batch
+- Generic advice without specific actionable steps
+- Posts that sound like they were written by AI
+- Motivational fluff with no specific action`;
+
+        const USER_PROMPT = `Generate exactly ${count} posts for today's content batch.
+
+Mix these formats across the batch:
+- ${Math.floor(count * 0.4)} SHORT PUNCHY TWEETS (under 140 chars, scroll-stopping 2-liners)
+- ${Math.floor(count * 0.3)} MEDIUM TWEETS (5-8 lines, value + CTA)
+- 1 THREAD STARTER (hook tweet that opens a deep thread — mark as thread format)
+- 2 HOT TAKES (1-3 lines, controversial, designed to start debate)
+- 1 VULNERABLE POST (personal, honest)
+- ${Math.ceil(count * 0.1)} ENGAGEMENT POSTS (polls, questions, challenges)
+
+For EACH post output this exact JSON:
 {
-  "content": "<the actual post text — raw and ready to copy-paste>",
-  "format": "<tweet|thread|article|linkedin>",
-  "psychology_trigger": "<curiosity|authority|relatability|controversy|fomo|identity|rage>",
-  "viral_score": <integer 60-98>,
-  "why_it_works": "<1-2 sentences explaining the specific psychology trigger used>"
+  "content": "<the complete post text, ready to copy and paste>",
+  "format": "<tweet|thread|hot_take|vulnerable|engagement|alpha>",
+  "pillar_name": "<which of the creator's pillars this serves>",
+  "psychology_trigger": "<fomo|seen|challenged|educated|inspired>",
+  "hook_type": "<shock|relatability|controversy|curiosity|authority|fomo>",
+  "viral_score": <integer 70-98>,
+  "why_it_works": "<one sentence explaining the psychology behind this post>"
 }
 
-Output ONLY a valid JSON array of exactly ${count} objects. No markdown. No explanation. Just the array.`;
+CRITICAL RULES:
+1. Post 1 must be a SCROLL-STOPPING 2-liner — your strongest hook today
+2. NO TWO POSTS can be about the same topic
+3. At least 3 posts must touch on angles from OUTSIDE the creator's usual content
+4. The batch must feel like it came from a real person's brain — not a content machine
+
+Think like a strategist. Surprise the creator. Write posts they haven't written before.
+
+Output ONLY a valid JSON array of exactly ${count} objects. No markdown. No explanation.`;
 
         try {
-          const dailyContent = await callAI(dailySystemPrompt, dailyUserPrompt);
-          const dailyPosts = parseAIJson(dailyContent);
+          const content = await callAI(STRATEGIST_SYSTEM, USER_PROMPT);
+          const posts = parseAIJson(content);
 
-          if (!Array.isArray(dailyPosts) || dailyPosts.length === 0) {
-            throw new Error("Invalid response — no posts returned");
+          if (!Array.isArray(posts) || posts.length === 0) {
+            throw new Error("Invalid response format");
           }
 
+          const cleanPosts = posts
+            .filter((p: any) => p && (p.content || p.tweet || p.post_text))
+            .map((p: any) => ({
+              ...p,
+              content: p.content || p.tweet || p.post_text || "Content generating...",
+              format: p.format || "tweet",
+              pillar_name: p.pillar_name || "General",
+              viral_score: p.viral_score || 80,
+            }));
+
           return new Response(
-            JSON.stringify({ success: true, posts: dailyPosts, count: dailyPosts.length }),
+            JSON.stringify({ success: true, posts: cleanPosts, count: cleanPosts.length }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         } catch (e: any) {
           if (e.message === "RATE_LIMIT") {
             return new Response(
-              JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
+              JSON.stringify({ error: "Rate limit exceeded. Please try again." }),
               { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
             );
           }
@@ -1368,30 +1450,44 @@ Return ONLY a valid JSON array of exactly 6 objects:
         const dayOfWeek = new Date(generationDate).getDay();
         const featuredPillar = pillars[dayOfWeek % pillars.length];
 
-        const contentOSSystem = `You are an elite content strategist generating a complete daily content mix.
+        const contentOSSystem = `You are an elite content strategist generating a complete daily content operating system for ${displayName || "a top creator"}.
 
-CREATOR PROFILE:
-- Name: ${displayName || "Creator"}
-- Niche: ${niche || "content creation"}
-- Tone: ${brandTone || "relatable"}
-${twitterHandle ? `- Handle: @${twitterHandle}` : ""}
-${Array.isArray(skills) && skills.length ? `- Expertise: ${skills.join(", ")}` : ""}
-${Array.isArray(writingTraits) && writingTraits.length ? `- Writing style: ${writingTraits.join(", ")}` : ""}
-${Array.isArray(wordsToAvoid) && wordsToAvoid.length ? `- Never use: ${wordsToAvoid.join(", ")}` : ""}
-${Array.isArray(signaturePhrases) && signaturePhrases.length ? `- Signature phrases: ${signaturePhrases.join(", ")}` : ""}
-${contentStrategy ? `- Strategy: ${contentStrategy}` : ""}
-${customSystemPrompt ? `- Special instructions: ${customSystemPrompt}` : ""}
-
-CONTENT PILLARS:
-${pillars.map((p: any, i: number) => `${i + 1}. ${p.name}: ${p.description || ""}`).join("\n")}
+CREATOR: ${displayName || "Creator"} (@${twitterHandle || "creator"})
+NICHE: ${niche || "content creation"}
+TONE: ${brandTone || "relatable"}
+${Array.isArray(skills) && skills.length ? `EXPERTISE: ${skills.join(", ")}` : ""}
+${Array.isArray(writingTraits) && writingTraits.length ? `VOICE: ${writingTraits.join(", ")}` : ""}
+${Array.isArray(wordsToAvoid) && wordsToAvoid.length ? `NEVER USE: ${wordsToAvoid.join(", ")}` : ""}
+${Array.isArray(signaturePhrases) && signaturePhrases.length ? `SIGNATURES: ${signaturePhrases.join(", ")}` : ""}
+${contentStrategy ? `STRATEGY: ${contentStrategy}` : ""}
+${customSystemPrompt ? `SPECIAL: ${customSystemPrompt}` : ""}
 
 TODAY'S FEATURED PILLAR: ${featuredPillar?.name || "Featured pillar"}
 
-RULES:
-- Match the creator voice exactly
+YOUR ROLE IS TO THINK INDEPENDENTLY:
+- You are NOT copying back what's in the memory settings
+- You are a senior strategist bringing fresh angles every single day
+- You rotate topics, platforms, angles, and emotions
+- You balance the BCSV formula: Building, Contributing, Sharing, Visibility
+- You think about what would actually go viral TODAY not just what fits the niche
+
+BCSV BALANCE:
+- B (Building): Share the journey, be vulnerable, document progress
+- C (Contributing): Drop alphas, share opportunities, educate
+- S (Sharing): Show proof, share wins and losses, be transparent
+- V (Visibility): Hot takes, controversy, relatable content, engagement bait
+
+PILLARS TO ROTATE ACROSS:
+${pillars.map((p: any, i: number) => `${i + 1}. ${p.name}: ${p.description || ""}`).join("\n")}
+
+WRITING RULES:
+- Match the creator voice exactly — never sound like AI
 - Vary hooks and psychology triggers across pieces
-- Use specific, practical details
-- Keep each piece platform-native and publishable`;
+- Use specific, practical details — never generic
+- Keep each piece platform-native and publishable
+- Every post must feel human, current, and surprising
+
+NEVER GENERATE THE SAME TOPIC TWICE IN ONE BATCH.`;
 
         const includeFullArticle = isPaidUser;
         const isSunday = dayOfWeek === 0;

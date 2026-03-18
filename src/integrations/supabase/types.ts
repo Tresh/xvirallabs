@@ -100,6 +100,66 @@ export type Database = {
         }
         Relationships: []
       }
+      content_bank: {
+        Row: {
+          content: string
+          created_at: string
+          format: string
+          id: string
+          original_date: string | null
+          original_id: string | null
+          pillar_name: string | null
+          posted_at: string | null
+          psychology_trigger: string | null
+          source: string
+          tags: string[] | null
+          thread_tweets: Json | null
+          title: string | null
+          user_id: string
+          video_prompt: string | null
+          viral_score: number | null
+          word_count: number | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          format: string
+          id?: string
+          original_date?: string | null
+          original_id?: string | null
+          pillar_name?: string | null
+          posted_at?: string | null
+          psychology_trigger?: string | null
+          source?: string
+          tags?: string[] | null
+          thread_tweets?: Json | null
+          title?: string | null
+          user_id: string
+          video_prompt?: string | null
+          viral_score?: number | null
+          word_count?: number | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          format?: string
+          id?: string
+          original_date?: string | null
+          original_id?: string | null
+          pillar_name?: string | null
+          posted_at?: string | null
+          psychology_trigger?: string | null
+          source?: string
+          tags?: string[] | null
+          thread_tweets?: Json | null
+          title?: string | null
+          user_id?: string
+          video_prompt?: string | null
+          viral_score?: number | null
+          word_count?: number | null
+        }
+        Relationships: []
+      }
       content_calendar_days: {
         Row: {
           calendar_id: string
@@ -446,6 +506,8 @@ export type Database = {
           format: string
           generated_date: string
           id: string
+          is_approved: boolean | null
+          is_archived: boolean | null
           pillar_id: string | null
           pillar_name: string | null
           posted_at: string | null
@@ -465,6 +527,8 @@ export type Database = {
           format: string
           generated_date?: string
           id?: string
+          is_approved?: boolean | null
+          is_archived?: boolean | null
           pillar_id?: string | null
           pillar_name?: string | null
           posted_at?: string | null
@@ -484,6 +548,8 @@ export type Database = {
           format?: string
           generated_date?: string
           id?: string
+          is_approved?: boolean | null
+          is_archived?: boolean | null
           pillar_id?: string | null
           pillar_name?: string | null
           posted_at?: string | null
@@ -550,6 +616,9 @@ export type Database = {
           format: string
           generated_date: string
           id: string
+          is_approved: boolean | null
+          is_archived: boolean | null
+          post_date: string | null
           posted_at: string | null
           psychology_trigger: string | null
           status: string
@@ -564,6 +633,9 @@ export type Database = {
           format?: string
           generated_date?: string
           id?: string
+          is_approved?: boolean | null
+          is_archived?: boolean | null
+          post_date?: string | null
           posted_at?: string | null
           psychology_trigger?: string | null
           status?: string
@@ -578,6 +650,9 @@ export type Database = {
           format?: string
           generated_date?: string
           id?: string
+          is_approved?: boolean | null
+          is_archived?: boolean | null
+          post_date?: string | null
           posted_at?: string | null
           psychology_trigger?: string | null
           status?: string
@@ -1050,6 +1125,7 @@ export type Database = {
           hook: string
           hook_type: string | null
           id: string
+          is_saved: boolean | null
           platform: string
           script: string
           status: string
@@ -1068,6 +1144,7 @@ export type Database = {
           hook: string
           hook_type?: string | null
           id?: string
+          is_saved?: boolean | null
           platform?: string
           script: string
           status?: string
@@ -1086,6 +1163,7 @@ export type Database = {
           hook?: string
           hook_type?: string | null
           id?: string
+          is_saved?: boolean | null
           platform?: string
           script?: string
           status?: string

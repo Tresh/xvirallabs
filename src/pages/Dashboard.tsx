@@ -20,6 +20,7 @@ import { ContentOS } from "@/components/dashboard/ContentOS";
 import { VideoBank } from "@/components/dashboard/VideoBank";
 import { SalesEngine } from "@/components/dashboard/SalesEngine";
 import { MemoryTab } from "@/components/dashboard/MemoryTab";
+import { ContentBank } from "@/components/dashboard/ContentBank";
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -105,6 +106,7 @@ export default function Dashboard() {
           <main className="flex-1 p-4 md:p-8 overflow-y-auto">
             {activeTab === "daily-feed" && <DailyFeed />}
             {activeTab === "content-os" && <ContentOS />}
+            {activeTab === "content-bank" && <ContentBank />}
             {activeTab === "video-bank" && <VideoBank />}
             {activeTab === "sales-engine" && <SalesEngine />}
             {activeTab === "memory" && <MemoryTab />}

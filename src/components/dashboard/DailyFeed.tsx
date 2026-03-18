@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useDailyPosts } from "@/hooks/useDailyPosts";
+import { useDailyPosts, type DailyPost } from "@/hooks/useDailyPosts";
 import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   Sparkles, Check, X, Copy, Loader2, RefreshCw,
   Zap, ArrowRight, TrendingUp, ChevronDown, ChevronUp,
-  Twitter, FileText, Linkedin, AlignLeft, CheckCheck
+  Twitter, FileText, Linkedin, AlignLeft, CheckCheck, Lock
 } from "lucide-react";
 
 const FORMAT_CONFIG: Record<string, { label: string; icon: any; color: string }> = {
@@ -75,7 +75,7 @@ function PostCard({ post, onApprove, onSkip, onCopy }: {
         <ViralScoreBadge score={post.viral_score} />
         {isApproved && (
           <Badge className="ml-auto text-[10px] bg-primary/20 text-primary border-primary/30">
-            <Check className="h-3 w-3 mr-1" /> Approved
+            <Lock className="h-3 w-3 mr-1" /> Saved to Bank
           </Badge>
         )}
         {isPosted && (
@@ -142,7 +142,7 @@ function PostCard({ post, onApprove, onSkip, onCopy }: {
 
 export function DailyFeed() {
   const { profile, brandVoice } = useAuth();
-  const { posts, isLoading, isGenerating, generate, updateStatus, approveAll } = useDailyPosts();
+  const { posts, isLoading, isGenerating, generate, updateStatus, approveAndSave, approveAll } = useDailyPosts();
   const { remaining, isUnlimited, hasReachedLimit, decrementLocal, refresh: refreshUsage } = useDailyUsage();
   const [filter, setFilter] = useState<"all" | "pending" | "approved">("all");
 
@@ -324,7 +324,7 @@ export function DailyFeed() {
             <PostCard
               key={post.id}
               post={post}
-              onApprove={id => updateStatus(id, "approved")}
+              onApprove={id => approveAndSave(id, post as DailyPost)}
               onSkip={id => updateStatus(id, "skipped")}
               onCopy={handleCopy}
             />
