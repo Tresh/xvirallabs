@@ -15,7 +15,7 @@ function ContentCard({
   onCopy,
 }: {
   item: ContentOSItem;
-  onApprove: (id: string) => void;
+  onApprove: (id: string, item: ContentOSItem) => void;
   onSkip: (id: string) => void;
   onCopy: (content: string, label: string) => void;
 }) {
@@ -74,7 +74,7 @@ function ContentCard({
         <div className="flex flex-wrap items-center gap-2">
           {item.status === "pending" ? (
             <>
-              <Button size="sm" variant="viral" onClick={() => onApprove(item.id)}>
+              <Button size="sm" variant="viral" onClick={() => onApprove(item.id, item)}>
                 <Check className="h-3.5 w-3.5" /> Approve
               </Button>
               <Button size="sm" variant="ghost" onClick={() => onSkip(item.id)}>
@@ -82,7 +82,9 @@ function ContentCard({
               </Button>
             </>
           ) : (
-            <Badge variant="secondary">{item.status}</Badge>
+            <Badge variant="secondary">
+              {item.status === "approved" ? "🔒 Saved to Bank" : item.status}
+            </Badge>
           )}
 
           <Button
@@ -114,7 +116,7 @@ function ContentCard({
 export function ContentOS() {
   const { profile, brandVoice } = useAuth();
   const { pillars } = useContentPillars();
-  const { items, isLoading, isGenerating, stats, generate, updateStatus } = useContentOS();
+  const { items, isLoading, isGenerating, stats, generate, updateStatus, approveAndSave } = useContentOS();
   const [activeFormat, setActiveFormat] = useState<"all" | ContentOSFormat>("all");
   const [activePillar, setActivePillar] = useState<string>("all");
 
@@ -225,7 +227,7 @@ export function ContentOS() {
             <ContentCard
               key={item.id}
               item={item}
-              onApprove={(id) => void updateStatus(id, "approved")}
+              onApprove={(id, itm) => approveAndSave(id, itm)}
               onSkip={(id) => void updateStatus(id, "skipped")}
               onCopy={handleCopy}
             />

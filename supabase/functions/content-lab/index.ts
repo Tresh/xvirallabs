@@ -1751,6 +1751,58 @@ Output ONLY a valid JSON array. No markdown.`;
         }
       }
 
+      case "optimize_reply_bait": {
+        const { content, displayName, brandTone } = params;
+
+        const OPTIMIZER_SYSTEM = `You are an expert at writing X/Twitter post endings that generate maximum replies.
+
+Based on the X algorithm, replies (P(reply)) are one of the highest-weighted engagement signals.
+Posts that trigger replies get significantly more reach than posts that only get likes.
+
+REPLY BAIT PRINCIPLES:
+1. End with a direct question that's easy to answer (A/B/C/D choices work best)
+2. Create a "drop your letter" format — people love categorizing themselves
+3. Use "be honest" to lower the barrier to replying
+4. Create mild controversy that people feel compelled to respond to
+5. Ask for a specific number, story, or experience
+6. Use "👇" to signal where they should reply
+
+RULES:
+- Keep the original post content completely intact
+- Only rewrite the LAST 1-3 lines (the CTA/ending)
+- Must sound like ${displayName || "the creator"} — ${brandTone || "casual and relatable"}
+- Never add more than 2-3 lines
+- The reply bait must feel natural not forced`;
+
+        const userPrompt = `Take this post and rewrite ONLY the ending (last 1-3 lines) to maximize replies.
+Keep everything else exactly the same.
+
+ORIGINAL POST:
+${content}
+
+Output JSON:
+{
+  "optimized_content": "<full post with new ending>",
+  "new_ending": "<just the new ending lines>",
+  "reply_bait_type": "<question|poll|controversial|story_request|categorize>",
+  "expected_reply_lift": "<estimated % increase in replies>"
+}`;
+
+        try {
+          const result = await callAI(OPTIMIZER_SYSTEM, userPrompt);
+          const optimized = parseAIJson(result);
+          return new Response(
+            JSON.stringify({ success: true, ...optimized }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        } catch (e: any) {
+          return new Response(
+            JSON.stringify({ error: e.message }),
+            { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+
       default:
         return new Response(
           JSON.stringify({ error: "Unknown action" }),

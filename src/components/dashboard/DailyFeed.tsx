@@ -5,6 +5,8 @@ import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
+import { AlgorithmBadge } from "@/components/dashboard/AlgorithmBadge";
+import { scoreContent, getRecommendedTime } from "@/utils/algorithmScorer";
 import {
   Sparkles, Check, X, Copy, Loader2, RefreshCw,
   Zap, ArrowRight, TrendingUp, ChevronDown, ChevronUp,
@@ -40,8 +42,9 @@ function ViralScoreBadge({ score }: { score?: number }) {
   );
 }
 
-function PostCard({ post, onApprove, onSkip, onCopy }: {
+function PostCard({ post, index, onApprove, onSkip, onCopy }: {
   post: any;
+  index: number;
   onApprove: (id: string) => void;
   onSkip: (id: string) => void;
   onCopy: (content: string) => void;
@@ -73,6 +76,21 @@ function PostCard({ post, onApprove, onSkip, onCopy }: {
           </Badge>
         )}
         <ViralScoreBadge score={post.viral_score} />
+        {(() => {
+          const algoScores = scoreContent(post.content, post.format);
+          return (
+            <AlgorithmBadge
+              score={post.algorithm_score || algoScores.algorithm_score || "reply_driver"}
+              followScore={post.follow_score || algoScores.follow_score}
+              replyScore={post.reply_bait_score || algoScores.reply_score}
+              dwellScore={post.dwell_score || algoScores.dwell_score}
+              shareScore={post.share_score || algoScores.share_score}
+              hasReplyBait={post.has_reply_bait || algoScores.has_reply_bait}
+              recommendedTime={getRecommendedTime(index)}
+              compact={false}
+            />
+          );
+        })()}
         {isApproved && (
           <Badge className="ml-auto text-[10px] bg-primary/20 text-primary border-primary/30">
             <Lock className="h-3 w-3 mr-1" /> Saved to Bank
@@ -320,10 +338,11 @@ export function DailyFeed() {
         </div>
       ) : (
         <div className="space-y-3">
-          {filtered.map(post => (
+          {filtered.map((post, index) => (
             <PostCard
               key={post.id}
               post={post}
+              index={index}
               onApprove={id => approveAndSave(id, post as DailyPost)}
               onSkip={id => updateStatus(id, "skipped")}
               onCopy={handleCopy}

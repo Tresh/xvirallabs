@@ -178,6 +178,33 @@ export function useContentOS() {
     return { error };
   };
 
+  const approveAndSave = async (id: string, item: ContentOSItem) => {
+    if (!user) return;
+
+    await supabase
+      .from("content_os_items")
+      .update({ status: "approved" as const, is_approved: true })
+      .eq("id", id);
+
+    await (supabase.from("content_bank") as any).insert({
+      user_id: user.id,
+      original_id: id,
+      source: "content_os",
+      pillar_name: item.pillar_name,
+      format: item.format,
+      title: item.title,
+      content: item.content || "Content saved",
+      thread_tweets: item.thread_tweets,
+      viral_score: item.viral_score,
+      psychology_trigger: item.psychology_trigger,
+      original_date: new Date().toISOString().split("T")[0],
+    });
+
+    setItems((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, status: "approved" as const } : i))
+    );
+  };
+
   const stats = useMemo(() => {
     const byFormat = Object.keys(FORMAT_CONFIG).reduce((acc, formatKey) => {
       acc[formatKey] = items.filter((item) => item.format === formatKey).length;
@@ -200,6 +227,7 @@ export function useContentOS() {
     today,
     generate,
     updateStatus,
+    approveAndSave,
     stats,
     reload: load,
   };

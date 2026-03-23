@@ -20,6 +20,8 @@ import {
   Save,
 } from "lucide-react";
 import { ContentPillarSetup } from "@/components/dashboard/ContentPillarSetup";
+import { PostScheduler } from "@/components/dashboard/PostScheduler";
+import { TelegramSettings } from "@/components/dashboard/TelegramSettings";
 
 type SaveStatus = "idle" | "saving" | "saved";
 
@@ -341,6 +343,16 @@ export function MemoryTab() {
 
       <div className="pt-2">
         <ContentPillarSetup />
+      </div>
+
+      {/* Post Scheduler */}
+      <div className="pt-6 border-t border-border">
+        <PostScheduler totalPosts={20} />
+      </div>
+
+      {/* Telegram Settings */}
+      <div className="pt-6 border-t border-border">
+        <TelegramSettings />
       </div>
 
       {/* Save Button */}
