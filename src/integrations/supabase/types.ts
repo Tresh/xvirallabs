@@ -102,8 +102,11 @@ export type Database = {
       }
       content_bank: {
         Row: {
+          algorithm_score: string | null
           content: string
           created_at: string
+          dwell_score: number | null
+          follow_score: number | null
           format: string
           id: string
           original_date: string | null
@@ -111,6 +114,8 @@ export type Database = {
           pillar_name: string | null
           posted_at: string | null
           psychology_trigger: string | null
+          reply_bait_score: number | null
+          share_score: number | null
           source: string
           tags: string[] | null
           thread_tweets: Json | null
@@ -121,8 +126,11 @@ export type Database = {
           word_count: number | null
         }
         Insert: {
+          algorithm_score?: string | null
           content: string
           created_at?: string
+          dwell_score?: number | null
+          follow_score?: number | null
           format: string
           id?: string
           original_date?: string | null
@@ -130,6 +138,8 @@ export type Database = {
           pillar_name?: string | null
           posted_at?: string | null
           psychology_trigger?: string | null
+          reply_bait_score?: number | null
+          share_score?: number | null
           source?: string
           tags?: string[] | null
           thread_tweets?: Json | null
@@ -140,8 +150,11 @@ export type Database = {
           word_count?: number | null
         }
         Update: {
+          algorithm_score?: string | null
           content?: string
           created_at?: string
+          dwell_score?: number | null
+          follow_score?: number | null
           format?: string
           id?: string
           original_date?: string | null
@@ -149,6 +162,8 @@ export type Database = {
           pillar_name?: string | null
           posted_at?: string | null
           psychology_trigger?: string | null
+          reply_bait_score?: number | null
+          share_score?: number | null
           source?: string
           tags?: string[] | null
           thread_tweets?: Json | null
@@ -501,17 +516,25 @@ export type Database = {
       }
       content_os_items: {
         Row: {
+          algorithm_score: string | null
           content: string
           created_at: string
+          dwell_score: number | null
+          follow_score: number | null
           format: string
           generated_date: string
+          has_reply_bait: boolean | null
           id: string
           is_approved: boolean | null
           is_archived: boolean | null
+          pillar_drift_warning: boolean | null
           pillar_id: string | null
           pillar_name: string | null
           posted_at: string | null
           psychology_trigger: string | null
+          recommended_post_time: string | null
+          reply_bait_score: number | null
+          share_score: number | null
           status: string
           thread_tweets: Json | null
           title: string | null
@@ -522,17 +545,25 @@ export type Database = {
           word_count: number | null
         }
         Insert: {
+          algorithm_score?: string | null
           content: string
           created_at?: string
+          dwell_score?: number | null
+          follow_score?: number | null
           format: string
           generated_date?: string
+          has_reply_bait?: boolean | null
           id?: string
           is_approved?: boolean | null
           is_archived?: boolean | null
+          pillar_drift_warning?: boolean | null
           pillar_id?: string | null
           pillar_name?: string | null
           posted_at?: string | null
           psychology_trigger?: string | null
+          recommended_post_time?: string | null
+          reply_bait_score?: number | null
+          share_score?: number | null
           status?: string
           thread_tweets?: Json | null
           title?: string | null
@@ -543,17 +574,25 @@ export type Database = {
           word_count?: number | null
         }
         Update: {
+          algorithm_score?: string | null
           content?: string
           created_at?: string
+          dwell_score?: number | null
+          follow_score?: number | null
           format?: string
           generated_date?: string
+          has_reply_bait?: boolean | null
           id?: string
           is_approved?: boolean | null
           is_archived?: boolean | null
+          pillar_drift_warning?: boolean | null
           pillar_id?: string | null
           pillar_name?: string | null
           posted_at?: string | null
           psychology_trigger?: string | null
+          recommended_post_time?: string | null
+          reply_bait_score?: number | null
+          share_score?: number | null
           status?: string
           thread_tweets?: Json | null
           title?: string | null
@@ -611,16 +650,24 @@ export type Database = {
       }
       daily_posts: {
         Row: {
+          algorithm_score: string | null
           content: string
           created_at: string
+          dwell_score: number | null
+          follow_score: number | null
           format: string
           generated_date: string
+          has_reply_bait: boolean | null
           id: string
           is_approved: boolean | null
           is_archived: boolean | null
+          pillar_drift_warning: boolean | null
           post_date: string | null
           posted_at: string | null
           psychology_trigger: string | null
+          recommended_post_time: string | null
+          reply_bait_score: number | null
+          share_score: number | null
           status: string
           updated_at: string
           user_id: string
@@ -628,16 +675,24 @@ export type Database = {
           why_it_works: string | null
         }
         Insert: {
+          algorithm_score?: string | null
           content: string
           created_at?: string
+          dwell_score?: number | null
+          follow_score?: number | null
           format?: string
           generated_date?: string
+          has_reply_bait?: boolean | null
           id?: string
           is_approved?: boolean | null
           is_archived?: boolean | null
+          pillar_drift_warning?: boolean | null
           post_date?: string | null
           posted_at?: string | null
           psychology_trigger?: string | null
+          recommended_post_time?: string | null
+          reply_bait_score?: number | null
+          share_score?: number | null
           status?: string
           updated_at?: string
           user_id: string
@@ -645,16 +700,24 @@ export type Database = {
           why_it_works?: string | null
         }
         Update: {
+          algorithm_score?: string | null
           content?: string
           created_at?: string
+          dwell_score?: number | null
+          follow_score?: number | null
           format?: string
           generated_date?: string
+          has_reply_bait?: boolean | null
           id?: string
           is_approved?: boolean | null
           is_archived?: boolean | null
+          pillar_drift_warning?: boolean | null
           post_date?: string | null
           posted_at?: string | null
           psychology_trigger?: string | null
+          recommended_post_time?: string | null
+          reply_bait_score?: number | null
+          share_score?: number | null
           status?: string
           updated_at?: string
           user_id?: string
@@ -1095,6 +1158,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      telegram_settings: {
+        Row: {
+          auto_post_approved: boolean | null
+          bot_token: string | null
+          channel_id: string | null
+          channel_username: string | null
+          created_at: string
+          id: string
+          is_connected: boolean | null
+          morning_delivery: boolean | null
+          notify_viral: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_post_approved?: boolean | null
+          bot_token?: string | null
+          channel_id?: string | null
+          channel_username?: string | null
+          created_at?: string
+          id?: string
+          is_connected?: boolean | null
+          morning_delivery?: boolean | null
+          notify_viral?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_post_approved?: boolean | null
+          bot_token?: string | null
+          channel_id?: string | null
+          channel_username?: string | null
+          created_at?: string
+          id?: string
+          is_connected?: boolean | null
+          morning_delivery?: boolean | null
+          notify_viral?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
