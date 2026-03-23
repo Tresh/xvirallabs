@@ -338,10 +338,11 @@ export function DailyFeed() {
         </div>
       ) : (
         <div className="space-y-3">
-          {filtered.map(post => (
+          {filtered.map((post, index) => (
             <PostCard
               key={post.id}
               post={post}
+              index={index}
               onApprove={id => approveAndSave(id, post as DailyPost)}
               onSkip={id => updateStatus(id, "skipped")}
               onCopy={handleCopy}
