@@ -20,6 +20,8 @@ import {
   Save,
 } from "lucide-react";
 import { ContentPillarSetup } from "@/components/dashboard/ContentPillarSetup";
+import { PostScheduler } from "@/components/dashboard/PostScheduler";
+import { TelegramSettings } from "@/components/dashboard/TelegramSettings";
 
 type SaveStatus = "idle" | "saving" | "saved";
 
