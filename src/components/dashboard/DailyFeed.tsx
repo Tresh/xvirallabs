@@ -42,8 +42,9 @@ function ViralScoreBadge({ score }: { score?: number }) {
   );
 }
 
-function PostCard({ post, onApprove, onSkip, onCopy }: {
+function PostCard({ post, index, onApprove, onSkip, onCopy }: {
   post: any;
+  index: number;
   onApprove: (id: string) => void;
   onSkip: (id: string) => void;
   onCopy: (content: string) => void;

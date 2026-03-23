@@ -82,7 +82,9 @@ function ContentCard({
               </Button>
             </>
           ) : (
-            <Badge variant="secondary">{item.status}</Badge>
+            <Badge variant="secondary">
+              {item.status === "approved" ? "🔒 Saved to Bank" : item.status}
+            </Badge>
           )}
 
           <Button
