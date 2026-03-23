@@ -225,7 +225,7 @@ export function ContentOS() {
             <ContentCard
               key={item.id}
               item={item}
-              onApprove={(id) => void updateStatus(id, "approved")}
+              onApprove={(id, itm) => approveAndSave(id, itm)}
               onSkip={(id) => void updateStatus(id, "skipped")}
               onCopy={handleCopy}
             />
