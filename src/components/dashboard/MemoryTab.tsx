@@ -345,6 +345,16 @@ export function MemoryTab() {
         <ContentPillarSetup />
       </div>
 
+      {/* Post Scheduler */}
+      <div className="pt-6 border-t border-border">
+        <PostScheduler totalPosts={20} />
+      </div>
+
+      {/* Telegram Settings */}
+      <div className="pt-6 border-t border-border">
+        <TelegramSettings />
+      </div>
+
       {/* Save Button */}
       <div className="sticky bottom-4 flex justify-end">
         <Button onClick={saveAll} disabled={saveStatus === "saving"} variant="viral" size="lg" className="gap-2 shadow-lg">
