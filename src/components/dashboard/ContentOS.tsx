@@ -74,7 +74,7 @@ function ContentCard({
         <div className="flex flex-wrap items-center gap-2">
           {item.status === "pending" ? (
             <>
-              <Button size="sm" variant="viral" onClick={() => onApprove(item.id)}>
+              <Button size="sm" variant="viral" onClick={() => onApprove(item.id, item)}>
                 <Check className="h-3.5 w-3.5" /> Approve
               </Button>
               <Button size="sm" variant="ghost" onClick={() => onSkip(item.id)}>
