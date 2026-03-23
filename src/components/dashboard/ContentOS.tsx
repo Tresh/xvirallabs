@@ -114,7 +114,7 @@ function ContentCard({
 export function ContentOS() {
   const { profile, brandVoice } = useAuth();
   const { pillars } = useContentPillars();
-  const { items, isLoading, isGenerating, stats, generate, updateStatus } = useContentOS();
+  const { items, isLoading, isGenerating, stats, generate, updateStatus, approveAndSave } = useContentOS();
   const [activeFormat, setActiveFormat] = useState<"all" | ContentOSFormat>("all");
   const [activePillar, setActivePillar] = useState<string>("all");
 
