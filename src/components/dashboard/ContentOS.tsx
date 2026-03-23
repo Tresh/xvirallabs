@@ -15,7 +15,7 @@ function ContentCard({
   onCopy,
 }: {
   item: ContentOSItem;
-  onApprove: (id: string) => void;
+  onApprove: (id: string, item: ContentOSItem) => void;
   onSkip: (id: string) => void;
   onCopy: (content: string, label: string) => void;
 }) {
