@@ -76,6 +76,21 @@ function PostCard({ post, index, onApprove, onSkip, onCopy }: {
           </Badge>
         )}
         <ViralScoreBadge score={post.viral_score} />
+        {(() => {
+          const algoScores = scoreContent(post.content, post.format);
+          return (
+            <AlgorithmBadge
+              score={post.algorithm_score || algoScores.algorithm_score || "reply_driver"}
+              followScore={post.follow_score || algoScores.follow_score}
+              replyScore={post.reply_bait_score || algoScores.reply_score}
+              dwellScore={post.dwell_score || algoScores.dwell_score}
+              shareScore={post.share_score || algoScores.share_score}
+              hasReplyBait={post.has_reply_bait || algoScores.has_reply_bait}
+              recommendedTime={getRecommendedTime(index)}
+              compact={false}
+            />
+          );
+        })()}
         {isApproved && (
           <Badge className="ml-auto text-[10px] bg-primary/20 text-primary border-primary/30">
             <Lock className="h-3 w-3 mr-1" /> Saved to Bank
