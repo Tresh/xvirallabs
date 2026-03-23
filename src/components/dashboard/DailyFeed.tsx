@@ -5,6 +5,8 @@ import { useDailyUsage } from "@/hooks/useDailyUsage";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
+import { AlgorithmBadge } from "@/components/dashboard/AlgorithmBadge";
+import { scoreContent, getRecommendedTime } from "@/utils/algorithmScorer";
 import {
   Sparkles, Check, X, Copy, Loader2, RefreshCw,
   Zap, ArrowRight, TrendingUp, ChevronDown, ChevronUp,
