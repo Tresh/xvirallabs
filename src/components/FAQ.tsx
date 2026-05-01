@@ -8,27 +8,27 @@ import {
 const faqs = [
   {
     q: "What is XViralLabs?",
-    a: "XViralLabs is an AI-powered platform that reverse-engineers why tweets go viral. It analyzes psychology, hooks, patterns, and platform mechanics — then helps you create your own high-performing content.",
+    a: "XViralLabs is a chat-based AI agent built specifically for Twitter/X growth. From a single conversation you can analyze viral tweets, generate posts in your voice, build sales campaigns, write threads, plan a daily feed and more.",
   },
   {
-    q: "How does the analysis work?",
-    a: "Paste any tweet into the analyzer. Our AI breaks it down across 10 modes — from viral diagnosis and psychology deconstruction to pattern extraction and engagement forecasting.",
+    q: "How does the chat work?",
+    a: "Pick a tool from the floating suggestions (Analyze, Generate, Sales, Video, Thread, Rewrite, Daily Feed, Content OS, Content Lab), type what you want, and the agent runs that tool. Every chat is saved and filterable in the sidebar.",
   },
   {
-    q: "Is it free to use?",
-    a: "Yes. Free accounts get 5 analyses per day. Upgrade to Pro for unlimited analyses, saved patterns, and the full Content Lab suite.",
+    q: "Can I copy posts easily?",
+    a: "Yes. When the AI generates multiple posts, each post gets its own copy button. One tap copies the post — ready to paste into X.",
   },
   {
-    q: "What is the Content Lab?",
-    a: "Content Lab is your personal content workspace. It includes a content calendar, brand pillars, mind maps, idea banks, and a tweet drafting workspace — all powered by AI.",
+    q: "Is it free?",
+    a: "Yes — free accounts get a daily credit allowance. Each message in the chat costs one credit. Upgrade for higher limits.",
   },
   {
-    q: "Can I generate content, not just analyze?",
-    a: "Absolutely. Use Mode 4 to generate 20+ viral variations, Mode 8 for idea generation, or the Content Lab to plan and draft entire content calendars.",
+    q: "Where do I configure my voice and brand?",
+    a: "Open Settings from the sidebar. Inside you'll find Memory (voice, niche, pillars), Sales Engine (your products), Growth (tracking) and Plans.",
   },
   {
     q: "Is my data private?",
-    a: "Yes. Your analyses, patterns, and content are private to your account. We do not share or sell your data.",
+    a: "Yes. Your chats, products, and saved data are private to your account. We do not share or sell your data.",
   },
 ];
 
