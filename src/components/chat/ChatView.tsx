@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Send, Plus, Loader2, Sparkles, Microscope, ShoppingBag,
   Video, FileText, RefreshCw, Zap, Layers, Calendar, X, Menu, Check, Copy, ArrowDown,
+  Maximize2, Minimize2,
 } from "lucide-react";
 import {
   Popover, PopoverContent, PopoverTrigger,
@@ -46,8 +47,10 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const [tool, setTool] = useState<string | null>(null);
   const [toolPickerOpen, setToolPickerOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [atBottom, setAtBottom] = useState(true);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [composerExpanded, setComposerExpanded] = useState(false);
   const { remaining, isUnlimited } = useDailyUsage();
 
   useEffect(() => {
@@ -60,20 +63,40 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     const el = scrollRef.current;
     if (!el) return;
     const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
-    const isAtBottom = distance < 80;
+    const isAtBottom = distance <= 24;
     setAtBottom(isAtBottom);
-    // Only show button if there's actually scrollable content AND user isn't at bottom
-    setShowScrollBtn(!isAtBottom && el.scrollHeight > el.clientHeight + 80);
+    setShowScrollBtn(!isAtBottom && el.scrollHeight > el.clientHeight + 24);
   };
 
   const handleScroll = () => checkScrollPosition();
 
   useEffect(() => {
-    checkScrollPosition();
+    const frame = requestAnimationFrame(checkScrollPosition);
+    return () => cancelAnimationFrame(frame);
   }, [messages, streamBuffer]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => checkScrollPosition());
+    observer.observe(el);
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const maxHeight = composerExpanded ? Math.max(260, window.innerHeight - 220) : 168;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+    el.style.overflowY = el.scrollHeight > maxHeight ? "auto" : "hidden";
+  }, [input, composerExpanded]);
 
   const scrollToBottom = () => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    setAtBottom(true);
+    setShowScrollBtn(false);
   };
 
   const send = async () => {
@@ -155,18 +178,21 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
       </div>
 
       {/* Composer — fixed to viewport bottom */}
-      <div className="fixed bottom-0 inset-x-0 md:left-72 z-20 border-t border-border bg-background/95 backdrop-blur-xl pt-3 pb-3 px-3 md:px-5">
+      <div className={cn(
+        "fixed inset-x-0 md:left-72 z-20 border-t border-border bg-background/95 backdrop-blur-xl px-3 md:px-5 transition-all",
+        composerExpanded ? "inset-y-0 pt-4 pb-4 flex flex-col" : "bottom-0 pt-3 pb-3"
+      )}>
         {/* Scroll-to-bottom button — top center of composer */}
-        {showScrollBtn && !isEmpty && (
+        {showScrollBtn && !isEmpty && !composerExpanded && (
           <button
             onClick={scrollToBottom}
-            className="absolute -top-5 left-1/2 -translate-x-1/2 z-30 h-10 w-10 rounded-full bg-card border border-border shadow-lg flex items-center justify-center hover:bg-muted hover:border-primary/40 transition-all"
+            className="absolute -top-12 left-1/2 -translate-x-1/2 z-50 h-10 px-3 rounded-full bg-primary text-primary-foreground border border-primary shadow-xl flex items-center gap-1.5 text-[11px] font-medium hover:bg-primary/90 transition-all"
             aria-label="Scroll to bottom"
           >
-            <ArrowDown className="h-4 w-4 text-foreground" />
+            <ArrowDown className="h-4 w-4" /> Bottom
           </button>
         )}
-        <div className="max-w-3xl mx-auto space-y-2">
+        <div className={cn("max-w-3xl mx-auto space-y-2 w-full", composerExpanded && "flex-1 flex flex-col min-h-0")}>
           {/* Floating tool suggestions — fixed primary list, joined by active secondary */}
           <div data-tour="tools" className="flex flex-wrap gap-1.5 px-1">
             {PRIMARY_TOOLS.map(t => (
@@ -192,7 +218,20 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
           </div>
 
           {/* Input row */}
-          <div className="flex items-end gap-1 rounded-2xl border border-border bg-card shadow-lg p-1.5 focus-within:border-primary/50 focus-within:shadow-xl transition-all">
+          <div className={cn(
+            "relative flex items-end gap-1 rounded-2xl border border-border bg-card shadow-lg p-1.5 focus-within:border-primary/50 focus-within:shadow-xl transition-all",
+            composerExpanded && "flex-1 min-h-0 items-stretch pt-10"
+          )}>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className={cn("absolute right-2 top-2 rounded-lg z-10", composerExpanded ? "h-9 w-9" : "h-8 w-8")}
+              onClick={() => setComposerExpanded(prev => !prev)}
+              aria-label={composerExpanded ? "Collapse composer" : "Enlarge composer"}
+            >
+              {composerExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </Button>
             <Popover open={toolPickerOpen} onOpenChange={setToolPickerOpen}>
               <PopoverTrigger asChild>
                 <Button data-tour="plus-menu" variant="ghost" size="icon" className="h-9 w-9 shrink-0 rounded-xl">
@@ -228,6 +267,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
             </Popover>
 
             <Textarea
+              ref={textareaRef}
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => {
@@ -237,7 +277,10 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
                 }
               }}
               placeholder={tool && activeToolMeta ? activeToolMeta.placeholder : "What do you want to generate? (pick a tool or just type)"}
-              className="min-h-[40px] max-h-40 resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-2 text-sm flex-1 bg-transparent"
+              className={cn(
+                "min-h-[40px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-2 pr-9 text-sm flex-1 bg-transparent leading-relaxed",
+                composerExpanded && "h-full max-h-none"
+              )}
               disabled={streaming}
             />
 

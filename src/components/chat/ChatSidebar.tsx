@@ -197,7 +197,8 @@ function ConvRow({
       {conv.is_pinned && <Pin className="h-3 w-3 text-primary" />}
       <button
         onClick={(e) => { e.stopPropagation(); if (confirm("Delete this chat?")) onDelete(conv.id); }}
-        className="opacity-0 group-hover:opacity-100 hover:text-destructive p-0.5 transition-opacity"
+        className="opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-destructive p-1 -mr-1 transition-opacity"
+        aria-label="Delete chat"
       >
         <Trash2 className="h-3 w-3" />
       </button>
