@@ -23,8 +23,6 @@ const sections = [
   { id: "account", label: "Account" },
   { id: "appearance", label: "Appearance" },
   { id: "profile", label: "Profile" },
-  { id: "memory", label: "Memory" },
-  { id: "voice", label: "Voice & Style" },
   { id: "data-health", label: "Data Health" },
   { id: "signout", label: "Sign Out" },
 ] as const;
@@ -554,76 +552,6 @@ export function SettingsTab() {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Memory */}
-          <Card id="section-memory">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base"><Brain className="h-4 w-4" /> Memory</CardTitle>
-              <CardDescription>Everything here is used by the AI to generate personalized content</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div>
-                <Label className="mb-1.5 block">Skills & Expertise</Label>
-                <TagInput value={skillInput} onChange={setSkillInput}
-                  onAdd={() => addTag(skillInput, skills, setSkills, setSkillInput)}
-                  tags={skills} onRemove={(t) => removeTag(t, skills, setSkills)}
-                  placeholder="e.g., Full-stack dev, Growth hacking" />
-              </div>
-              <div>
-                <Label className="mb-1.5 block">Content Strategy</Label>
-                <Textarea value={contentStrategy} onChange={(e) => setContentStrategy(e.target.value)}
-                  placeholder="e.g., I'm building a personal brand around AI productivity..."
-                  className="min-h-[100px] resize-none" />
-              </div>
-              <div>
-                <Label className="mb-1.5 block">AI Instructions</Label>
-                <Textarea value={customSystemPrompt} onChange={(e) => setCustomSystemPrompt(e.target.value)}
-                  placeholder="e.g., Always write in first person. Never use emojis."
-                  className="min-h-[100px] resize-none font-mono text-sm" />
-              </div>
-
-              <div className="pt-1">
-                <ContentPillarSetup />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Voice & Style */}
-          <Card id="section-voice">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base"><MessageSquare className="h-4 w-4" /> Voice & Style</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div>
-                <Label className="mb-1.5 block">Writing Traits</Label>
-                <TagInput value={traitInput} onChange={setTraitInput}
-                  onAdd={() => addTag(traitInput, writingTraits, setWritingTraits, setTraitInput)}
-                  tags={writingTraits} onRemove={(t) => removeTag(t, writingTraits, setWritingTraits)}
-                  placeholder="e.g., Concise, data-driven" />
-              </div>
-              <div>
-                <Label className="mb-1.5 block">Signature Phrases</Label>
-                <TagInput value={phraseInput} onChange={setPhraseInput}
-                  onAdd={() => addTag(phraseInput, signaturePhrases, setSignaturePhrases, setPhraseInput)}
-                  tags={signaturePhrases} onRemove={(t) => removeTag(t, signaturePhrases, setSignaturePhrases)}
-                  placeholder="e.g., Here's the thing" />
-              </div>
-              <div>
-                <Label className="mb-1.5 block">Preferred Hook Types</Label>
-                <TagInput value={hookInput} onChange={setHookInput}
-                  onAdd={() => addTag(hookInput, preferredHooks, setPreferredHooks, setHookInput)}
-                  tags={preferredHooks} onRemove={(t) => removeTag(t, preferredHooks, setPreferredHooks)}
-                  placeholder="e.g., Curiosity, Authority" />
-              </div>
-              <div>
-                <Label className="mb-1.5 block">Words to Avoid</Label>
-                <TagInput value={avoidInput} onChange={setAvoidInput}
-                  onAdd={() => addTag(avoidInput, wordsToAvoid, setWordsToAvoid, setAvoidInput)}
-                  tags={wordsToAvoid} onRemove={(t) => removeTag(t, wordsToAvoid, setWordsToAvoid)}
-                  placeholder="e.g., Leverage, Synergy" />
               </div>
             </CardContent>
           </Card>
