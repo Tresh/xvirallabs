@@ -271,6 +271,28 @@ serve(async (req) => {
     const tier = profile?.tier || "free";
     const isPaidUser = tier === "pro" || tier === "elite";
 
+    // Ownership guard: verifies the current user owns a row before we mutate it
+    // with the service-role client (which bypasses RLS).
+    const assertOwns = async (
+      table: "content_calendars" | "content_ideas" | "content_calendar_days",
+      rowId: string | undefined | null,
+    ): Promise<Response | null> => {
+      if (!rowId) return null;
+      const { data, error } = await supabase
+        .from(table)
+        .select("id")
+        .eq("id", rowId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (error || !data) {
+        return new Response(
+          JSON.stringify({ error: "Forbidden: resource not found or not yours" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      return null;
+    };
+
     // Build creator context for AI personalization
     const buildCreatorContext = () => {
       const parts: string[] = [];
@@ -426,6 +448,8 @@ serve(async (req) => {
       // ===== LAYER 1: GENERATE BRAND PILLARS =====
       case "generate_pillars": {
         const { calendarId, niche, goal, audienceLevel, unhingedMode } = params;
+        const ownErr = await assertOwns("content_calendars", calendarId);
+        if (ownErr) return ownErr;
 
         // Free users: 3 pillars, Paid: 5 pillars
         const pillarCount = isPaidUser ? 5 : 3;
@@ -488,6 +512,8 @@ ${BRAND_PILLAR_PROMPT}`;
       // ===== LAYER 2: GENERATE MIND-MAP (IDEAS ONLY) =====
       case "generate_mind_map": {
         const { calendarId, pillars, niche, daysToGenerate, unhingedMode } = params;
+        const ownErr = await assertOwns("content_calendars", calendarId);
+        if (ownErr) return ownErr;
 
         // Free: 3 days, Paid: up to 30 days
         const maxDays = isPaidUser ? Math.min(daysToGenerate || 7, 30) : Math.min(daysToGenerate || 3, 3);
@@ -566,6 +592,8 @@ ${MIND_MAP_PROMPT}`;
       // ===== LAYER 3: GENERATE SINGLE TWEET ON DEMAND =====
       case "generate_tweet": {
         const { ideaId, ideaTitle, ideaType, pillarName, niche, intent, unhingedMode } = params;
+        const ownErr = await assertOwns("content_ideas", ideaId);
+        if (ownErr) return ownErr;
 
         const systemPrompt = unhingedMode 
           ? SYSTEM_PROMPT + UNHINGED_ADDITION 
@@ -615,6 +643,8 @@ ${SINGLE_TWEET_PROMPT}`;
       // ===== IMPROVE TWEET =====
       case "improve_tweet": {
         const { ideaId, currentContent, instruction, niche, unhingedMode } = params;
+        const ownErr = await assertOwns("content_ideas", ideaId);
+        if (ownErr) return ownErr;
 
         if (!isPaidUser) {
           return new Response(
@@ -671,6 +701,8 @@ ${IMPROVE_TWEET_PROMPT}`;
       // ===== SAVE TO VAULT =====
       case "save_to_vault": {
         const { ideaId, content, pillarName, ideaTitle } = params;
+        const ownErr = await assertOwns("content_ideas", ideaId);
+        if (ownErr) return ownErr;
 
         // Insert into idea_vault
         const { error: insertError } = await supabaseAdmin
@@ -700,6 +732,8 @@ ${IMPROVE_TWEET_PROMPT}`;
       // ===== LEGACY: GENERATE CONTENT BANK (keep for backward compat) =====
       case "generate_content_bank": {
         const settings = params;
+        const ownErr = await assertOwns("content_calendars", settings.calendarId);
+        if (ownErr) return ownErr;
         const postCount = isPaidUser ? 10 : 5;
 
         const systemPrompt = settings.unhingedMode 
@@ -791,6 +825,8 @@ ${CONTENT_BANK_PROMPT}`;
       // ===== LEGACY: REGENERATE POST =====
       case "regenerate_post": {
         const { postId, originalPost, niche, category, unhingedMode } = params;
+        const ownErr = await assertOwns("content_calendar_days", postId);
+        if (ownErr) return ownErr;
 
         const systemPrompt = unhingedMode 
           ? SYSTEM_PROMPT + UNHINGED_ADDITION 
@@ -850,6 +886,8 @@ Output as JSON:
       // ===== LEGACY: GENERATE NEXT DAY =====
       case "generate_next_day": {
         const { calendarId, primaryNiche, audienceLevel, mainGoal, unhingedMode, currentMaxDay } = params;
+        const ownErr = await assertOwns("content_calendars", calendarId);
+        if (ownErr) return ownErr;
 
         if (!isPaidUser && currentMaxDay >= 1) {
           return new Response(
@@ -938,6 +976,8 @@ ${CONTENT_BANK_PROMPT}`;
       // ===== ANALYZE TWEET PERFORMANCE =====
       case "analyze_performance": {
         const { postId, metrics, tweetUrl, screenshotUrl, originalContent } = params;
+        const ownErr = await assertOwns("content_calendar_days", postId);
+        if (ownErr) return ownErr;
 
         const PERFORMANCE_ANALYSIS_PROMPT = `You are a Twitter/X analytics expert. Analyze this post's performance and provide actionable insights.
 

@@ -97,7 +97,7 @@ export function PerformanceFeedback({ post, onAnalyzed }: PerformanceFeedbackPro
     const fileExt = screenshotFile.name.split(".").pop();
     const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from("performance-screenshots")
       .upload(fileName, screenshotFile);
 
@@ -106,11 +106,17 @@ export function PerformanceFeedback({ post, onAnalyzed }: PerformanceFeedbackPro
       return null;
     }
 
-    const { data: urlData } = supabase.storage
+    // Bucket is private; create a short-lived signed URL for the AI to read.
+    const { data: signed, error: signErr } = await supabase.storage
       .from("performance-screenshots")
-      .getPublicUrl(fileName);
+      .createSignedUrl(fileName, 60 * 10); // 10 minutes
 
-    return urlData.publicUrl;
+    if (signErr || !signed?.signedUrl) {
+      console.error("Signed URL error:", signErr);
+      return null;
+    }
+
+    return signed.signedUrl;
   };
 
   const extractFromScreenshot = async () => {
