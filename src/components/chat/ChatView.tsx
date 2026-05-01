@@ -48,6 +48,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const [toolPickerOpen, setToolPickerOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
   const [atBottom, setAtBottom] = useState(true);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [composerExpanded, setComposerExpanded] = useState(false);
@@ -71,8 +72,10 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const handleScroll = () => checkScrollPosition();
 
   useEffect(() => {
+    // Re-check after content updates (new messages, streaming chunks, layout changes)
     const frame = requestAnimationFrame(checkScrollPosition);
-    return () => cancelAnimationFrame(frame);
+    const t = setTimeout(checkScrollPosition, 120);
+    return () => { cancelAnimationFrame(frame); clearTimeout(t); };
   }, [messages, streamBuffer]);
 
   useEffect(() => {
@@ -83,6 +86,19 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     if (el.firstElementChild) observer.observe(el.firstElementChild);
     return () => observer.disconnect();
   }, []);
+
+  // Track composer height so the floating scroll-to-bottom sits just above it
+  useEffect(() => {
+    const el = composerRef.current;
+    if (!el) return;
+    const update = () => {
+      document.documentElement.style.setProperty("--composer-h", `${el.offsetHeight}px`);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [composerExpanded, input, tool]);
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -117,7 +133,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const activeToolMeta = ALL_TOOLS.find(t => t.id === tool);
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 h-screen bg-background relative">
+    <div className="flex-1 flex flex-col min-w-0 h-screen max-h-screen overflow-hidden bg-background relative">
       {/* Header — sidebar toggle on mobile, credits on right. No "name" overlap. */}
       <header className="h-14 border-b border-border flex items-center px-3 md:px-5 justify-between bg-background/80 backdrop-blur-xl sticky top-0 z-10 shrink-0">
         <div className="flex items-center gap-2">
@@ -142,7 +158,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
       </header>
 
       {/* Messages */}
-      <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto pb-56">
+      <div ref={scrollRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto pb-56">
         {isEmpty ? (
           <EmptyState onPickTool={pickTool} />
         ) : (
@@ -177,21 +193,25 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
         )}
       </div>
 
+      {/* Scroll-to-bottom button — fixed to viewport so it's always visible above composer */}
+      {showScrollBtn && !isEmpty && !composerExpanded && (
+        <button
+          onClick={scrollToBottom}
+          style={{ bottom: "calc(var(--composer-h, 160px) + 12px)" }}
+          className="fixed left-1/2 md:left-[calc(50%+9rem)] -translate-x-1/2 z-[60] h-9 px-3.5 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center gap-1.5 text-[11px] font-medium hover:bg-primary/90 transition-all border border-primary-foreground/10"
+          aria-label="Scroll to bottom"
+        >
+          <ArrowDown className="h-4 w-4" /> Bottom
+        </button>
+      )}
+
       {/* Composer — fixed to viewport bottom */}
-      <div className={cn(
+      <div
+        ref={composerRef}
+        className={cn(
         "fixed inset-x-0 md:left-72 z-20 border-t border-border bg-background/95 backdrop-blur-xl px-3 md:px-5 transition-all",
         composerExpanded ? "inset-y-0 pt-4 pb-4 flex flex-col" : "bottom-0 pt-3 pb-3"
       )}>
-        {/* Scroll-to-bottom button — top center of composer */}
-        {showScrollBtn && !isEmpty && !composerExpanded && (
-          <button
-            onClick={scrollToBottom}
-            className="absolute -top-5 left-1/2 -translate-x-1/2 z-50 h-9 px-3 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center gap-1.5 text-[11px] font-medium hover:bg-primary/90 transition-all"
-            aria-label="Scroll to bottom"
-          >
-            <ArrowDown className="h-4 w-4" /> Bottom
-          </button>
-        )}
         <div className={cn("max-w-3xl mx-auto space-y-2 w-full", composerExpanded && "flex-1 flex flex-col min-h-0")}>
           {/* Floating tool suggestions — fixed primary list, joined by active secondary */}
           <div data-tour="tools" className="flex flex-wrap gap-1.5 px-1">
