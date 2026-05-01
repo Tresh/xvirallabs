@@ -130,9 +130,9 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
         )}
       </div>
 
-      {/* Composer — floating */}
-      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-8 pb-3 px-3 md:px-5 pointer-events-none">
-        <div className="max-w-3xl mx-auto space-y-2 pointer-events-auto">
+      {/* Composer — fixed to bottom of chat pane */}
+      <div className="shrink-0 border-t border-border bg-background/95 backdrop-blur-xl pt-3 pb-3 px-3 md:px-5">
+        <div className="max-w-3xl mx-auto space-y-2">
           {/* Floating tool suggestions — fixed primary list, joined by active secondary */}
           <div data-tour="tools" className="flex flex-wrap gap-1.5 px-1">
             {PRIMARY_TOOLS.map(t => (
