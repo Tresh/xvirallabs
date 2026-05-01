@@ -47,6 +47,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const [toolPickerOpen, setToolPickerOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [atBottom, setAtBottom] = useState(true);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
   const { remaining, isUnlimited } = useDailyUsage();
 
   useEffect(() => {
@@ -55,12 +56,21 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     }
   }, [messages, streamBuffer]);
 
-  const handleScroll = () => {
+  const checkScrollPosition = () => {
     const el = scrollRef.current;
     if (!el) return;
     const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
-    setAtBottom(distance < 80);
+    const isAtBottom = distance < 80;
+    setAtBottom(isAtBottom);
+    // Only show button if there's actually scrollable content AND user isn't at bottom
+    setShowScrollBtn(!isAtBottom && el.scrollHeight > el.clientHeight + 80);
   };
+
+  const handleScroll = () => checkScrollPosition();
+
+  useEffect(() => {
+    checkScrollPosition();
+  }, [messages, streamBuffer]);
 
   const scrollToBottom = () => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -144,19 +154,18 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
         )}
       </div>
 
-      {/* Scroll-to-bottom button */}
-      {!atBottom && !isEmpty && (
-        <button
-          onClick={scrollToBottom}
-          className="fixed bottom-48 left-1/2 -translate-x-1/2 z-30 h-9 w-9 rounded-full bg-card border border-border shadow-lg flex items-center justify-center hover:bg-muted transition-all"
-          aria-label="Scroll to bottom"
-        >
-          <ArrowDown className="h-4 w-4 text-foreground" />
-        </button>
-      )}
-
       {/* Composer — fixed to viewport bottom */}
       <div className="fixed bottom-0 inset-x-0 md:left-72 z-20 border-t border-border bg-background/95 backdrop-blur-xl pt-3 pb-3 px-3 md:px-5">
+        {/* Scroll-to-bottom button — top center of composer */}
+        {showScrollBtn && !isEmpty && (
+          <button
+            onClick={scrollToBottom}
+            className="absolute -top-5 left-1/2 -translate-x-1/2 z-30 h-10 w-10 rounded-full bg-card border border-border shadow-lg flex items-center justify-center hover:bg-muted hover:border-primary/40 transition-all"
+            aria-label="Scroll to bottom"
+          >
+            <ArrowDown className="h-4 w-4 text-foreground" />
+          </button>
+        )}
         <div className="max-w-3xl mx-auto space-y-2">
           {/* Floating tool suggestions — fixed primary list, joined by active secondary */}
           <div data-tour="tools" className="flex flex-wrap gap-1.5 px-1">
