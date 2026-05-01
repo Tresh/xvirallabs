@@ -218,17 +218,17 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
           {/* Input row */}
           <div className={cn(
             "relative flex items-end gap-1 rounded-2xl border border-border bg-card shadow-lg p-1.5 focus-within:border-primary/50 focus-within:shadow-xl transition-all",
-            composerExpanded && "flex-1 min-h-0 items-stretch pt-9"
+            composerExpanded && "flex-1 min-h-0 items-stretch pt-10"
           )}>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="absolute right-2 top-2 h-7 w-7 rounded-lg z-10"
+              className={cn("absolute right-2 top-2 rounded-lg z-10", composerExpanded ? "h-9 w-9" : "h-8 w-8")}
               onClick={() => setComposerExpanded(prev => !prev)}
               aria-label={composerExpanded ? "Collapse composer" : "Enlarge composer"}
             >
-              {composerExpanded ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+              {composerExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </Button>
             <Popover open={toolPickerOpen} onOpenChange={setToolPickerOpen}>
               <PopoverTrigger asChild>
