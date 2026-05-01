@@ -648,6 +648,42 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          is_pinned: boolean | null
+          last_message_at: string
+          tags: string[] | null
+          title: string
+          tool: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_pinned?: boolean | null
+          last_message_at?: string
+          tags?: string[] | null
+          title?: string
+          tool?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_pinned?: boolean | null
+          last_message_at?: string
+          tags?: string[] | null
+          title?: string
+          tool?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_posts: {
         Row: {
           algorithm_score: string | null
@@ -851,6 +887,50 @@ export type Database = {
             columns: ["generated_from_pattern_id"]
             isOneToOne: false
             referencedRelation: "viral_patterns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          role: string
+          tool: string | null
+          tool_input: Json | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role: string
+          tool?: string | null
+          tool_input?: Json | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          role?: string
+          tool?: string | null
+          tool_input?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
         ]
