@@ -162,7 +162,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
       </header>
 
       {/* Messages */}
-      <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto pb-56">
+      <div ref={scrollRef} onScroll={handleScroll} className="flex-1 min-h-0 overflow-y-auto pb-56">
         {isEmpty ? (
           <EmptyState onPickTool={pickTool} />
         ) : (
