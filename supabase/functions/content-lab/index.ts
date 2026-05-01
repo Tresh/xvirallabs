@@ -271,6 +271,28 @@ serve(async (req) => {
     const tier = profile?.tier || "free";
     const isPaidUser = tier === "pro" || tier === "elite";
 
+    // Ownership guard: verifies the current user owns a row before we mutate it
+    // with the service-role client (which bypasses RLS).
+    const assertOwns = async (
+      table: "content_calendars" | "content_ideas" | "content_calendar_days",
+      rowId: string | undefined | null,
+    ): Promise<Response | null> => {
+      if (!rowId) return null;
+      const { data, error } = await supabase
+        .from(table)
+        .select("id")
+        .eq("id", rowId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (error || !data) {
+        return new Response(
+          JSON.stringify({ error: "Forbidden: resource not found or not yours" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      return null;
+    };
+
     // Build creator context for AI personalization
     const buildCreatorContext = () => {
       const parts: string[] = [];
