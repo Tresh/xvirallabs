@@ -115,7 +115,7 @@ serve(async (req) => {
     if (remaining === 0) {
       return new Response(JSON.stringify({
         error: "Daily limit reached", code: "LIMIT_EXCEEDED",
-        message: "You've used all 5 free messages today. Upgrade to Pro for unlimited.",
+        message: "You've used all 3 free messages today. Upgrade to Pro for unlimited.",
       }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 

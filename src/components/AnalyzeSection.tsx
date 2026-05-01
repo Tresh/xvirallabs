@@ -124,7 +124,7 @@ export function AnalyzeSection() {
     if (hasReachedLimit) {
       toast({
         title: "Daily limit reached",
-        description: "You've used all 5 free analyses today. Upgrade to Pro for unlimited access!",
+        description: "You've used all 3 free analyses today. Upgrade to Pro for unlimited access!",
         variant: "destructive",
       });
       return;
@@ -440,7 +440,7 @@ export function AnalyzeSection() {
                     <LogIn className="h-5 w-5 text-primary shrink-0" />
                     <div className="flex-1">
                       <span className="font-medium text-foreground block">Sign in to analyze tweets</span>
-                      <p className="text-sm text-muted-foreground">Free users get 5 analyses per day</p>
+                      <p className="text-sm text-muted-foreground">Free users get 3 analyses per day</p>
                     </div>
                   </div>
                   <Button asChild variant="viral" size="default" className="w-full sm:w-auto">

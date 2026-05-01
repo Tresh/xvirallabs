@@ -176,7 +176,7 @@ export function DailyFeed() {
     if (hasReachedLimit) {
       toast({
         title: "Daily credits used up",
-        description: "You've used all 5 free credits today. Upgrade to Pro for unlimited.",
+        description: "You've used all 3 free credits today. Upgrade to Pro for unlimited.",
         variant: "destructive",
       });
       return;
@@ -253,7 +253,7 @@ export function DailyFeed() {
         </Button>
         {!isUnlimited && (
           <p className="text-xs text-muted-foreground mt-3">
-            {hasReachedLimit ? "You've used all 5 free daily credits. Upgrade to Pro for unlimited." : `${remaining} credit${remaining !== 1 ? "s" : ""} remaining today`}
+            {hasReachedLimit ? "You've used all 3 free daily credits. Upgrade to Pro for unlimited." : `${remaining} credit${remaining !== 1 ? "s" : ""} remaining today`}
           </p>
         )}
         {!profile?.primary_niche && (
