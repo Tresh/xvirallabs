@@ -70,12 +70,12 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const activeToolMeta = ALL_TOOLS.find(t => t.id === tool);
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 h-screen bg-background">
+    <div className="flex-1 flex flex-col min-w-0 h-screen bg-background relative">
       {/* Header — sidebar toggle on mobile, credits on right. No "name" overlap. */}
-      <header className="h-14 border-b border-border flex items-center px-3 md:px-5 justify-between bg-background/80 backdrop-blur-xl sticky top-0 z-10">
+      <header className="h-14 border-b border-border flex items-center px-3 md:px-5 justify-between bg-background/80 backdrop-blur-xl sticky top-0 z-10 shrink-0">
         <div className="flex items-center gap-2">
           {onToggleSidebar && (
-            <Button variant="ghost" size="icon" className="h-8 w-8 md:hidden" onClick={onToggleSidebar}>
+            <Button data-tour="sidebar-toggle" variant="ghost" size="icon" className="h-8 w-8 md:hidden" onClick={onToggleSidebar}>
               <Menu className="h-4 w-4" />
             </Button>
           )}
@@ -86,7 +86,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
             </div>
           )}
         </div>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/60 border border-border">
+        <div data-tour="credits" className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/60 border border-border">
           <Zap className="h-3 w-3 text-primary" />
           <span className="text-[11px] font-mono text-muted-foreground">
             {isUnlimited ? "∞" : remaining}
@@ -95,7 +95,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
       </header>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto pb-44 md:pb-40">
         {isEmpty ? (
           <EmptyState onPickTool={pickTool} />
         ) : (
@@ -130,11 +130,11 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
         )}
       </div>
 
-      {/* Composer */}
-      <div className="bg-gradient-to-t from-background via-background to-background/0 pt-6 pb-3 px-3 md:px-5">
-        <div className="max-w-3xl mx-auto space-y-2">
+      {/* Composer — floating */}
+      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-8 pb-3 px-3 md:px-5 pointer-events-none">
+        <div className="max-w-3xl mx-auto space-y-2 pointer-events-auto">
           {/* Floating tool suggestions — fixed primary list, joined by active secondary */}
-          <div className="flex flex-wrap gap-1.5 px-1">
+          <div data-tour="tools" className="flex flex-wrap gap-1.5 px-1">
             {PRIMARY_TOOLS.map(t => (
               <ToolPill key={t.id} active={tool === t.id} onClick={() => pickTool(t.id)} icon={t.icon} label={t.label} />
             ))}
@@ -158,10 +158,10 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
           </div>
 
           {/* Input row */}
-          <div className="flex items-end gap-1 rounded-2xl border border-border bg-card shadow-sm p-1.5 focus-within:border-primary/50 focus-within:shadow-md transition-all">
+          <div className="flex items-end gap-1 rounded-2xl border border-border bg-card shadow-lg p-1.5 focus-within:border-primary/50 focus-within:shadow-xl transition-all">
             <Popover open={toolPickerOpen} onOpenChange={setToolPickerOpen}>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 rounded-xl">
+                <Button data-tour="plus-menu" variant="ghost" size="icon" className="h-9 w-9 shrink-0 rounded-xl">
                   <Plus className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
@@ -208,7 +208,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
             />
 
             <Button
-              variant="viral" size="icon"
+              data-tour="send" variant="viral" size="icon"
               className="h-9 w-9 shrink-0 rounded-xl"
               onClick={send}
               disabled={!input.trim() || streaming}
