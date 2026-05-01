@@ -67,6 +67,8 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     const isAtBottom = distance <= 24;
     setAtBottom(isAtBottom);
     setShowScrollBtn(distance > 80);
+    // eslint-disable-next-line no-console
+    console.log("[scrollDbg]", { sh: el.scrollHeight, st: el.scrollTop, ch: el.clientHeight, distance, show: distance > 80 });
   };
 
   const handleScroll = () => checkScrollPosition();
