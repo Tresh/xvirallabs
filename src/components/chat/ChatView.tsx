@@ -186,7 +186,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
         {showScrollBtn && !isEmpty && !composerExpanded && (
           <button
             onClick={scrollToBottom}
-            className="absolute -top-12 left-1/2 -translate-x-1/2 z-50 h-10 px-3 rounded-full bg-primary text-primary-foreground border border-primary shadow-xl flex items-center gap-1.5 text-[11px] font-medium hover:bg-primary/90 transition-all"
+            className="absolute -top-5 left-1/2 -translate-x-1/2 z-50 h-9 px-3 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center gap-1.5 text-[11px] font-medium hover:bg-primary/90 transition-all"
             aria-label="Scroll to bottom"
           >
             <ArrowDown className="h-4 w-4" /> Bottom
