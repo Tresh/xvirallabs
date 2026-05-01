@@ -48,6 +48,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const [toolPickerOpen, setToolPickerOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
   const [atBottom, setAtBottom] = useState(true);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [composerExpanded, setComposerExpanded] = useState(false);
@@ -83,6 +84,19 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     if (el.firstElementChild) observer.observe(el.firstElementChild);
     return () => observer.disconnect();
   }, []);
+
+  // Track composer height so the floating scroll-to-bottom sits just above it
+  useEffect(() => {
+    const el = composerRef.current;
+    if (!el) return;
+    const update = () => {
+      document.documentElement.style.setProperty("--composer-h", `${el.offsetHeight}px`);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [composerExpanded, input, tool]);
 
   useEffect(() => {
     const el = textareaRef.current;
