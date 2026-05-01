@@ -118,13 +118,15 @@ function SalesPostCard({
     <Card className={isApproved ? "border-primary/40" : undefined}>
       <CardContent className="p-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="text-[10px]">Day {post.scheduled_day}</Badge>
-          <Badge variant="outline" className={`text-[10px] ${config.color}`}>{config.emoji} {config.label}</Badge>
-          <Badge variant="outline" className="text-[10px]">{post.sell_intensity} sell</Badge>
-          {post.viral_score && <Badge variant="outline" className="text-[10px] text-yellow-500">⚡ {post.viral_score}</Badge>}
+          <Badge variant="secondary" className="text-[10px] pointer-events-none">Day {post.scheduled_day}</Badge>
+          <Badge variant="outline" className="text-[10px] pointer-events-none">{config.label}</Badge>
+          {post.viral_score && (
+            <Badge variant="outline" className="text-[10px] text-primary border-primary/30 pointer-events-none">
+              ⚡ {post.viral_score}
+            </Badge>
+          )}
           {post.scheduled_date && (
             <span className="text-[10px] text-muted-foreground ml-auto">
-              <Calendar className="h-3 w-3 inline mr-0.5" />
               {new Date(post.scheduled_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
             </span>
           )}
