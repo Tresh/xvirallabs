@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Send, Plus, Loader2, Sparkles, Microscope, ShoppingBag,
-  Video, FileText, RefreshCw, Zap, Layers, Calendar, X, Menu, Check,
+  Video, FileText, RefreshCw, Zap, Layers, Calendar, X, Menu, Check, Copy,
 } from "lucide-react";
 import {
   Popover, PopoverContent, PopoverTrigger,
@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/hooks/useChat";
 import { useDailyUsage } from "@/hooks/useDailyUsage";
+import { toast } from "@/hooks/use-toast";
 
 const PRIMARY_TOOLS = [
   { id: "analyze", label: "Analyze", icon: Microscope, hint: "Reverse-engineer a viral tweet", placeholder: "Paste a tweet or describe one to reverse-engineer..." },
@@ -132,23 +133,20 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
       {/* Composer */}
       <div className="bg-gradient-to-t from-background via-background to-background/0 pt-6 pb-3 px-3 md:px-5">
         <div className="max-w-3xl mx-auto space-y-2">
-          {/* Floating tool suggestions (always visible) */}
+          {/* Floating tool suggestions — fixed primary list, joined by active secondary */}
           <div className="flex flex-wrap gap-1.5 px-1">
             {PRIMARY_TOOLS.map(t => (
-              <button
-                key={t.id}
-                onClick={() => pickTool(t.id)}
-                className={cn(
-                  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all",
-                  tool === t.id
-                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                    : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
-                )}
-              >
-                {tool === t.id ? <Check className="h-3 w-3" /> : <t.icon className="h-3 w-3" />}
-                {t.label}
-              </button>
+              <ToolPill key={t.id} active={tool === t.id} onClick={() => pickTool(t.id)} icon={t.icon} label={t.label} />
             ))}
+            {/* If active tool is a secondary one, show it joined to the row */}
+            {tool && !PRIMARY_TOOLS.some(p => p.id === tool) && activeToolMeta && (
+              <ToolPill
+                active
+                onClick={clearTool}
+                icon={activeToolMeta.icon}
+                label={activeToolMeta.label}
+              />
+            )}
             {tool && (
               <button
                 onClick={clearTool}
