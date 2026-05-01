@@ -95,6 +95,8 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
 
   const scrollToBottom = () => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    setAtBottom(true);
+    setShowScrollBtn(false);
   };
 
   const send = async () => {
@@ -181,7 +183,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
         composerExpanded ? "inset-y-0 pt-4 pb-4 flex flex-col" : "bottom-0 pt-3 pb-3"
       )}>
         {/* Scroll-to-bottom button — top center of composer */}
-        {showScrollBtn && !isEmpty && (
+        {showScrollBtn && !isEmpty && !composerExpanded && (
           <button
             onClick={scrollToBottom}
             className="absolute -top-12 left-1/2 -translate-x-1/2 z-50 h-10 px-3 rounded-full bg-primary text-primary-foreground border border-primary shadow-xl flex items-center gap-1.5 text-[11px] font-medium hover:bg-primary/90 transition-all"
