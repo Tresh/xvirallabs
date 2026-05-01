@@ -65,7 +65,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
     const isAtBottom = distance <= 24;
     setAtBottom(isAtBottom);
-    setShowScrollBtn(!isAtBottom && el.scrollHeight > el.clientHeight + 24);
+    setShowScrollBtn(distance > 80);
   };
 
   const handleScroll = () => checkScrollPosition();
