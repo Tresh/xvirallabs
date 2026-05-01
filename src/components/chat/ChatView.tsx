@@ -198,7 +198,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
         <button
           onClick={scrollToBottom}
           style={{ bottom: "calc(var(--composer-h, 160px) + 12px)" }}
-          className="fixed left-1/2 md:left-[calc(50%+9rem)] -translate-x-1/2 z-[60] h-9 px-3.5 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center gap-1.5 text-[11px] font-medium hover:bg-primary/90 transition-all border border-primary-foreground/10"
+          className="fixed left-1/2 md:left-[calc(18rem+(100vw-18rem)/2)] -translate-x-1/2 z-[60] h-9 px-3.5 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center gap-1.5 text-[11px] font-medium hover:bg-primary/90 transition-all border border-primary-foreground/10"
           aria-label="Scroll to bottom"
         >
           <ArrowDown className="h-4 w-4" /> Bottom
