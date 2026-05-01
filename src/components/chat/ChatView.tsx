@@ -294,3 +294,41 @@ function MessageBubble({ message, streaming }: { message: ChatMessage; streaming
     </div>
   );
 }
+
+function ToolPill({ active, onClick, icon: Icon, label }: {
+  active: boolean; onClick: () => void; icon: any; label: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all",
+        active
+          ? "bg-primary text-primary-foreground border-primary shadow-sm"
+          : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
+      )}
+    >
+      {active ? <Check className="h-3 w-3" /> : <Icon className="h-3 w-3" />}
+      {label}
+    </button>
+  );
+}
+
+function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={async (e) => {
+        e.stopPropagation();
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        toast({ title: "Copied to clipboard" });
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      className="inline-flex items-center gap-1 text-[10px] font-mono text-muted-foreground hover:text-primary transition-colors"
+    >
+      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+      {copied ? "Copied" : label}
+    </button>
+  );
+}
