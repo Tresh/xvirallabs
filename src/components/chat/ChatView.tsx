@@ -219,24 +219,31 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
 
           {/* Input row */}
           <div className={cn(
-            "relative flex items-end gap-1 rounded-2xl border border-border bg-card shadow-lg p-1.5 focus-within:border-primary/50 focus-within:shadow-xl transition-all",
-            composerExpanded && "flex-1 min-h-0 items-stretch pt-10"
+            "relative flex flex-col rounded-2xl border border-border bg-card shadow-lg focus-within:border-primary/50 focus-within:shadow-xl transition-all",
+            composerExpanded && "flex-1 min-h-0"
           )}>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className={cn("absolute right-2 top-2 rounded-lg z-10", composerExpanded ? "h-9 w-9" : "h-8 w-8")}
-              onClick={() => setComposerExpanded(prev => !prev)}
-              aria-label={composerExpanded ? "Collapse composer" : "Enlarge composer"}
-            >
-              {composerExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-            </Button>
+            {/* Top bar — expand toggle, no overlap with send */}
+            <div className="flex items-center justify-end px-2 pt-1.5">
+              <button
+                type="button"
+                onClick={() => setComposerExpanded(prev => !prev)}
+                aria-label={composerExpanded ? "Collapse composer" : "Enlarge composer"}
+                className="h-7 w-7 inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {composerExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </button>
+            </div>
+            <div className={cn("flex items-end gap-1 px-1.5 pb-1.5", composerExpanded && "flex-1 min-h-0 items-stretch")}>
             <Popover open={toolPickerOpen} onOpenChange={setToolPickerOpen}>
               <PopoverTrigger asChild>
-                <Button data-tour="plus-menu" variant="ghost" size="icon" className="h-9 w-9 shrink-0 rounded-xl">
+                <button
+                  data-tour="plus-menu"
+                  type="button"
+                  className="h-9 w-9 shrink-0 rounded-xl inline-flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label="Pick a tool"
+                >
                   <Plus className="h-4 w-4" />
-                </Button>
+                </button>
               </PopoverTrigger>
               <PopoverContent side="top" align="start" className="w-72 p-2 rounded-xl">
                 <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground px-2 py-1">
@@ -278,7 +285,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
               }}
               placeholder={tool && activeToolMeta ? activeToolMeta.placeholder : "What do you want to generate? (pick a tool or just type)"}
               className={cn(
-                "min-h-[40px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-2 pr-9 text-sm flex-1 bg-transparent leading-relaxed",
+                "min-h-[40px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-2 text-sm flex-1 bg-transparent leading-relaxed",
                 composerExpanded && "h-full max-h-none"
               )}
               disabled={streaming}
@@ -292,6 +299,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
             >
               {streaming ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
+            </div>
           </div>
 
           <div className="text-[10px] text-muted-foreground/70 text-center font-mono">
