@@ -72,8 +72,10 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const handleScroll = () => checkScrollPosition();
 
   useEffect(() => {
+    // Re-check after content updates (new messages, streaming chunks, layout changes)
     const frame = requestAnimationFrame(checkScrollPosition);
-    return () => cancelAnimationFrame(frame);
+    const t = setTimeout(checkScrollPosition, 120);
+    return () => { cancelAnimationFrame(frame); clearTimeout(t); };
   }, [messages, streamBuffer]);
 
   useEffect(() => {
@@ -82,7 +84,9 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     const observer = new ResizeObserver(() => checkScrollPosition());
     observer.observe(el);
     if (el.firstElementChild) observer.observe(el.firstElementChild);
-    return () => observer.disconnect();
+    // Also poll every 500ms as a safety net for cases where scroll events don't fire reliably
+    const poll = setInterval(checkScrollPosition, 500);
+    return () => { observer.disconnect(); clearInterval(poll); };
   }, []);
 
   // Track composer height so the floating scroll-to-bottom sits just above it
