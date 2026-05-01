@@ -177,21 +177,25 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
         )}
       </div>
 
+      {/* Scroll-to-bottom button — fixed to viewport so it's always visible above composer */}
+      {showScrollBtn && !isEmpty && !composerExpanded && (
+        <button
+          onClick={scrollToBottom}
+          style={{ bottom: "calc(var(--composer-h, 160px) + 12px)" }}
+          className="fixed left-1/2 md:left-[calc(50%+9rem)] -translate-x-1/2 z-[60] h-9 px-3.5 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center gap-1.5 text-[11px] font-medium hover:bg-primary/90 transition-all border border-primary-foreground/10"
+          aria-label="Scroll to bottom"
+        >
+          <ArrowDown className="h-4 w-4" /> Bottom
+        </button>
+      )}
+
       {/* Composer — fixed to viewport bottom */}
-      <div className={cn(
+      <div
+        ref={composerRef}
+        className={cn(
         "fixed inset-x-0 md:left-72 z-20 border-t border-border bg-background/95 backdrop-blur-xl px-3 md:px-5 transition-all",
         composerExpanded ? "inset-y-0 pt-4 pb-4 flex flex-col" : "bottom-0 pt-3 pb-3"
       )}>
-        {/* Scroll-to-bottom button — top center of composer */}
-        {showScrollBtn && !isEmpty && !composerExpanded && (
-          <button
-            onClick={scrollToBottom}
-            className="absolute -top-5 left-1/2 -translate-x-1/2 z-50 h-9 px-3 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center gap-1.5 text-[11px] font-medium hover:bg-primary/90 transition-all"
-            aria-label="Scroll to bottom"
-          >
-            <ArrowDown className="h-4 w-4" /> Bottom
-          </button>
-        )}
         <div className={cn("max-w-3xl mx-auto space-y-2 w-full", composerExpanded && "flex-1 flex flex-col min-h-0")}>
           {/* Floating tool suggestions — fixed primary list, joined by active secondary */}
           <div data-tour="tools" className="flex flex-wrap gap-1.5 px-1">
