@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Send, Plus, Loader2, Sparkles, Microscope, ShoppingBag,
-  Video, FileText, RefreshCw, Zap, Layers, Calendar, X, Menu, Check, Copy,
+  Video, FileText, RefreshCw, Zap, Layers, Calendar, X, Menu, Check, Copy, ArrowDown,
 } from "lucide-react";
 import {
   Popover, PopoverContent, PopoverTrigger,
@@ -46,11 +46,25 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const [tool, setTool] = useState<string | null>(null);
   const [toolPickerOpen, setToolPickerOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [atBottom, setAtBottom] = useState(true);
   const { remaining, isUnlimited } = useDailyUsage();
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    if (atBottom) {
+      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    }
   }, [messages, streamBuffer]);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setAtBottom(distance < 80);
+  };
+
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  };
 
   const send = async () => {
     if (!input.trim() || streaming) return;
@@ -95,7 +109,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
       </header>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto pb-56">
         {isEmpty ? (
           <EmptyState onPickTool={pickTool} />
         ) : (
@@ -130,8 +144,19 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
         )}
       </div>
 
-      {/* Composer — fixed to bottom of chat pane */}
-      <div className="shrink-0 border-t border-border bg-background/95 backdrop-blur-xl pt-3 pb-3 px-3 md:px-5">
+      {/* Scroll-to-bottom button */}
+      {!atBottom && !isEmpty && (
+        <button
+          onClick={scrollToBottom}
+          className="fixed bottom-48 left-1/2 -translate-x-1/2 z-30 h-9 w-9 rounded-full bg-card border border-border shadow-lg flex items-center justify-center hover:bg-muted transition-all"
+          aria-label="Scroll to bottom"
+        >
+          <ArrowDown className="h-4 w-4 text-foreground" />
+        </button>
+      )}
+
+      {/* Composer — fixed to viewport bottom */}
+      <div className="fixed bottom-0 inset-x-0 md:left-72 z-20 border-t border-border bg-background/95 backdrop-blur-xl pt-3 pb-3 px-3 md:px-5">
         <div className="max-w-3xl mx-auto space-y-2">
           {/* Floating tool suggestions — fixed primary list, joined by active secondary */}
           <div data-tour="tools" className="flex flex-wrap gap-1.5 px-1">
