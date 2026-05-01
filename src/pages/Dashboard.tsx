@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Loader2, Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { useChat } from "@/hooks/useChat";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { ChatView } from "@/components/chat/ChatView";
 import { SettingsView } from "@/components/chat/SettingsView";
-import { cn } from "@/lib/utils";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -35,38 +34,32 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen flex w-full bg-background relative">
-      {/* Sidebar — fixed on mobile, static on desktop */}
-      <div className={cn(
-        "fixed inset-y-0 left-0 z-40 transition-transform md:static md:translate-x-0",
-        mobileSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-      )}>
+    <div className="min-h-screen flex w-full bg-background">
+      {/* Desktop sidebar */}
+      <div className="hidden md:block">
         <ChatSidebar
           conversations={conversations}
           activeId={activeId}
-          onSelect={(id) => { setActiveId(id); setShowSettings(false); setMobileSidebarOpen(false); }}
-          onNew={() => { newChat(); setShowSettings(false); setMobileSidebarOpen(false); }}
+          onSelect={(id) => { setActiveId(id); setShowSettings(false); }}
+          onNew={() => { newChat(); setShowSettings(false); }}
           onDelete={deleteConversation}
-          onOpenSettings={() => { setShowSettings(true); setMobileSidebarOpen(false); }}
+          onOpenSettings={() => { setShowSettings(true); }}
         />
       </div>
 
-      {/* Mobile overlay */}
-      {mobileSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-background/70 backdrop-blur-sm z-30 md:hidden"
-          onClick={() => setMobileSidebarOpen(false)}
-        />
-      )}
-
-      {/* Mobile menu button */}
-      <Button
-        variant="ghost" size="icon"
-        className="fixed top-2 left-2 z-50 md:hidden h-8 w-8"
-        onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-      >
-        {mobileSidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-      </Button>
+      {/* Mobile sidebar in a Sheet */}
+      <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+        <SheetContent side="left" className="p-0 w-72 max-w-[85vw]">
+          <ChatSidebar
+            conversations={conversations}
+            activeId={activeId}
+            onSelect={(id) => { setActiveId(id); setShowSettings(false); setMobileSidebarOpen(false); }}
+            onNew={() => { newChat(); setShowSettings(false); setMobileSidebarOpen(false); }}
+            onDelete={deleteConversation}
+            onOpenSettings={() => { setShowSettings(true); setMobileSidebarOpen(false); }}
+          />
+        </SheetContent>
+      </Sheet>
 
       <div className="flex-1 flex flex-col min-w-0">
         {showSettings ? (
@@ -78,6 +71,7 @@ export default function Dashboard() {
             streamBuffer={streamBuffer}
             onSend={sendMessage}
             isEmpty={!activeId && messages.length === 0}
+            onToggleSidebar={() => setMobileSidebarOpen(true)}
           />
         )}
       </div>
