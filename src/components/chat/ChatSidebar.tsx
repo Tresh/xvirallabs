@@ -69,9 +69,9 @@ export function ChatSidebar({ conversations, activeId, onSelect, onNew, onDelete
   }, [filtered, toolFilter]);
 
   return (
-    <aside className="h-screen w-72 shrink-0 border-r border-border bg-background flex flex-col">
+    <aside className="h-full w-72 shrink-0 border-r border-border bg-background flex flex-col min-h-0">
       {/* Top: logo + new chat */}
-      <div className="p-3 border-b border-border space-y-2">
+      <div className="p-3 border-b border-border space-y-2 shrink-0">
         <div className="flex items-center justify-between">
           <Link to="/"><Logo size="sm" showText /></Link>
           {isAdmin && (
@@ -80,13 +80,13 @@ export function ChatSidebar({ conversations, activeId, onSelect, onNew, onDelete
             </Button>
           )}
         </div>
-        <Button variant="viral" size="sm" className="w-full gap-2" onClick={onNew}>
+        <Button data-tour="new-chat" variant="viral" size="sm" className="w-full gap-2" onClick={onNew}>
           <Plus className="h-4 w-4" /> New chat
         </Button>
       </div>
 
       {/* Search + filter */}
-      <div className="p-3 border-b border-border space-y-2">
+      <div className="p-3 border-b border-border space-y-2 shrink-0">
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
@@ -126,7 +126,7 @@ export function ChatSidebar({ conversations, activeId, onSelect, onNew, onDelete
       </div>
 
       {/* History list */}
-      <div className="flex-1 overflow-y-auto p-2">
+      <div data-tour="history" className="flex-1 overflow-y-auto p-2 min-h-0">
         {filtered.length === 0 && (
           <div className="text-center py-8 px-3">
             <MessageSquare className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
@@ -153,13 +153,13 @@ export function ChatSidebar({ conversations, activeId, onSelect, onNew, onDelete
       </div>
 
       {/* Bottom: settings + signout */}
-      <div className="border-t border-border p-2 space-y-1">
+      <div className="border-t border-border p-2 space-y-1 shrink-0">
         {profile?.email && (
           <div className="px-2 py-1 text-[10px] text-muted-foreground truncate font-mono">
             {profile.email}
           </div>
         )}
-        <Button variant="ghost" size="sm" className="w-full justify-start gap-2 h-8" onClick={onOpenSettings}>
+        <Button data-tour="settings" variant="ghost" size="sm" className="w-full justify-start gap-2 h-8" onClick={onOpenSettings}>
           <Settings className="h-4 w-4" /> Settings
         </Button>
         <Button

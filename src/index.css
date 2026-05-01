@@ -109,3 +109,54 @@
     background-clip: text;
   }
 }
+
+/* Driver.js — branded tour theme */
+.xvl-tour.driver-popover {
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 50px -10px hsl(0 0% 0% / 0.25);
+  font-family: 'DM Sans', sans-serif;
+  max-width: 320px;
+}
+.xvl-tour .driver-popover-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: hsl(var(--foreground));
+}
+.xvl-tour .driver-popover-description {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.xvl-tour .driver-popover-progress-text {
+  color: hsl(var(--muted-foreground));
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+}
+.xvl-tour .driver-popover-next-btn,
+.xvl-tour .driver-popover-prev-btn,
+.xvl-tour .driver-popover-close-btn {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-shadow: none;
+}
+.xvl-tour .driver-popover-prev-btn {
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+.xvl-tour .driver-popover-close-btn {
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  padding: 0.25rem;
+}
+.xvl-tour .driver-popover-arrow-side-top.driver-popover-arrow { border-top-color: hsl(var(--card)); }
+.xvl-tour .driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: hsl(var(--card)); }
+.xvl-tour .driver-popover-arrow-side-left.driver-popover-arrow { border-left-color: hsl(var(--card)); }
+.xvl-tour .driver-popover-arrow-side-right.driver-popover-arrow { border-right-color: hsl(var(--card)); }

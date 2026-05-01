@@ -8,6 +8,7 @@ import { ChatView } from "@/components/chat/ChatView";
 import { SettingsView } from "@/components/chat/SettingsView";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { Sheet } from "@/components/ui/sheet";
+import { useOnboardingTour } from "@/hooks/useOnboardingTour";
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -22,6 +23,9 @@ export default function Dashboard() {
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
   }, [user, authLoading, navigate]);
+
+  // Launch first-visit guided tour once user + chat UI is ready
+  useOnboardingTour(!authLoading && !!user && !showSettings);
 
   if (authLoading) {
     return (

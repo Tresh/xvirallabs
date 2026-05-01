@@ -70,12 +70,12 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const activeToolMeta = ALL_TOOLS.find(t => t.id === tool);
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 h-screen bg-background">
+    <div className="flex-1 flex flex-col min-w-0 h-screen bg-background relative">
       {/* Header — sidebar toggle on mobile, credits on right. No "name" overlap. */}
-      <header className="h-14 border-b border-border flex items-center px-3 md:px-5 justify-between bg-background/80 backdrop-blur-xl sticky top-0 z-10">
+      <header className="h-14 border-b border-border flex items-center px-3 md:px-5 justify-between bg-background/80 backdrop-blur-xl sticky top-0 z-10 shrink-0">
         <div className="flex items-center gap-2">
           {onToggleSidebar && (
-            <Button variant="ghost" size="icon" className="h-8 w-8 md:hidden" onClick={onToggleSidebar}>
+            <Button data-tour="sidebar-toggle" variant="ghost" size="icon" className="h-8 w-8 md:hidden" onClick={onToggleSidebar}>
               <Menu className="h-4 w-4" />
             </Button>
           )}
@@ -86,7 +86,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
             </div>
           )}
         </div>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/60 border border-border">
+        <div data-tour="credits" className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/60 border border-border">
           <Zap className="h-3 w-3 text-primary" />
           <span className="text-[11px] font-mono text-muted-foreground">
             {isUnlimited ? "∞" : remaining}
@@ -95,7 +95,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
       </header>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto pb-44 md:pb-40">
         {isEmpty ? (
           <EmptyState onPickTool={pickTool} />
         ) : (
@@ -130,11 +130,11 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
         )}
       </div>
 
-      {/* Composer */}
-      <div className="bg-gradient-to-t from-background via-background to-background/0 pt-6 pb-3 px-3 md:px-5">
-        <div className="max-w-3xl mx-auto space-y-2">
+      {/* Composer — floating */}
+      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-background via-background/95 to-transparent pt-8 pb-3 px-3 md:px-5 pointer-events-none">
+        <div className="max-w-3xl mx-auto space-y-2 pointer-events-auto">
           {/* Floating tool suggestions — fixed primary list, joined by active secondary */}
-          <div className="flex flex-wrap gap-1.5 px-1">
+          <div data-tour="tools" className="flex flex-wrap gap-1.5 px-1">
             {PRIMARY_TOOLS.map(t => (
               <ToolPill key={t.id} active={tool === t.id} onClick={() => pickTool(t.id)} icon={t.icon} label={t.label} />
             ))}
@@ -158,10 +158,10 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
           </div>
 
           {/* Input row */}
-          <div className="flex items-end gap-1 rounded-2xl border border-border bg-card shadow-sm p-1.5 focus-within:border-primary/50 focus-within:shadow-md transition-all">
+          <div className="flex items-end gap-1 rounded-2xl border border-border bg-card shadow-lg p-1.5 focus-within:border-primary/50 focus-within:shadow-xl transition-all">
             <Popover open={toolPickerOpen} onOpenChange={setToolPickerOpen}>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 rounded-xl">
+                <Button data-tour="plus-menu" variant="ghost" size="icon" className="h-9 w-9 shrink-0 rounded-xl">
                   <Plus className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
@@ -208,7 +208,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
             />
 
             <Button
-              variant="viral" size="icon"
+              data-tour="send" variant="viral" size="icon"
               className="h-9 w-9 shrink-0 rounded-xl"
               onClick={send}
               disabled={!input.trim() || streaming}
@@ -228,29 +228,29 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
 
 function EmptyState({ onPickTool }: { onPickTool: (id: string) => void }) {
   return (
-    <div className="h-full flex flex-col items-center justify-center px-4 py-10">
-      <div className="text-center mb-10 max-w-lg">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-5">
+    <div className="min-h-full flex flex-col items-center justify-center px-4 py-8">
+      <div className="text-center mb-6 md:mb-10 max-w-lg">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4">
           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
           <span className="text-[10px] font-mono text-primary uppercase tracking-wider">XViralLabs</span>
         </div>
-        <div className="text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
+        <div className="text-2xl md:text-4xl font-semibold mb-2.5 tracking-tight">
           What do you want to <span className="text-gradient-primary">generate</span>?
         </div>
-        <div className="text-sm text-muted-foreground">
+        <div className="text-xs md:text-sm text-muted-foreground">
           Select a tool below, then describe what you want. Like an agent.
         </div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 w-full max-w-2xl">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full max-w-2xl">
         {PRIMARY_TOOLS.map(t => (
           <button
             key={t.id}
             onClick={() => onPickTool(t.id)}
-            className="p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-primary/5 hover:-translate-y-0.5 text-left transition-all group"
+            className="p-3 md:p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-primary/5 hover:-translate-y-0.5 text-left transition-all group"
           >
-            <t.icon className="h-5 w-5 text-primary mb-2 group-hover:scale-110 transition-transform" />
-            <div className="text-sm font-medium mb-0.5">{t.label}</div>
-            <div className="text-[11px] text-muted-foreground line-clamp-2">{t.hint}</div>
+            <t.icon className="h-4 w-4 md:h-5 md:w-5 text-primary mb-1.5 md:mb-2 group-hover:scale-110 transition-transform" />
+            <div className="text-xs md:text-sm font-medium mb-0.5">{t.label}</div>
+            <div className="text-[10px] md:text-[11px] text-muted-foreground line-clamp-2 leading-snug">{t.hint}</div>
           </button>
         ))}
       </div>

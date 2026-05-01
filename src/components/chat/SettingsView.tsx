@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Settings as SettingsIcon, ShoppingBag, TrendingUp, Brain, CreditCard, ChevronRight } from "lucide-react";
+import { X, Settings as SettingsIcon, ShoppingBag, TrendingUp, Brain, CreditCard, ChevronRight, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { SalesEngine } from "@/components/dashboard/SalesEngine";
 import { GrowthTracker } from "@/components/dashboard/GrowthTracker";
 import { MemoryTab } from "@/components/dashboard/MemoryTab";
 import { PricingPlans } from "@/components/dashboard/PricingPlans";
+import { replayOnboardingTour } from "@/hooks/useOnboardingTour";
 
 const SECTIONS = [
   { id: "settings", label: "Settings", icon: SettingsIcon, desc: "Account, appearance, profile" },
@@ -67,6 +68,18 @@ export function SettingsView({ onClose }: { onClose: () => void }) {
                 </button>
               ))}
             </div>
+
+            <button
+              onClick={() => replayOnboardingTour()}
+              className="mt-6 w-full group flex items-center gap-3 p-3 rounded-xl border border-dashed border-border hover:border-primary/40 hover:bg-primary/5 transition-all text-left"
+            >
+              <PlayCircle className="h-4 w-4 text-primary" />
+              <div className="flex-1 text-xs">
+                <div className="font-medium">Replay onboarding tour</div>
+                <div className="text-muted-foreground">See the guided walkthrough again.</div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+            </button>
           </div>
         ) : (
           <div className="px-4 md:px-6 py-6">
