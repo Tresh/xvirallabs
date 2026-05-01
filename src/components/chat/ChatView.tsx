@@ -67,8 +67,6 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     const isAtBottom = distance <= 24;
     setAtBottom(isAtBottom);
     setShowScrollBtn(distance > 80);
-    // eslint-disable-next-line no-console
-    console.log("[scrollDbg]", { sh: el.scrollHeight, st: el.scrollTop, ch: el.clientHeight, distance, show: distance > 80 });
   };
 
   const handleScroll = () => checkScrollPosition();
@@ -86,9 +84,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     const observer = new ResizeObserver(() => checkScrollPosition());
     observer.observe(el);
     if (el.firstElementChild) observer.observe(el.firstElementChild);
-    // Also poll every 500ms as a safety net for cases where scroll events don't fire reliably
-    const poll = setInterval(checkScrollPosition, 500);
-    return () => { observer.disconnect(); clearInterval(poll); };
+    return () => observer.disconnect();
   }, []);
 
   // Track composer height so the floating scroll-to-bottom sits just above it
