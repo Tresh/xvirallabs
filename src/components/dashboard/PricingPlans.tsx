@@ -11,7 +11,7 @@ const plans = [
     price: "$0",
     description: "Get started with viral analysis",
     icon: Zap,
-    features: ["5 analyses per day", "Basic viral diagnosis", "Psychology breakdown", "Pattern extraction"],
+    features: ["3 analyses per day", "Basic viral diagnosis", "Psychology breakdown", "Pattern extraction"],
     limitations: ["No saved history", "No idea vault"],
   },
   {
@@ -23,7 +23,6 @@ const plans = [
     icon: Sparkles,
     badge: "Popular",
     features: ["Unlimited analyses", "All 10 analysis modes", "Saved analysis history", "Pattern library", "Idea vault", "Brand voice settings"],
-    comingSoon: true,
   },
   {
     name: "Elite",
@@ -33,7 +32,6 @@ const plans = [
     description: "For agencies & power users",
     icon: Crown,
     features: ["Everything in Pro", "Team collaboration", "API access", "Priority support", "Custom integrations", "White-label reports"],
-    comingSoon: true,
   },
 ];
 
@@ -113,8 +111,6 @@ export function PricingPlans() {
                 
                 {isCurrent ? (
                   <Button variant="outline" className="w-full" disabled>Current Plan</Button>
-                ) : plan.comingSoon ? (
-                  <Button variant="viral" className="w-full" disabled>Coming Soon</Button>
                 ) : (
                   <Button variant="viral" className="w-full">Upgrade</Button>
                 )}

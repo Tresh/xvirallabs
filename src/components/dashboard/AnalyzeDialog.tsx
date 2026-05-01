@@ -74,7 +74,7 @@ export function AnalyzeDialog({ children, onAnalysisComplete }: AnalyzeDialogPro
     if (hasReachedLimit) {
       toast({
         title: "Daily limit reached",
-        description: "You've used all 5 free analyses today. Upgrade to Pro for unlimited access!",
+        description: "You've used all 3 free analyses today. Upgrade to Pro for unlimited access!",
         variant: "destructive",
       });
       return;

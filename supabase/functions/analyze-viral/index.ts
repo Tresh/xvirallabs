@@ -260,7 +260,7 @@ serve(async (req) => {
               JSON.stringify({ 
                 error: "Daily limit reached",
                 code: "LIMIT_EXCEEDED",
-                message: "You've used all 5 free analyses today. Upgrade to Pro for unlimited analyses!",
+                message: "You've used all 3 free analyses today. Upgrade to Pro for unlimited analyses!",
                 remaining: 0
               }),
               { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
