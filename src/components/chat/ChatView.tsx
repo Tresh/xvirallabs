@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Send, Plus, Loader2, Sparkles, Microscope, ShoppingBag,
-  Video, FileText, RefreshCw, Zap, Layers, Calendar, X, Menu,
+  Video, FileText, RefreshCw, Zap, Layers, Calendar, X, Menu, Check,
 } from "lucide-react";
 import {
   Popover, PopoverContent, PopoverTrigger,
@@ -15,18 +15,18 @@ import type { ChatMessage } from "@/hooks/useChat";
 import { useDailyUsage } from "@/hooks/useDailyUsage";
 
 const PRIMARY_TOOLS = [
-  { id: "analyze", label: "Analyze", icon: Microscope, hint: "Reverse-engineer a viral tweet" },
-  { id: "generate_post", label: "Generate Post", icon: Sparkles, hint: "Write viral X posts" },
-  { id: "sales", label: "Sales Post", icon: ShoppingBag, hint: "Sell-without-selling content" },
-  { id: "video", label: "Video Script", icon: Video, hint: "Sora/Runway-ready video" },
+  { id: "analyze", label: "Analyze", icon: Microscope, hint: "Reverse-engineer a viral tweet", placeholder: "Paste a tweet or describe one to reverse-engineer..." },
+  { id: "generate_post", label: "Generate Post", icon: Sparkles, hint: "Write viral X posts", placeholder: "Topic + any direction (style, count, angle)..." },
+  { id: "sales", label: "Sales Post", icon: ShoppingBag, hint: "Sell-without-selling content", placeholder: "Product / offer + tone (soft, story, proof, direct)..." },
+  { id: "video", label: "Video Script", icon: Video, hint: "Sora/Runway-ready video", placeholder: "Concept + style (vibe, length, characters)..." },
 ] as const;
 
 const SECONDARY_TOOLS = [
-  { id: "thread", label: "Thread", icon: FileText, hint: "Convert to high-retention thread" },
-  { id: "rewrite", label: "Rewrite", icon: RefreshCw, hint: "Boost virality of a draft" },
-  { id: "daily_feed", label: "Daily Feed", icon: Zap, hint: "Generate daily posts" },
-  { id: "content_os", label: "Content OS", icon: Layers, hint: "Plan content mix from pillars" },
-  { id: "content_lab", label: "Content Lab", icon: Calendar, hint: "Strategy planning" },
+  { id: "thread", label: "Thread", icon: FileText, hint: "Convert to high-retention thread", placeholder: "Paste your draft or topic for the thread..." },
+  { id: "rewrite", label: "Rewrite", icon: RefreshCw, hint: "Boost virality of a draft", placeholder: "Paste the draft you want rewritten..." },
+  { id: "daily_feed", label: "Daily Feed", icon: Zap, hint: "Generate daily posts", placeholder: "How many posts? Pillars / direction?" },
+  { id: "content_os", label: "Content OS", icon: Layers, hint: "Plan content mix from pillars", placeholder: "Your pillars + how many of each format..." },
+  { id: "content_lab", label: "Content Lab", icon: Calendar, hint: "Strategy planning", placeholder: "What strategy do you want planned?" },
 ] as const;
 
 const ALL_TOOLS = [...PRIMARY_TOOLS, ...SECONDARY_TOOLS];
@@ -43,10 +43,7 @@ interface Props {
 export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, onToggleSidebar }: Props) {
   const [input, setInput] = useState("");
   const [tool, setTool] = useState<string | null>(null);
-  const [note, setNote] = useState("");
-  const [showNote, setShowNote] = useState(false);
   const [toolPickerOpen, setToolPickerOpen] = useState(false);
-  const [notePickerTool, setNotePickerTool] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { remaining, isUnlimited } = useDailyUsage();
 
@@ -58,19 +55,16 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     if (!input.trim() || streaming) return;
     const txt = input;
     const t = tool;
-    const n = note;
     setInput("");
-    await onSend(txt, { tool: t, note: n });
+    await onSend(txt, { tool: t });
   };
 
   const pickTool = (id: string) => {
-    setTool(id);
+    setTool(prev => (prev === id ? null : id));
     setToolPickerOpen(false);
-    setNotePickerTool(id);
-    setShowNote(true);
   };
 
-  const clearTool = () => { setTool(null); setNote(""); setShowNote(false); };
+  const clearTool = () => { setTool(null); };
 
   const activeToolMeta = ALL_TOOLS.find(t => t.id === tool);
 
@@ -151,45 +145,19 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
                     : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
                 )}
               >
-                <t.icon className="h-3 w-3" />
+                {tool === t.id ? <Check className="h-3 w-3" /> : <t.icon className="h-3 w-3" />}
                 {t.label}
               </button>
             ))}
-          </div>
-
-          {/* Selected tool + note display */}
-          {tool && (
-            <div className="flex items-start gap-2 p-2.5 rounded-xl border border-primary/30 bg-primary/5">
-              {activeToolMeta && <activeToolMeta.icon className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />}
-              <div className="flex-1 min-w-0">
-                <div className="text-[11px] font-mono text-primary">{activeToolMeta?.label}</div>
-                {note ? (
-                  <div className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">📝 {note}</div>
-                ) : (
-                  <button
-                    onClick={() => setShowNote(true)}
-                    className="text-[11px] text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
-                  >
-                    + add a note / direction
-                  </button>
-                )}
-              </div>
-              <button onClick={clearTool} className="text-muted-foreground hover:text-destructive">
-                <X className="h-3.5 w-3.5" />
+            {tool && (
+              <button
+                onClick={clearTool}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11px] font-medium border border-border text-muted-foreground hover:text-destructive hover:border-destructive/40 transition-all"
+              >
+                <X className="h-3 w-3" /> Clear
               </button>
-            </div>
-          )}
-
-          {showNote && tool && (
-            <Textarea
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              placeholder="Optional: write what you want this tool to do (style, angle, count, audience...)"
-              className="text-xs min-h-[60px] resize-none rounded-xl"
-              autoFocus
-              onBlur={() => { if (!note) setShowNote(false); }}
-            />
-          )}
+            )}
+          </div>
 
           {/* Input row */}
           <div className="flex items-end gap-1 rounded-2xl border border-border bg-card shadow-sm p-1.5 focus-within:border-primary/50 focus-within:shadow-md transition-all">
@@ -201,18 +169,24 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
               </PopoverTrigger>
               <PopoverContent side="top" align="start" className="w-72 p-2 rounded-xl">
                 <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground px-2 py-1">
-                  Tools
+                  Pick a tool
                 </div>
                 <div className="space-y-0.5">
                   {ALL_TOOLS.map(t => (
                     <button
                       key={t.id}
                       onClick={() => pickTool(t.id)}
-                      className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-muted text-left transition-colors"
+                      className={cn(
+                        "w-full flex items-start gap-2 p-2 rounded-lg hover:bg-muted text-left transition-colors",
+                        tool === t.id && "bg-primary/10"
+                      )}
                     >
                       <t.icon className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <div className="min-w-0">
-                        <div className="text-xs font-medium">{t.label}</div>
+                        <div className="text-xs font-medium flex items-center gap-1">
+                          {t.label}
+                          {tool === t.id && <Check className="h-3 w-3 text-primary" />}
+                        </div>
                         <div className="text-[10px] text-muted-foreground">{t.hint}</div>
                       </div>
                     </button>
@@ -230,7 +204,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
                   send();
                 }
               }}
-              placeholder={tool ? `Ask ${activeToolMeta?.label}...` : "Ask anything about virality..."}
+              placeholder={tool && activeToolMeta ? activeToolMeta.placeholder : "What do you want to generate? (pick a tool or just type)"}
               className="min-h-[40px] max-h-40 resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-2 text-sm flex-1 bg-transparent"
               disabled={streaming}
             />
@@ -246,7 +220,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
           </div>
 
           <div className="text-[10px] text-muted-foreground/70 text-center font-mono">
-            Shift + Enter for newline · 1 message = 1 credit
+            {tool ? `${activeToolMeta?.label} mode · tap pill again to clear` : "Tip: pick a tool above or type your request"} · 1 message = 1 credit
           </div>
         </div>
       </div>
@@ -263,10 +237,10 @@ function EmptyState({ onPickTool }: { onPickTool: (id: string) => void }) {
           <span className="text-[10px] font-mono text-primary uppercase tracking-wider">XViralLabs</span>
         </div>
         <div className="text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
-          What are we <span className="text-gradient-primary">engineering</span> today?
+          What do you want to <span className="text-gradient-primary">generate</span>?
         </div>
         <div className="text-sm text-muted-foreground">
-          Pick a tool, add your direction, or just start typing.
+          Select a tool below, then describe what you want. Like an agent.
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 w-full max-w-2xl">
@@ -289,30 +263,17 @@ function EmptyState({ onPickTool }: { onPickTool: (id: string) => void }) {
 function MessageBubble({ message, streaming }: { message: ChatMessage; streaming?: boolean }) {
   const isUser = message.role === "user";
   return (
-    <div className={cn("flex gap-3", isUser ? "flex-row-reverse" : "")}>
-      <div className={cn(
-        "h-8 w-8 rounded-full flex items-center justify-center text-[10px] font-mono shrink-0 shadow-sm",
-        isUser
-          ? "bg-primary text-primary-foreground"
-          : "bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 text-primary"
-      )}>
-        {isUser ? "Y" : "✦"}
-      </div>
-      <div className={cn("flex-1 min-w-0 flex flex-col", isUser && "items-end")}>
+    <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
+      <div className={cn("flex flex-col min-w-0 max-w-[92%]", isUser && "items-end")}>
+        {message.tool && !isUser && (
+          <Badge variant="outline" className="mb-1.5 text-[9px] pointer-events-none capitalize w-fit">{message.tool}</Badge>
+        )}
         <div className={cn(
-          "rounded-2xl px-4 py-3 max-w-[88%]",
+          "rounded-2xl px-4 py-3",
           isUser
             ? "bg-primary text-primary-foreground rounded-tr-sm"
             : "bg-card border border-border rounded-tl-sm"
         )}>
-          {message.tool && !isUser && (
-            <Badge variant="outline" className="mb-2 text-[9px] pointer-events-none capitalize">{message.tool}</Badge>
-          )}
-          {message.metadata?.note && isUser && (
-            <div className="mb-2 text-[10px] opacity-80 border-l-2 border-primary-foreground/40 pl-2">
-              📝 {message.metadata.note}
-            </div>
-          )}
           <div className="prose prose-sm max-w-none dark:prose-invert">
             <ReactMarkdown
               components={{
