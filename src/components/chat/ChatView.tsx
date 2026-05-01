@@ -228,29 +228,29 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
 
 function EmptyState({ onPickTool }: { onPickTool: (id: string) => void }) {
   return (
-    <div className="h-full flex flex-col items-center justify-center px-4 py-10">
-      <div className="text-center mb-10 max-w-lg">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-5">
+    <div className="min-h-full flex flex-col items-center justify-center px-4 py-8">
+      <div className="text-center mb-6 md:mb-10 max-w-lg">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4">
           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
           <span className="text-[10px] font-mono text-primary uppercase tracking-wider">XViralLabs</span>
         </div>
-        <div className="text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
+        <div className="text-2xl md:text-4xl font-semibold mb-2.5 tracking-tight">
           What do you want to <span className="text-gradient-primary">generate</span>?
         </div>
-        <div className="text-sm text-muted-foreground">
+        <div className="text-xs md:text-sm text-muted-foreground">
           Select a tool below, then describe what you want. Like an agent.
         </div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 w-full max-w-2xl">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full max-w-2xl">
         {PRIMARY_TOOLS.map(t => (
           <button
             key={t.id}
             onClick={() => onPickTool(t.id)}
-            className="p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-primary/5 hover:-translate-y-0.5 text-left transition-all group"
+            className="p-3 md:p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-primary/5 hover:-translate-y-0.5 text-left transition-all group"
           >
-            <t.icon className="h-5 w-5 text-primary mb-2 group-hover:scale-110 transition-transform" />
-            <div className="text-sm font-medium mb-0.5">{t.label}</div>
-            <div className="text-[11px] text-muted-foreground line-clamp-2">{t.hint}</div>
+            <t.icon className="h-4 w-4 md:h-5 md:w-5 text-primary mb-1.5 md:mb-2 group-hover:scale-110 transition-transform" />
+            <div className="text-xs md:text-sm font-medium mb-0.5">{t.label}</div>
+            <div className="text-[10px] md:text-[11px] text-muted-foreground line-clamp-2 leading-snug">{t.hint}</div>
           </button>
         ))}
       </div>
