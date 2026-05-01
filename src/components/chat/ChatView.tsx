@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Send, Plus, Loader2, Sparkles, Microscope, ShoppingBag,
-  Video, FileText, RefreshCw, Zap, Layers, Calendar, X, Menu, Check,
+  Video, FileText, RefreshCw, Zap, Layers, Calendar, X, Menu, Check, Copy,
 } from "lucide-react";
 import {
   Popover, PopoverContent, PopoverTrigger,
@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/hooks/useChat";
 import { useDailyUsage } from "@/hooks/useDailyUsage";
+import { toast } from "@/hooks/use-toast";
 
 const PRIMARY_TOOLS = [
   { id: "analyze", label: "Analyze", icon: Microscope, hint: "Reverse-engineer a viral tweet", placeholder: "Paste a tweet or describe one to reverse-engineer..." },
@@ -132,23 +133,20 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
       {/* Composer */}
       <div className="bg-gradient-to-t from-background via-background to-background/0 pt-6 pb-3 px-3 md:px-5">
         <div className="max-w-3xl mx-auto space-y-2">
-          {/* Floating tool suggestions (always visible) */}
+          {/* Floating tool suggestions — fixed primary list, joined by active secondary */}
           <div className="flex flex-wrap gap-1.5 px-1">
             {PRIMARY_TOOLS.map(t => (
-              <button
-                key={t.id}
-                onClick={() => pickTool(t.id)}
-                className={cn(
-                  "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all",
-                  tool === t.id
-                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                    : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
-                )}
-              >
-                {tool === t.id ? <Check className="h-3 w-3" /> : <t.icon className="h-3 w-3" />}
-                {t.label}
-              </button>
+              <ToolPill key={t.id} active={tool === t.id} onClick={() => pickTool(t.id)} icon={t.icon} label={t.label} />
             ))}
+            {/* If active tool is a secondary one, show it joined to the row */}
+            {tool && !PRIMARY_TOOLS.some(p => p.id === tool) && activeToolMeta && (
+              <ToolPill
+                active
+                onClick={clearTool}
+                icon={activeToolMeta.icon}
+                label={activeToolMeta.label}
+              />
+            )}
             {tool && (
               <button
                 onClick={clearTool}
@@ -262,37 +260,141 @@ function EmptyState({ onPickTool }: { onPickTool: (id: string) => void }) {
 
 function MessageBubble({ message, streaming }: { message: ChatMessage; streaming?: boolean }) {
   const isUser = message.role === "user";
-  return (
-    <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
-      <div className={cn("flex flex-col min-w-0 max-w-[92%]", isUser && "items-end")}>
-        {message.tool && !isUser && (
-          <Badge variant="outline" className="mb-1.5 text-[9px] pointer-events-none capitalize w-fit">{message.tool}</Badge>
-        )}
-        <div className={cn(
-          "rounded-2xl px-4 py-3",
-          isUser
-            ? "bg-primary text-primary-foreground rounded-tr-sm"
-            : "bg-card border border-border rounded-tl-sm"
-        )}>
-          <div className="prose prose-sm max-w-none dark:prose-invert">
-            <ReactMarkdown
-              components={{
-                h1: ({ children }) => <h1 className="text-base font-bold mt-3 mb-2 first:mt-0">{children}</h1>,
-                h2: ({ children }) => <h2 className="text-sm font-semibold mt-3 mb-1.5 first:mt-0">{children}</h2>,
-                h3: ({ children }) => <h3 className="text-sm font-medium mt-2 mb-1">{children}</h3>,
-                p: ({ children }) => <p className="text-sm leading-relaxed mb-2 last:mb-0">{children}</p>,
-                ul: ({ children }) => <ul className="space-y-1 mb-2 list-disc list-inside text-sm">{children}</ul>,
-                ol: ({ children }) => <ol className="space-y-1 mb-2 list-decimal list-inside text-sm">{children}</ol>,
-                code: ({ children }) => <code className="px-1 py-0.5 bg-background rounded text-[11px] font-mono">{children}</code>,
-                pre: ({ children }) => <pre className="p-2.5 bg-background rounded text-[11px] font-mono overflow-x-auto mb-2">{children}</pre>,
-              }}
-            >
-              {message.content}
-            </ReactMarkdown>
+
+  // For assistant messages, split into post sections by "### Post" headers so each gets its own copy button
+  const sections = !isUser ? splitIntoPosts(message.content) : null;
+
+  if (isUser) {
+    return (
+      <div className="flex w-full justify-end">
+        <div className="flex flex-col items-end min-w-0 max-w-[92%]">
+          <div className="rounded-2xl rounded-tr-sm bg-primary text-primary-foreground px-4 py-3">
+            <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
           </div>
-          {streaming && <span className="inline-block w-1.5 h-3.5 bg-primary animate-pulse ml-0.5" />}
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="flex w-full justify-start">
+      <div className="flex flex-col min-w-0 w-full max-w-[92%] gap-2">
+        {message.tool && (
+          <Badge variant="outline" className="text-[9px] pointer-events-none capitalize w-fit">{message.tool}</Badge>
+        )}
+
+        {sections && sections.length > 1 ? (
+          <>
+            {sections.map((sec, i) => (
+              <PostCard key={i} title={sec.title} content={sec.body} />
+            ))}
+          </>
+        ) : (
+          <div className="rounded-2xl rounded-tl-sm bg-card border border-border px-4 py-3">
+            <MarkdownBody content={message.content} />
+            {streaming && <span className="inline-block w-1.5 h-3.5 bg-primary animate-pulse ml-0.5" />}
+            {!streaming && message.content.length > 0 && (
+              <div className="mt-3 pt-2 border-t border-border/60 flex justify-end">
+                <CopyButton text={message.content} label="Copy" />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
+  );
+}
+
+function MarkdownBody({ content }: { content: string }) {
+  return (
+    <div className="prose prose-sm max-w-none dark:prose-invert">
+      <ReactMarkdown
+        components={{
+          h1: ({ children }) => <h1 className="text-base font-bold mt-3 mb-2 first:mt-0">{children}</h1>,
+          h2: ({ children }) => <h2 className="text-sm font-semibold mt-3 mb-1.5 first:mt-0">{children}</h2>,
+          h3: ({ children }) => <h3 className="text-sm font-medium mt-2 mb-1 first:mt-0">{children}</h3>,
+          p: ({ children }) => <p className="text-sm leading-relaxed mb-2 last:mb-0">{children}</p>,
+          ul: ({ children }) => <ul className="space-y-1 mb-2 list-disc list-inside text-sm">{children}</ul>,
+          ol: ({ children }) => <ol className="space-y-1 mb-2 list-decimal list-inside text-sm">{children}</ol>,
+          code: ({ children }) => <code className="px-1 py-0.5 bg-background rounded text-[11px] font-mono">{children}</code>,
+          pre: ({ children }) => <pre className="p-2.5 bg-background rounded text-[11px] font-mono overflow-x-auto mb-2 whitespace-pre-wrap">{children}</pre>,
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
+  );
+}
+
+function PostCard({ title, content }: { title: string; content: string }) {
+  // Extract the primary post text (inside ``` block if present), else use full content
+  const codeMatch = content.match(/```([\s\S]*?)```/);
+  const postText = codeMatch ? codeMatch[1].trim() : content.trim();
+  return (
+    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+      <div className="flex items-center justify-between gap-2 px-4 py-2 border-b border-border bg-muted/40">
+        <span className="text-[11px] font-mono text-muted-foreground truncate">{title}</span>
+        <CopyButton text={postText} label="Copy post" />
+      </div>
+      <div className="px-4 py-3">
+        <MarkdownBody content={content} />
+      </div>
+    </div>
+  );
+}
+
+function splitIntoPosts(content: string): { title: string; body: string }[] | null {
+  // Match "### Post N — Title" or "### Post N" headers
+  const regex = /^###\s+Post\s+\d+.*$/gim;
+  const matches = [...content.matchAll(regex)];
+  if (matches.length < 2) return null;
+  const sections: { title: string; body: string }[] = [];
+  for (let i = 0; i < matches.length; i++) {
+    const start = matches[i].index ?? 0;
+    const end = i + 1 < matches.length ? matches[i + 1].index ?? content.length : content.length;
+    const block = content.slice(start, end);
+    const firstLineEnd = block.indexOf("\n");
+    const title = block.slice(0, firstLineEnd === -1 ? block.length : firstLineEnd).replace(/^###\s*/, "").trim();
+    const body = firstLineEnd === -1 ? "" : block.slice(firstLineEnd + 1).trim();
+    sections.push({ title, body });
+  }
+  return sections;
+}
+
+function ToolPill({ active, onClick, icon: Icon, label }: {
+  active: boolean; onClick: () => void; icon: any; label: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all",
+        active
+          ? "bg-primary text-primary-foreground border-primary shadow-sm"
+          : "bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
+      )}
+    >
+      {active ? <Check className="h-3 w-3" /> : <Icon className="h-3 w-3" />}
+      {label}
+    </button>
+  );
+}
+
+function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={async (e) => {
+        e.stopPropagation();
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        toast({ title: "Copied to clipboard" });
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      className="inline-flex items-center gap-1 text-[10px] font-mono text-muted-foreground hover:text-primary transition-colors"
+    >
+      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+      {copied ? "Copied" : label}
+    </button>
   );
 }

@@ -6,7 +6,8 @@ import { useChat } from "@/hooks/useChat";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { ChatView } from "@/components/chat/ChatView";
 import { SettingsView } from "@/components/chat/SettingsView";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import * as SheetPrimitive from "@radix-ui/react-dialog";
+import { Sheet } from "@/components/ui/sheet";
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -47,18 +48,23 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Mobile sidebar in a Sheet */}
+      {/* Mobile sidebar — no X button, tap overlay to close */}
       <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
-        <SheetContent side="left" className="p-0 w-72 max-w-[85vw]">
-          <ChatSidebar
-            conversations={conversations}
-            activeId={activeId}
-            onSelect={(id) => { setActiveId(id); setShowSettings(false); setMobileSidebarOpen(false); }}
-            onNew={() => { newChat(); setShowSettings(false); setMobileSidebarOpen(false); }}
-            onDelete={deleteConversation}
-            onOpenSettings={() => { setShowSettings(true); setMobileSidebarOpen(false); }}
-          />
-        </SheetContent>
+        <SheetPrimitive.Portal>
+          <SheetPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+          <SheetPrimitive.Content
+            className="fixed inset-y-0 left-0 z-50 h-full w-72 max-w-[85vw] bg-background shadow-xl border-r border-border data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left"
+          >
+            <ChatSidebar
+              conversations={conversations}
+              activeId={activeId}
+              onSelect={(id) => { setActiveId(id); setShowSettings(false); setMobileSidebarOpen(false); }}
+              onNew={() => { newChat(); setShowSettings(false); setMobileSidebarOpen(false); }}
+              onDelete={deleteConversation}
+              onOpenSettings={() => { setShowSettings(true); setMobileSidebarOpen(false); }}
+            />
+          </SheetPrimitive.Content>
+        </SheetPrimitive.Portal>
       </Sheet>
 
       <div className="flex-1 flex flex-col min-w-0">

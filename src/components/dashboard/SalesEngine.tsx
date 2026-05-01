@@ -118,13 +118,15 @@ function SalesPostCard({
     <Card className={isApproved ? "border-primary/40" : undefined}>
       <CardContent className="p-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="text-[10px]">Day {post.scheduled_day}</Badge>
-          <Badge variant="outline" className={`text-[10px] ${config.color}`}>{config.emoji} {config.label}</Badge>
-          <Badge variant="outline" className="text-[10px]">{post.sell_intensity} sell</Badge>
-          {post.viral_score && <Badge variant="outline" className="text-[10px] text-yellow-500">⚡ {post.viral_score}</Badge>}
+          <Badge variant="secondary" className="text-[10px] pointer-events-none">Day {post.scheduled_day}</Badge>
+          <Badge variant="outline" className="text-[10px] pointer-events-none">{config.label}</Badge>
+          {post.viral_score && (
+            <Badge variant="outline" className="text-[10px] text-primary border-primary/30 pointer-events-none">
+              ⚡ {post.viral_score}
+            </Badge>
+          )}
           {post.scheduled_date && (
             <span className="text-[10px] text-muted-foreground ml-auto">
-              <Calendar className="h-3 w-3 inline mr-0.5" />
               {new Date(post.scheduled_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
             </span>
           )}
@@ -247,29 +249,18 @@ export function SalesEngine() {
 
   if (products.length === 0 && !showProductForm) {
     return (
-      <div className="rounded-xl border border-border bg-card p-8 text-center space-y-4">
-        <div className="mx-auto h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
-          <ShoppingBag className="h-7 w-7 text-primary" />
+      <div className="rounded-xl border border-border bg-card p-10 text-center space-y-5 max-w-lg mx-auto">
+        <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+          <ShoppingBag className="h-6 w-6 text-primary" />
         </div>
-        <div>
-          <h2 className="text-xl font-semibold">Sales Content Engine</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Turn any product or offer into a full 14-day organic sales campaign. Value threads, story posts, FOMO, controversy, and direct CTAs — all sequenced strategically.
+        <div className="space-y-2">
+          <h2 className="text-xl font-semibold tracking-tight">Sales Engine</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Turn a product into a multi-day organic sales campaign. Value-first, no spam.
           </p>
-          <p className="text-xs text-muted-foreground mt-2">
-            The best sales content delivers so much free value that buying the product feels obvious.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2 justify-center">
-          {Object.entries(POST_TYPE_CONFIG).map(([key, cfg]) => (
-            <div key={key} className={`rounded-lg border p-2 text-left ${cfg.color}`}>
-              <p className="text-xs font-medium">{cfg.emoji} {cfg.label}</p>
-              <p className="text-[10px] text-muted-foreground">{cfg.desc}</p>
-            </div>
-          ))}
         </div>
         <Button variant="viral" size="lg" onClick={() => setShowProductForm(true)}>
-          <Plus className="h-4 w-4 mr-1" /> Add Your First Product
+          <Plus className="h-4 w-4 mr-1.5" /> Add Your First Product
         </Button>
       </div>
     );
@@ -277,12 +268,9 @@ export function SalesEngine() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-2">
-          <ShoppingBag className="h-5 w-5 text-primary" />
-          <h2 className="text-xl font-semibold">Sales Content Engine</h2>
-        </div>
-        <p className="text-xs text-muted-foreground">Organic content that sells. No ads. No spam. Just value.</p>
+      <div className="flex items-center gap-2">
+        <ShoppingBag className="h-5 w-5 text-primary" />
+        <h2 className="text-xl font-semibold tracking-tight">Sales Engine</h2>
       </div>
 
       <div className="flex items-center gap-2">
