@@ -137,7 +137,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
   const activeToolMeta = ALL_TOOLS.find(t => t.id === tool);
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 h-screen bg-background relative">
+    <div className="flex-1 flex flex-col min-w-0 h-screen max-h-screen overflow-hidden bg-background relative">
       {/* Header — sidebar toggle on mobile, credits on right. No "name" overlap. */}
       <header className="h-14 border-b border-border flex items-center px-3 md:px-5 justify-between bg-background/80 backdrop-blur-xl sticky top-0 z-10 shrink-0">
         <div className="flex items-center gap-2">
