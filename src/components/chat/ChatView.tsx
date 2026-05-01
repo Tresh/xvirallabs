@@ -80,6 +80,7 @@ export function ChatView({ messages, streaming, streamBuffer, onSend, isEmpty, o
     if (!el) return;
     const observer = new ResizeObserver(() => checkScrollPosition());
     observer.observe(el);
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
     return () => observer.disconnect();
   }, []);
 
