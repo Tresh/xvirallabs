@@ -10,7 +10,10 @@ export function Footer() {
           
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <Link to="/features" className="hover:text-foreground transition-colors">Features</Link>
+            <Link to="/pricing" className="hover:text-foreground transition-colors">Pricing</Link>
             <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+            <Link to="/refund" className="hover:text-foreground transition-colors">Refunds</Link>
           </div>
 
           <p className="text-sm text-muted-foreground font-mono">
