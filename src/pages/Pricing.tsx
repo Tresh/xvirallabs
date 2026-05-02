@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Sparkles, Zap, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const plans = [
   {
@@ -39,6 +40,8 @@ const plans = [
 ];
 
 const Pricing = () => {
+  const { user } = useAuth();
+  const upgradeHref = user ? "/dashboard?view=settings&section=plans" : "/auth?redirect=/dashboard?view=settings%26section=plans";
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -89,10 +92,16 @@ const Pricing = () => {
 
                   {plan.comingSoon ? (
                     <Button variant="outline" className="w-full" disabled>Coming Soon</Button>
+                  ) : plan.name === "Free" ? (
+                    <Link to={user ? "/dashboard" : "/auth"}>
+                      <Button variant="outline" className="w-full">
+                        {user ? "Go to dashboard" : "Start free"}
+                      </Button>
+                    </Link>
                   ) : (
-                    <Link to="/auth">
+                    <Link to={upgradeHref}>
                       <Button variant={plan.highlighted ? "viral" : "outline"} className="w-full">
-                        {plan.name === "Free" ? "Start free" : "Get started"}
+                        {user ? "Upgrade now" : "Get started"}
                       </Button>
                     </Link>
                   )}
