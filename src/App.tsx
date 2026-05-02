@@ -11,6 +11,9 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Features from "./pages/Features";
 import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Refund from "./pages/Refund";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
@@ -42,6 +45,9 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/features" element={<Features />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/refund" element={<Refund />} />
+            <Route path="/pricing" element={<Pricing />} />
             <Route path="/checkout/success" element={<CheckoutSuccess />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
