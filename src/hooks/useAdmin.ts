@@ -85,12 +85,20 @@ export function useAdmin() {
     queryKey: ["admin-users"],
     queryFn: async () => {
       // First get all profiles
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
+      const { data: profilesRaw, error: profilesError } = await supabase
+        .from("admin_user_directory" as any)
         .select("*")
         .order("created_at", { ascending: false });
       
       if (profilesError) throw profilesError;
+      const profiles = ((profilesRaw ?? []) as unknown) as Array<{
+        id: string;
+        user_id: string;
+        email: string | null;
+        twitter_handle: string | null;
+        tier: string | null;
+        created_at: string;
+      }>;
       
       // Then get all roles
       const { data: roles, error: rolesError } = await supabase
