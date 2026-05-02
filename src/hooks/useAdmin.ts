@@ -91,7 +91,7 @@ export function useAdmin() {
         .order("created_at", { ascending: false });
       
       if (profilesError) throw profilesError;
-      const profiles = (profilesRaw ?? []) as Array<{
+      const profiles = ((profilesRaw ?? []) as unknown) as Array<{
         id: string;
         user_id: string;
         email: string | null;
