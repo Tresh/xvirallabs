@@ -97,10 +97,9 @@ async function handleSubscriptionUpdated(data: any, env: PaddleEnv) {
   const newPriceId = items?.[0]?.price?.importMeta?.externalId ?? subRow.price_id;
   const tier = PRICE_TO_TIER[newPriceId as string] ?? 'free';
 
-  if (status === 'active' || status === 'trialing') {
+  if (status === 'active' || status === 'trialing' || status === 'past_due') {
+    // past_due = Paddle is retrying the card; keep premium access during dunning.
     await updateUserTier(userId, tier);
-  } else if (status === 'past_due') {
-    // grace period — keep current tier
   }
 }
 
