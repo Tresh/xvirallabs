@@ -8,12 +8,12 @@ const Terms = () => {
       <main className="pt-32 pb-20">
         <div className="container mx-auto px-4 max-w-3xl">
           <h1 className="text-4xl font-bold mb-2">Terms & Conditions</h1>
-          <p className="text-sm text-muted-foreground mb-12">Last updated: March 8, 2026</p>
+          <p className="text-sm text-muted-foreground mb-12">Last updated: May 2, 2026</p>
 
           <div className="space-y-8 text-foreground/80 text-[15px] leading-relaxed">
             <section>
               <h2 className="text-lg font-semibold text-foreground mb-3">1. Acceptance of Terms</h2>
-              <p>By accessing or using XViralLabs ("the Service"), you agree to be bound by these Terms and Conditions. If you do not agree, you may not use the Service.</p>
+              <p>XViralLabs (the "Service") is operated by <strong>Tomiwa Sanni</strong> ("we", "us", "our"). By accessing or using the Service, you agree to be bound by these Terms and Conditions and form a binding agreement with Tomiwa Sanni. If you do not agree, you may not use the Service.</p>
             </section>
 
             <section>
@@ -38,12 +38,12 @@ const Terms = () => {
 
             <section>
               <h2 className="text-lg font-semibold text-foreground mb-3">6. Usage Limits & Billing</h2>
-              <p>Free accounts are subject to daily analysis limits. Paid plans offer expanded or unlimited usage. Subscription fees are non-refundable unless otherwise stated.</p>
+              <p>Free accounts are subject to daily analysis limits. Paid plans offer expanded or unlimited usage. Our order process is conducted by our online reseller <strong>Paddle.com</strong>. Paddle.com is the Merchant of Record for all our orders, and provides all customer service inquiries, billing, tax compliance, and refunds. Payment, billing, cancellation, and refund mechanics are governed by Paddle's <a href="https://www.paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noopener noreferrer" className="text-primary underline">Buyer Terms</a> and our <a href="/refund" className="text-primary underline">Refund Policy</a>, which offers a 30-day money-back guarantee.</p>
             </section>
 
             <section>
               <h2 className="text-lg font-semibold text-foreground mb-3">7. Privacy</h2>
-              <p>We collect and process data as described in our Privacy Policy. By using the Service, you consent to such processing. We do not sell your personal data to third parties.</p>
+              <p>We collect and process data as described in our <a href="/privacy" className="text-primary underline">Privacy Notice</a>. By using the Service, you consent to such processing. We do not sell your personal data to third parties.</p>
             </section>
 
             <section>

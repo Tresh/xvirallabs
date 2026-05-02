@@ -28,6 +28,9 @@ export function Header() {
           <Link to="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Features
           </Link>
+          <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Pricing
+          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
