@@ -1520,6 +1520,42 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_user_directory: {
+        Row: {
+          created_at: string | null
+          display_name: string | null
+          email: string | null
+          id: string | null
+          primary_niche: string | null
+          tier: string | null
+          twitter_handle: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string | null
+          primary_niche?: string | null
+          tier?: string | null
+          twitter_handle?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string | null
+          email?: string | null
+          id?: string | null
+          primary_niche?: string | null
+          tier?: string | null
+          twitter_handle?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_and_increment_usage: {
