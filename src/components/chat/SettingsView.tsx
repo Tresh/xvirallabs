@@ -7,6 +7,7 @@ import { SalesEngine } from "@/components/dashboard/SalesEngine";
 import { GrowthTracker } from "@/components/dashboard/GrowthTracker";
 import { MemoryTab } from "@/components/dashboard/MemoryTab";
 import { PricingPlans } from "@/components/dashboard/PricingPlans";
+import { SubscriptionManagement } from "@/components/dashboard/SubscriptionManagement";
 import { replayOnboardingTour } from "@/hooks/useOnboardingTour";
 
 const SECTIONS = [
@@ -87,7 +88,12 @@ export function SettingsView({ onClose }: { onClose: () => void }) {
             {section === "memory" && <MemoryTab />}
             {section === "sales" && <SalesEngine />}
             {section === "growth" && <GrowthTracker />}
-            {section === "plans" && <PricingPlans />}
+            {section === "plans" && (
+              <div className="space-y-4 max-w-5xl mx-auto">
+                <SubscriptionManagement />
+                <PricingPlans />
+              </div>
+            )}
           </div>
         )}
       </div>
