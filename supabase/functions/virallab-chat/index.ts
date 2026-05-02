@@ -110,8 +110,15 @@ serve(async (req) => {
       });
     }
 
-    // Usage check (counts as one analysis credit)
-    const { data: remaining } = await supabaseAdmin.rpc("check_and_increment_usage", { p_user_id: user.id });
+    // Usage check (counts as one analysis credit) — must use user-scoped client
+    // so auth.uid() matches inside the SECURITY DEFINER function.
+    const { data: remaining, error: usageError } = await supabase.rpc("check_and_increment_usage", { p_user_id: user.id });
+    if (usageError) {
+      console.error("Usage check failed", usageError);
+      return new Response(JSON.stringify({ error: "Usage check failed" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     if (remaining === 0) {
       return new Response(JSON.stringify({
         error: "Daily limit reached", code: "LIMIT_EXCEEDED",
