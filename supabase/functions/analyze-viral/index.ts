@@ -248,12 +248,17 @@ serve(async (req) => {
         if (user) {
           userId = user.id;
 
-          // Check rate limit using database function
-          const { data: remainingData, error: usageError } = await supabaseAdmin
+          // Check rate limit — must use user-scoped client so auth.uid()
+          // matches inside the SECURITY DEFINER function.
+          const { data: remainingData, error: usageError } = await supabase
             .rpc('check_and_increment_usage', { p_user_id: user.id });
 
           if (usageError) {
             console.error("Usage check error:", usageError);
+            return new Response(
+              JSON.stringify({ error: "Usage check failed" }),
+              { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
           } else if (remainingData === 0) {
             // User has hit their limit
             return new Response(
