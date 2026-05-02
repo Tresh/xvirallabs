@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, Sparkles, Zap, Crown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
+import { Loader2 } from "lucide-react";
 
 const plans = [
   {
@@ -17,27 +19,33 @@ const plans = [
   {
     name: "Pro",
     tier: "pro",
-    price: "$19",
+    price: "$7",
+    originalPrice: "$10",
     period: "/month",
     description: "For serious content creators",
     icon: Sparkles,
-    badge: "Popular",
+    badge: "Launch price",
     features: ["Unlimited analyses", "All 10 analysis modes", "Saved analysis history", "Pattern library", "Idea vault", "Brand voice settings"],
+    priceId: "pro_monthly",
   },
   {
     name: "Elite",
     tier: "elite",
-    price: "$49",
+    price: "$18",
+    originalPrice: "$25",
     period: "/month",
     description: "For agencies & power users",
     icon: Crown,
     features: ["Everything in Pro", "Team collaboration", "API access", "Priority support", "Custom integrations", "White-label reports"],
+    priceId: "elite_monthly",
+    comingSoon: true,
   },
 ];
 
 export function PricingPlans() {
   const { profile } = useAuth();
   const currentTier = profile?.tier || "free";
+  const { openCheckout, loading } = usePaddleCheckout();
 
   return (
     <Card className="border-border">
@@ -87,6 +95,9 @@ export function PricingPlans() {
                     <h3 className="font-semibold">{plan.name}</h3>
                     <div className="flex items-baseline gap-1">
                       <span className="text-2xl font-bold">{plan.price}</span>
+                      {plan.originalPrice && (
+                        <span className="text-sm text-muted-foreground line-through">{plan.originalPrice}</span>
+                      )}
                       {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
                     </div>
                   </div>
@@ -111,8 +122,17 @@ export function PricingPlans() {
                 
                 {isCurrent ? (
                   <Button variant="outline" className="w-full" disabled>Current Plan</Button>
+                ) : plan.comingSoon ? (
+                  <Button variant="viral" className="w-full" disabled>Coming Soon</Button>
                 ) : (
-                  <Button variant="viral" className="w-full">Upgrade</Button>
+                  <Button
+                    variant="viral"
+                    className="w-full"
+                    disabled={loading || !plan.priceId}
+                    onClick={() => plan.priceId && openCheckout(plan.priceId)}
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Upgrade"}
+                  </Button>
                 )}
               </div>
             );
