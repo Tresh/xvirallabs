@@ -86,7 +86,7 @@ export function useAdmin() {
     queryFn: async () => {
       // First get all profiles
       const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
+        .from("admin_user_directory" as any)
         .select("*")
         .order("created_at", { ascending: false });
       
